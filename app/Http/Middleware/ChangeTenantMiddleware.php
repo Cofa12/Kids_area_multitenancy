@@ -17,9 +17,7 @@ class ChangeTenantMiddleware
      */
     public function handle(Request $request, Closure $next): Response
     {
-        $tenantIdentifier = $request->input('tenant')
-            ?? $request->header('X-Tenant')
-            ?? $request->query('tenant');
+        $tenantIdentifier = $request->header('X-Tenant');
 
         if (!$tenantIdentifier) {
             return response()->json([
