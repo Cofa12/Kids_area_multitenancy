@@ -23,18 +23,20 @@ class HeaderTenantIdentificationTest extends TestCase
     }
 
     /** @test */
-    public function requests_without_x_tenant_header_fail_for_routes_requiring_a_tenant()
+    public function requests_without_x_tenant_header_fail_with_400_for_website_routes()
     {
-        $response = $this->getJson('/api/v1/tenant-check'); // Route protected by 'tenant' middleware
+        // /api/v1/get-date is now protected by 'ChangeTenantMiddleware'
+        $response = $this->getJson('/api/v1/get-date');
 
-        $response->assertStatus(500); // Spatie NeedsTenant throws exception if no tenant found
+        $response->assertStatus(400);
+        $response->assertJson(['message' => 'Tenant identifier is required']);
     }
 
     /** @test */
     public function header_tenant_finder_identifies_tenant_from_header()
     {
         $tenant = Tenant::first();
-        $request = Request::create('/api/v1/tenant-check', 'GET');
+        $request = Request::create('/api/v1/get-date', 'GET');
         $request->headers->set('X-Tenant', $tenant->domain);
 
         $finder = new \App\TenantFinder\HeaderTenantFinder();
@@ -47,7 +49,7 @@ class HeaderTenantIdentificationTest extends TestCase
     /** @test */
     public function header_tenant_finder_returns_null_if_header_missing()
     {
-        $request = Request::create('/api/v1/tenant-check', 'GET');
+        $request = Request::create('/api/v1/get-date', 'GET');
 
         $finder = new \App\TenantFinder\HeaderTenantFinder();
         $foundTenant = $finder->findForRequest($request);
@@ -56,16 +58,25 @@ class HeaderTenantIdentificationTest extends TestCase
     }
 
     /** @test */
-    public function change_tenant_middleware_works_with_x_tenant_header()
+    public function website_routes_correctly_identify_tenant_via_header()
     {
         $tenant = Tenant::first();
 
-        // Test with a route that only uses ChangeTenantMiddleware and doesn't require authentication
         $response = $this->withHeaders([
             'X-Tenant' => $tenant->domain,
-        ])->getJson('/api/v1/test-change-tenant');
+        ])->getJson('/api/v1/get-date');
 
         $response->assertStatus(200);
-        $response->assertJson(['tenant_id' => $tenant->id]);
+    }
+
+    /** @test */
+    public function requests_with_invalid_tenant_fail_with_404()
+    {
+        $response = $this->withHeaders([
+            'X-Tenant' => 'invalid-tenant',
+        ])->getJson('/api/v1/get-date');
+
+        $response->assertStatus(404);
+        $response->assertJson(['message' => 'Tenant not found']);
     }
 }

@@ -55,7 +55,7 @@ Route::middleware('landlord')->group(function () {
 
 Route::middleware('CheckAuthenticationUser')->get('/category/{id}/videos', [CategoryController::class, 'show']);
 
-Route::middleware(['tenant'])->group(function () {
+Route::middleware(['ChangeTenantMiddleware'])->group(function () {
     Route::post('/safaricom/callback', [LandingPage::class, 'callback']);
     Route::get('/get-date', [WebsiteController::class, 'getDate']);
     Route::post('/website/register', [WebsiteController::class, 'register']);

