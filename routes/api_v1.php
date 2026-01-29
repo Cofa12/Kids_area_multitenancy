@@ -48,23 +48,6 @@ Route::middleware('landlord')->group(function () {
             Route::put('dashboard/campaigns/{id}/cpa', [CampaignController::class, 'updateCpa'])->whereUuid('id');
 
             Route::post('dashboard/campaigns/non-billable-clicks', [CampaignController::class, 'storeNonBillableClick']);
-
-
-            // Website
-            Route::post('/safaricom/callback', [LandingPage::class, 'callback']);
-            Route::get('/get-date', [WebsiteController::class, 'getDate']);
-            Route::post('/website/register', [WebsiteController::class, 'register']);
-            Route::post('/website/login', [WebsiteController::class, 'login']);
-
-
-            Route::middleware('CheckAuthenticationUser')->group(function () {
-                Route::post('/upload-child-photo', [WebsiteController::class, 'uploadChildPhoto']);
-            });
-
-            Route::post('refresh-token', [AuthController::class, 'refreshToken']);
-
-            Route::post('/landing/auth', [AuthController::class, 'registerFromLandingPage']);
-            Route::post('/login', [AuthController::class, 'login']);
         });
     });
 
@@ -72,6 +55,19 @@ Route::middleware('landlord')->group(function () {
 
 Route::middleware('CheckAuthenticationUser')->get('/category/{id}/videos', [CategoryController::class, 'show']);
 
-//Route::middleware(['ChangeTenantMiddleware'])->group(function () {
-//
-//});
+Route::middleware(['ChangeTenantMiddleware'])->group(function () {
+    Route::post('/safaricom/callback', [LandingPage::class, 'callback']);
+    Route::get('/get-date', [WebsiteController::class, 'getDate']);
+    Route::post('/website/register', [WebsiteController::class, 'register']);
+    Route::post('/website/login', [WebsiteController::class, 'login']);
+
+
+    Route::middleware('CheckAuthenticationUser')->group(function () {
+        Route::post('/upload-child-photo', [WebsiteController::class, 'uploadChildPhoto']);
+    });
+
+    Route::post('refresh-token', [AuthController::class, 'refreshToken']);
+
+    Route::post('/landing/auth', [AuthController::class, 'registerFromLandingPage']);
+    Route::post('/login', [AuthController::class, 'login']);
+});
