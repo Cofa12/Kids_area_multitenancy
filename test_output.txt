@@ -1,0 +1,36 @@
+array:2 [
+  0 => {#3182
+    +"title": "Video EN"
+    +"description": "Description EN"
+    +"url": "video_en.mp4"
+    +"thumbnail": "thumb_en.png"
+  }
+  1 => {#3175
+    +"title": "Video Both"
+    +"description": "Description Both"
+    +"url": "video_both_en.mp4"
+    +"thumbnail": "thumb_both_en.png"
+  }
+] // vendor/laravel/framework/src/Illuminate/Testing/TestResponse.php:1833
+
+   FAIL  Tests\Feature\RandomVideoTest
+  ⨯ get random videos with language filtering                            0.14s  
+  ────────────────────────────────────────────────────────────────────────────  
+   FAILED  Tests\Feature\RandomVideoTest > get random videos with…  TypeError   
+  PHPUnit\Framework\Assert::assertCount(): Argument #2 ($haystack) must be of type Countable|Traversable|array, null given, called in /Users/cofa/Documents/GitHub/Kids_area_multitenancy/vendor/laravel/framework/src/Illuminate/Testing/AssertableJsonString.php on line 74
+
+  at tests/Feature/RandomVideoTest.php:83
+     79▕         ]);
+     80▕ 
+     81▕         $responseEn->dump();
+     82▕         $responseEn->assertStatus(JsonResponse::HTTP_OK);
+  ➜  83▕         $responseEn->assertJsonCount(2, 'data'); // Only Video EN and Video Both
+     84▕         $responseEn->assertJsonFragment(['title' => 'Video EN']);
+     85▕         $responseEn->assertJsonFragment(['title' => 'Video Both']);
+     86▕         $responseEn->assertJsonMissing(['title' => 'فيديو عربي']);
+     87▕         $responseEn->assertJsonStructure([
+
+
+  Tests:    1 failed (1 assertions)
+  Duration: 0.16s
+

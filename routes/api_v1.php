@@ -9,7 +9,6 @@ use App\Http\Controllers\V1\LandingPage;
 use App\Http\Controllers\V1\VideoController;
 use App\Http\Controllers\V1\WebsiteController;
 use Illuminate\Support\Facades\Route;
-use Spatie\Multitenancy\Http\Middleware\NeedsTenant;
 
 use App\Http\Controllers\V1\Landlord\TenantController;
 
@@ -24,6 +23,7 @@ Route::middleware('landlord')->group(function () {
     Route::post('/admin/login', [AdminAuthController::class, 'login']);
 
     Route::middleware('LandlordAuthenticationUser')->group(function () {
+        Route::get('/videos/random', [VideoController::class, 'randomVideos']);
         Route::apiResource('/videos', VideoController::class)->except('index');
         Route::middleware('ChangeTenantMiddleware')->group(function () {
             Route::get('/get-unaccepted-child-photos', [DashboardController::class, 'getUnAcceptedChildPhotos']);

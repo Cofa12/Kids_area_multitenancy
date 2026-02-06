@@ -7,6 +7,7 @@ use App\Http\Exceptions\NotFoundException;
 use App\Http\Requests\V1\VideoCreationRequest;
 use App\Http\Requests\V1\VideoUpdateRequest;
 use App\Http\Resources\V1\ShowSingleVideoResource;
+use App\Http\Resources\V1\RandomVideoResource;
 use App\Http\Resources\V1\VideoResource;
 use App\Models\Video;
 use App\Services\V1\FileHandling;
@@ -44,7 +45,7 @@ class VideoController extends Controller
             $query->orderBy('created_at');
         }
 
-        return VIdeoResource::collection($query->paginate(10));
+        return VideoResource::collection($query->paginate(10));
     }
 
 
@@ -144,5 +145,20 @@ class VideoController extends Controller
 
         $video->delete();
         return response()->json(['message' => 'Video Deleted Successfully'], Response::HTTP_OK);
+    }
+
+    /**
+     * Display a listing of the resource in random order.
+     */
+    public function randomVideos(Request $request): AnonymousResourceCollection
+    {
+        $lang = $request->header('Accept-Language');
+        $lang = $lang ? substr($lang, 0, 2) : 'en';
+
+        $query = Video::query()
+            ->whereNotNull('title_' . $lang)
+            ->inRandomOrder();
+
+        return RandomVideoResource::collection($query->get());
     }
 }
