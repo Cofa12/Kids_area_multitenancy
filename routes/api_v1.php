@@ -17,13 +17,14 @@ Route::get('/all/categories-with-videos', [CategoryController::class, 'getCatego
 Route::get('/category/{id}/videos/search', [CategoryController::class, 'searchVideos']);
 Route::get('/videos', [VideoController::class, 'index']);
 Route::get('/videos/search', [VideoController::class, 'search']);
+Route::get('/videos/random', [VideoController::class, 'randomVideos']);
+
 
 Route::middleware('landlord')->group(function () {
     Route::get('/landlord/tenants', [TenantController::class, 'index']);
     Route::post('/admin/login', [AdminAuthController::class, 'login']);
 
     Route::middleware('LandlordAuthenticationUser')->group(function () {
-        Route::get('/videos/random', [VideoController::class, 'randomVideos']);
         Route::apiResource('/videos', VideoController::class)->except('index');
         Route::middleware('ChangeTenantMiddleware')->group(function () {
             Route::get('/get-unaccepted-child-photos', [DashboardController::class, 'getUnAcceptedChildPhotos']);
