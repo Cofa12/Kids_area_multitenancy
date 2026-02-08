@@ -61,11 +61,10 @@ Route::middleware(['ChangeTenantMiddleware'])->group(function () {
     Route::post('/website/register', [WebsiteController::class, 'register']);
     Route::post('/website/login', [WebsiteController::class, 'login']);
 
+    Route::get('/videos/random', [VideoController::class, 'randomVideos']);
 
     Route::middleware('CheckAuthenticationUser')->group(function () {
         Route::post('/upload-child-photo', [WebsiteController::class, 'uploadChildPhoto']);
-        Route::get('/videos/random', [VideoController::class, 'randomVideos']);
-
     });
 
     Route::post('refresh-token', [AuthController::class, 'refreshToken']);
