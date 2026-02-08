@@ -17,7 +17,6 @@ Route::get('/all/categories-with-videos', [CategoryController::class, 'getCatego
 Route::get('/category/{id}/videos/search', [CategoryController::class, 'searchVideos']);
 Route::get('/videos', [VideoController::class, 'index']);
 Route::get('/videos/search', [VideoController::class, 'search']);
-Route::get('/videos/random', [VideoController::class, 'randomVideos']);
 
 
 Route::middleware('landlord')->group(function () {
@@ -65,6 +64,8 @@ Route::middleware(['ChangeTenantMiddleware'])->group(function () {
 
     Route::middleware('CheckAuthenticationUser')->group(function () {
         Route::post('/upload-child-photo', [WebsiteController::class, 'uploadChildPhoto']);
+        Route::get('/videos/random', [VideoController::class, 'randomVideos']);
+
     });
 
     Route::post('refresh-token', [AuthController::class, 'refreshToken']);

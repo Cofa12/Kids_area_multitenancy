@@ -159,6 +159,6 @@ class VideoController extends Controller
             ->whereNotNull('title_' . $lang)
             ->inRandomOrder();
 
-        return RandomVideoResource::collection($query->get());
+        return RandomVideoResource::collection($query->paginate(10));
     }
 }
