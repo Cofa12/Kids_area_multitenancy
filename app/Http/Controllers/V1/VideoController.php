@@ -15,6 +15,9 @@ use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Resources\Json\AnonymousResourceCollection;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\Config;
+use Illuminate\Support\Facades\DB;
+use Spatie\Multitenancy\Models\Tenant;
 use Symfony\Component\HttpFoundation\Response;
 
 /**
@@ -152,6 +155,16 @@ class VideoController extends Controller
      */
     public function randomVideos(Request $request): AnonymousResourceCollection
     {
+        Tenant::forgetCurrent();
+
+        Config::set('database.default', 'landlord');
+        DB::purge('tenant');
+
+        if (!app()->environment('testing')) {
+            DB::reconnect('landlord');
+        }
+
+
         $lang = $request->header('Accept-Language');
         $lang = $lang ? substr($lang, 0, 2) : 'en';
 
