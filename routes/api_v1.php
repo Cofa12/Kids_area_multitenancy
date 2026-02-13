@@ -18,6 +18,27 @@ Route::get('/category/{id}/videos/search', [CategoryController::class, 'searchVi
 Route::get('/videos', [VideoController::class, 'index']);
 Route::get('/videos/search', [VideoController::class, 'search']);
 
+Route::middleware(['ChangeTenantMiddleware'])->group(function () {
+    Route::post('/safaricom/callback', [LandingPage::class, 'callback']);
+    Route::get('/get-date', [WebsiteController::class, 'getDate']);
+    Route::post('/website/register', [WebsiteController::class, 'register']);
+    Route::post('/website/login', [WebsiteController::class, 'login']);
+
+
+    Route::middleware('CheckAuthenticationUser')->group(function () {
+        Route::post('/upload-child-photo', [WebsiteController::class, 'uploadChildPhoto']);
+		Route::get('/videos/random', [VideoController::class, 'randomVideos']);
+
+    });
+
+    Route::post('refresh-token', [AuthController::class, 'refreshToken']);
+
+    Route::post('/landing/auth', [AuthController::class, 'registerFromLandingPage']);
+    Route::post('/login', [AuthController::class, 'login']);
+});
+
+
+
 
 Route::middleware('landlord')->group(function () {
     Route::get('/landlord/tenants', [TenantController::class, 'index']);
@@ -55,21 +76,3 @@ Route::middleware('landlord')->group(function () {
 
 Route::middleware('CheckAuthenticationUser')->get('/category/{id}/videos', [CategoryController::class, 'show']);
 
-Route::middleware(['ChangeTenantMiddleware'])->group(function () {
-    Route::post('/safaricom/callback', [LandingPage::class, 'callback']);
-    Route::get('/get-date', [WebsiteController::class, 'getDate']);
-    Route::post('/website/register', [WebsiteController::class, 'register']);
-    Route::post('/website/login', [WebsiteController::class, 'login']);
-
-
-    Route::middleware('CheckAuthenticationUser')->group(function () {
-        Route::post('/upload-child-photo', [WebsiteController::class, 'uploadChildPhoto']);
-        Route::get('/videos/random', [VideoController::class, 'randomVideos']);
-
-    });
-
-    Route::post('refresh-token', [AuthController::class, 'refreshToken']);
-
-    Route::post('/landing/auth', [AuthController::class, 'registerFromLandingPage']);
-    Route::post('/login', [AuthController::class, 'login']);
-});
