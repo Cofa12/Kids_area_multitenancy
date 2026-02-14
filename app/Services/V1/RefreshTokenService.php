@@ -20,7 +20,7 @@ class RefreshTokenService
         }
 
         try {
-        $payload = JWTAuth::setToken($refreshToken)->getPayload();
+            $payload = JWTAuth::setToken($refreshToken)->getPayload();
         } catch (\Exception $e) {
             throw new UnAuthorizedException('refresh token is Expired');
         }
@@ -30,9 +30,9 @@ class RefreshTokenService
         }
 
 
-        $user = JWTAuth::setToken($refreshToken)->toUser();
-
-        $accessToken = JWTAuth::fromUser($user);
+        // Use refresh() which handles the token refresh logic.
+        // We don't necessarily need to fetch the user beforehand.
+        $accessToken = JWTAuth::setToken($refreshToken)->refresh();
 
 
         return [

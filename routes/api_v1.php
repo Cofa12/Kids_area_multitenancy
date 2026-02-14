@@ -27,11 +27,11 @@ Route::middleware(['ChangeTenantMiddleware'])->group(function () {
 
     Route::middleware('CheckAuthenticationUser')->group(function () {
         Route::post('/upload-child-photo', [WebsiteController::class, 'uploadChildPhoto']);
-		Route::get('/videos/random', [VideoController::class, 'randomVideos']);
+        Route::get('/videos/random', [VideoController::class, 'randomVideos']);
 
     });
 
-    Route::post('refresh-token', [AuthController::class, 'refreshToken']);
+    Route::post('tenant/refresh-token', [AuthController::class, 'refreshToken']);
 
     Route::post('/landing/auth', [AuthController::class, 'registerFromLandingPage']);
     Route::post('/login', [AuthController::class, 'login']);
@@ -43,6 +43,7 @@ Route::middleware(['ChangeTenantMiddleware'])->group(function () {
 Route::middleware('landlord')->group(function () {
     Route::get('/landlord/tenants', [TenantController::class, 'index']);
     Route::post('/admin/login', [AdminAuthController::class, 'login']);
+    Route::post('/landlord/refresh-token', [AdminAuthController::class, 'refreshToken']);
 
     Route::middleware('LandlordAuthenticationUser')->group(function () {
         Route::apiResource('/videos', VideoController::class)->except('index');

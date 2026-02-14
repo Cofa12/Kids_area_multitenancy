@@ -25,4 +25,10 @@ class AdminAuthController extends Controller
         $tokens = $this->loginService->Authenticate($request->toArray());
         return new AuthenticatedUser($tokens, auth('admin')->user());
     }
+
+    public function refreshToken(\App\Http\Requests\V1\RefreshTokenRequest $request): \Illuminate\Http\JsonResponse
+    {
+        $data = $this->refreshTokenService->handle($request->refreshToken);
+        return response()->json($data, \Illuminate\Http\JsonResponse::HTTP_OK);
+    }
 }

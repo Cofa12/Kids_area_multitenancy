@@ -1,0 +1,107 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<testsuites>
+  <testsuite name="Tests\Feature\RefreshTokenTest" file="/Users/cofa/Documents/GitHub/Kids_area_multitenancy/tests/Feature/RefreshTokenTest.php" tests="3" assertions="3" errors="0" failures="2" skipped="0" time="0.549815">
+    <testcase name="test_landlord_can_refresh_token" file="/Users/cofa/Documents/GitHub/Kids_area_multitenancy/tests/Feature/RefreshTokenTest.php" line="22" class="Tests\Feature\RefreshTokenTest" classname="Tests.Feature.RefreshTokenTest" assertions="1" time="0.287116">
+      <failure type="PHPUnit\Framework\ExpectationFailedException">Tests\Feature\RefreshTokenTest::test_landlord_can_refresh_token
+Expected response status code [200] but received 500.
+Failed asserting that 500 is identical to 200.
+
+The following exception occurred during the last request:
+
+TypeError: Illuminate\Database\Connectors\SQLiteConnector::parseDatabasePath(): Argument #1 ($path) must be of type string, null given, called in /Users/cofa/Documents/GitHub/Kids_area_multitenancy/vendor/laravel/framework/src/Illuminate/Database/Connectors/SQLiteConnector.php on line 19 and defined in /Users/cofa/Documents/GitHub/Kids_area_multitenancy/vendor/laravel/framework/src/Illuminate/Database/Connectors/SQLiteConnector.php:40
+Stack trace:
+#0 /Users/cofa/Documents/GitHub/Kids_area_multitenancy/vendor/laravel/framework/src/Illuminate/Database/Connectors/SQLiteConnector.php(19): Illuminate\Database\Connectors\SQLiteConnector-&gt;parseDatabasePath(NULL)
+#1 /Users/cofa/Documents/GitHub/Kids_area_multitenancy/vendor/laravel/framework/src/Illuminate/Database/Connectors/ConnectionFactory.php(225): Illuminate\Database\Connectors\SQLiteConnector-&gt;connect(Array)
+#2 [internal function]: Illuminate\Database\Connectors\ConnectionFactory-&gt;{closure:Illuminate\Database\Connectors\ConnectionFactory::createPdoResolverWithoutHosts():225}()
+#3 /Users/cofa/Documents/GitHub/Kids_area_multitenancy/vendor/laravel/framework/src/Illuminate/Database/Connection.php(1257): call_user_func(Object(Closure))
+#4 /Users/cofa/Documents/GitHub/Kids_area_multitenancy/vendor/laravel/framework/src/Illuminate/Database/Connection.php(1295): Illuminate\Database\Connection-&gt;getPdo()
+#5 /Users/cofa/Documents/GitHub/Kids_area_multitenancy/vendor/laravel/framework/src/Illuminate/Database/Connection.php(525): Illuminate\Database\Connection-&gt;getReadPdo()
+#6 /Users/cofa/Documents/GitHub/Kids_area_multitenancy/vendor/laravel/framework/src/Illuminate/Database/Connection.php(420): Illuminate\Database\Connection-&gt;getPdoForSelect(true)
+#7 /Users/cofa/Documents/GitHub/Kids_area_multitenancy/vendor/laravel/framework/src/Illuminate/Database/Connection.php(827): Illuminate\Database\Connection-&gt;{closure:Illuminate\Database\Connection::select():411}('select * from "...', Array)
+#8 /Users/cofa/Documents/GitHub/Kids_area_multitenancy/vendor/laravel/framework/src/Illuminate/Database/Connection.php(794): Illuminate\Database\Connection-&gt;runQueryCallback('select * from "...', Array, Object(Closure))
+#9 /Users/cofa/Documents/GitHub/Kids_area_multitenancy/vendor/laravel/framework/src/Illuminate/Database/Connection.php(411): Illuminate\Database\Connection-&gt;run('select * from "...', Array, Object(Closure))
+#10 /Users/cofa/Documents/GitHub/Kids_area_multitenancy/vendor/laravel/framework/src/Illuminate/Database/Query/Builder.php(3386): Illuminate\Database\Connection-&gt;select('select * from "...', Array, true)
+#11 /Users/cofa/Documents/GitHub/Kids_area_multitenancy/vendor/laravel/framework/src/Illuminate/Database/Query/Builder.php(3371): Illuminate\Database\Query\Builder-&gt;runSelect()
+#12 /Users/cofa/Documents/GitHub/Kids_area_multitenancy/vendor/laravel/framework/src/Illuminate/Database/Query/Builder.php(3961): Illuminate\Database\Query\Builder-&gt;{closure:Illuminate\Database\Query\Builder::get():3370}()
+#13 /Users/cofa/Documents/GitHub/Kids_area_multitenancy/vendor/laravel/framework/src/Illuminate/Database/Query/Builder.php(3370): Illuminate\Database\Query\Builder-&gt;onceWithColumns(Array, Object(Closure))
+#14 /Users/cofa/Documents/GitHub/Kids_area_multitenancy/vendor/laravel/framework/src/Illuminate/Database/Eloquent/Builder.php(902): Illuminate\Database\Query\Builder-&gt;get(Array)
+#15 /Users/cofa/Documents/GitHub/Kids_area_multitenancy/vendor/laravel/framework/src/Illuminate/Database/Eloquent/Builder.php(884): Illuminate\Database\Eloquent\Builder-&gt;getModels(Array)
+#16 /Users/cofa/Documents/GitHub/Kids_area_multitenancy/vendor/laravel/framework/src/Illuminate/Database/Concerns/BuildsQueries.php(366): Illuminate\Database\Eloquent\Builder-&gt;get(Array)
+#17 /Users/cofa/Documents/GitHub/Kids_area_multitenancy/vendor/laravel/framework/src/Illuminate/Auth/EloquentUserProvider.php(58): Illuminate\Database\Eloquent\Builder-&gt;first()
+#18 /Users/cofa/Documents/GitHub/Kids_area_multitenancy/vendor/tymon/jwt-auth/src/JWTGuard.php(219): Illuminate\Auth\EloquentUserProvider-&gt;retrieveById('1')
+#19 /Users/cofa/Documents/GitHub/Kids_area_multitenancy/vendor/tymon/jwt-auth/src/Providers/Auth/Illuminate.php(56): Tymon\JWTAuth\JWTGuard-&gt;onceUsingId('1')
+#20 /Users/cofa/Documents/GitHub/Kids_area_multitenancy/vendor/tymon/jwt-auth/src/JWTAuth.php(65): Tymon\JWTAuth\Providers\Auth\Illuminate-&gt;byId('1')
+#21 /Users/cofa/Documents/GitHub/Kids_area_multitenancy/vendor/tymon/jwt-auth/src/JWTAuth.php(79): Tymon\JWTAuth\JWTAuth-&gt;authenticate()
+#22 /Users/cofa/Documents/GitHub/Kids_area_multitenancy/app/Services/V1/RefreshTokenService.php(33): Tymon\JWTAuth\JWTAuth-&gt;toUser()
+#23 /Users/cofa/Documents/GitHub/Kids_area_multitenancy/app/Http/Controllers/V1/AdminAuth/AdminAuthController.php(31): App\Services\V1\RefreshTokenService-&gt;handle('eyJ0eXAiOiJKV1Q...')
+#24 /Users/cofa/Documents/GitHub/Kids_area_multitenancy/vendor/laravel/framework/src/Illuminate/Routing/ControllerDispatcher.php(46): App\Http\Controllers\V1\AdminAuth\AdminAuthController-&gt;refreshToken(Object(App\Http\Requests\V1\RefreshTokenRequest))
+#25 /Users/cofa/Documents/GitHub/Kids_area_multitenancy/vendor/laravel/framework/src/Illuminate/Routing/Route.php(265): Illuminate\Routing\ControllerDispatcher-&gt;dispatch(Object(Illuminate\Routing\Route), Object(App\Http\Controllers\V1\AdminAuth\AdminAuthController), 'refreshToken')
+#26 /Users/cofa/Documents/GitHub/Kids_area_multitenancy/vendor/laravel/framework/src/Illuminate/Routing/Route.php(211): Illuminate\Routing\Route-&gt;runController()
+#27 /Users/cofa/Documents/GitHub/Kids_area_multitenancy/vendor/laravel/framework/src/Illuminate/Routing/Router.php(822): Illuminate\Routing\Route-&gt;run()
+#28 /Users/cofa/Documents/GitHub/Kids_area_multitenancy/vendor/laravel/framework/src/Illuminate/Pipeline/Pipeline.php(180): Illuminate\Routing\Router-&gt;{closure:Illuminate\Routing\Router::runRouteWithinStack():821}(Object(Illuminate\Http\Request))
+#29 /Users/cofa/Documents/GitHub/Kids_area_multitenancy/app/Http/Middleware/ForceLandlordConnection.php(24): Illuminate\Pipeline\Pipeline-&gt;{closure:Illuminate\Pipeline\Pipeline::prepareDestination():178}(Object(Illuminate\Http\Request))
+#30 /Users/cofa/Documents/GitHub/Kids_area_multitenancy/vendor/laravel/framework/src/Illuminate/Pipeline/Pipeline.php(219): App\Http\Middleware\ForceLandlordConnection-&gt;handle(Object(Illuminate\Http\Request), Object(Closure))
+#31 /Users/cofa/Documents/GitHub/Kids_area_multitenancy/vendor/laravel/framework/src/Illuminate/Routing/Middleware/SubstituteBindings.php(50): Illuminate\Pipeline\Pipeline-&gt;{closure:{closure:Illuminate\Pipeline\Pipeline::carry():194}:195}(Object(Illuminate\Http\Request))
+#32 /Users/cofa/Documents/GitHub/Kids_area_multitenancy/vendor/laravel/framework/src/Illuminate/Pipeline/Pipeline.php(219): Illuminate\Routing\Middleware\SubstituteBindings-&gt;handle(Object(Illuminate\Http\Request), Object(Closure))
+#33 /Users/cofa/Documents/GitHub/Kids_area_multitenancy/vendor/laravel/framework/src/Illuminate/Pipeline/Pipeline.php(137): Illuminate\Pipeline\Pipeline-&gt;{closure:{closure:Illuminate\Pipeline\Pipeline::carry():194}:195}(Object(Illuminate\Http\Request))
+#34 /Users/cofa/Documents/GitHub/Kids_area_multitenancy/vendor/laravel/framework/src/Illuminate/Routing/Router.php(821): Illuminate\Pipeline\Pipeline-&gt;then(Object(Closure))
+#35 /Users/cofa/Documents/GitHub/Kids_area_multitenancy/vendor/laravel/framework/src/Illuminate/Routing/Router.php(800): Illuminate\Routing\Router-&gt;runRouteWithinStack(Object(Illuminate\Routing\Route), Object(Illuminate\Http\Request))
+#36 /Users/cofa/Documents/GitHub/Kids_area_multitenancy/vendor/laravel/framework/src/Illuminate/Routing/Router.php(764): Illuminate\Routing\Router-&gt;runRoute(Object(Illuminate\Http\Request), Object(Illuminate\Routing\Route))
+#37 /Users/cofa/Documents/GitHub/Kids_area_multitenancy/vendor/laravel/framework/src/Illuminate/Routing/Router.php(753): Illuminate\Routing\Router-&gt;dispatchToRoute(Object(Illuminate\Http\Request))
+#38 /Users/cofa/Documents/GitHub/Kids_area_multitenancy/vendor/laravel/framework/src/Illuminate/Foundation/Http/Kernel.php(200): Illuminate\Routing\Router-&gt;dispatch(Object(Illuminate\Http\Request))
+#39 /Users/cofa/Documents/GitHub/Kids_area_multitenancy/vendor/laravel/framework/src/Illuminate/Pipeline/Pipeline.php(180): Illuminate\Foundation\Http\Kernel-&gt;{closure:Illuminate\Foundation\Http\Kernel::dispatchToRouter():197}(Object(Illuminate\Http\Request))
+#40 /Users/cofa/Documents/GitHub/Kids_area_multitenancy/vendor/laravel/framework/src/Illuminate/Foundation/Http/Middleware/TransformsRequest.php(21): Illuminate\Pipeline\Pipeline-&gt;{closure:Illuminate\Pipeline\Pipeline::prepareDestination():178}(Object(Illuminate\Http\Request))
+#41 /Users/cofa/Documents/GitHub/Kids_area_multitenancy/vendor/laravel/framework/src/Illuminate/Foundation/Http/Middleware/ConvertEmptyStringsToNull.php(31): Illuminate\Foundation\Http\Middleware\TransformsRequest-&gt;handle(Object(Illuminate\Http\Request), Object(Closure))
+#42 /Users/cofa/Documents/GitHub/Kids_area_multitenancy/vendor/laravel/framework/src/Illuminate/Pipeline/Pipeline.php(219): Illuminate\Foundation\Http\Middleware\ConvertEmptyStringsToNull-&gt;handle(Object(Illuminate\Http\Request), Object(Closure))
+#43 /Users/cofa/Documents/GitHub/Kids_area_multitenancy/vendor/laravel/framework/src/Illuminate/Foundation/Http/Middleware/TransformsRequest.php(21): Illuminate\Pipeline\Pipeline-&gt;{closure:{closure:Illuminate\Pipeline\Pipeline::carry():194}:195}(Object(Illuminate\Http\Request))
+#44 /Users/cofa/Documents/GitHub/Kids_area_multitenancy/vendor/laravel/framework/src/Illuminate/Foundation/Http/Middleware/TrimStrings.php(51): Illuminate\Foundation\Http\Middleware\TransformsRequest-&gt;handle(Object(Illuminate\Http\Request), Object(Closure))
+#45 /Users/cofa/Documents/GitHub/Kids_area_multitenancy/vendor/laravel/framework/src/Illuminate/Pipeline/Pipeline.php(219): Illuminate\Foundation\Http\Middleware\TrimStrings-&gt;handle(Object(Illuminate\Http\Request), Object(Closure))
+#46 /Users/cofa/Documents/GitHub/Kids_area_multitenancy/vendor/laravel/framework/src/Illuminate/Http/Middleware/ValidatePostSize.php(27): Illuminate\Pipeline\Pipeline-&gt;{closure:{closure:Illuminate\Pipeline\Pipeline::carry():194}:195}(Object(Illuminate\Http\Request))
+#47 /Users/cofa/Documents/GitHub/Kids_area_multitenancy/vendor/laravel/framework/src/Illuminate/Pipeline/Pipeline.php(219): Illuminate\Http\Middleware\ValidatePostSize-&gt;handle(Object(Illuminate\Http\Request), Object(Closure))
+#48 /Users/cofa/Documents/GitHub/Kids_area_multitenancy/vendor/laravel/framework/src/Illuminate/Foundation/Http/Middleware/PreventRequestsDuringMaintenance.php(109): Illuminate\Pipeline\Pipeline-&gt;{closure:{closure:Illuminate\Pipeline\Pipeline::carry():194}:195}(Object(Illuminate\Http\Request))
+#49 /Users/cofa/Documents/GitHub/Kids_area_multitenancy/vendor/laravel/framework/src/Illuminate/Pipeline/Pipeline.php(219): Illuminate\Foundation\Http\Middleware\PreventRequestsDuringMaintenance-&gt;handle(Object(Illuminate\Http\Request), Object(Closure))
+#50 /Users/cofa/Documents/GitHub/Kids_area_multitenancy/vendor/laravel/framework/src/Illuminate/Http/Middleware/HandleCors.php(74): Illuminate\Pipeline\Pipeline-&gt;{closure:{closure:Illuminate\Pipeline\Pipeline::carry():194}:195}(Object(Illuminate\Http\Request))
+#51 /Users/cofa/Documents/GitHub/Kids_area_multitenancy/vendor/laravel/framework/src/Illuminate/Pipeline/Pipeline.php(219): Illuminate\Http\Middleware\HandleCors-&gt;handle(Object(Illuminate\Http\Request), Object(Closure))
+#52 /Users/cofa/Documents/GitHub/Kids_area_multitenancy/vendor/laravel/framework/src/Illuminate/Http/Middleware/TrustProxies.php(58): Illuminate\Pipeline\Pipeline-&gt;{closure:{closure:Illuminate\Pipeline\Pipeline::carry():194}:195}(Object(Illuminate\Http\Request))
+#53 /Users/cofa/Documents/GitHub/Kids_area_multitenancy/vendor/laravel/framework/src/Illuminate/Pipeline/Pipeline.php(219): Illuminate\Http\Middleware\TrustProxies-&gt;handle(Object(Illuminate\Http\Request), Object(Closure))
+#54 /Users/cofa/Documents/GitHub/Kids_area_multitenancy/vendor/laravel/framework/src/Illuminate/Foundation/Http/Middleware/InvokeDeferredCallbacks.php(22): Illuminate\Pipeline\Pipeline-&gt;{closure:{closure:Illuminate\Pipeline\Pipeline::carry():194}:195}(Object(Illuminate\Http\Request))
+#55 /Users/cofa/Documents/GitHub/Kids_area_multitenancy/vendor/laravel/framework/src/Illuminate/Pipeline/Pipeline.php(219): Illuminate\Foundation\Http\Middleware\InvokeDeferredCallbacks-&gt;handle(Object(Illuminate\Http\Request), Object(Closure))
+#56 /Users/cofa/Documents/GitHub/Kids_area_multitenancy/vendor/laravel/framework/src/Illuminate/Http/Middleware/ValidatePathEncoding.php(26): Illuminate\Pipeline\Pipeline-&gt;{closure:{closure:Illuminate\Pipeline\Pipeline::carry():194}:195}(Object(Illuminate\Http\Request))
+#57 /Users/cofa/Documents/GitHub/Kids_area_multitenancy/vendor/laravel/framework/src/Illuminate/Pipeline/Pipeline.php(219): Illuminate\Http\Middleware\ValidatePathEncoding-&gt;handle(Object(Illuminate\Http\Request), Object(Closure))
+#58 /Users/cofa/Documents/GitHub/Kids_area_multitenancy/vendor/laravel/framework/src/Illuminate/Pipeline/Pipeline.php(137): Illuminate\Pipeline\Pipeline-&gt;{closure:{closure:Illuminate\Pipeline\Pipeline::carry():194}:195}(Object(Illuminate\Http\Request))
+#59 /Users/cofa/Documents/GitHub/Kids_area_multitenancy/vendor/laravel/framework/src/Illuminate/Foundation/Http/Kernel.php(175): Illuminate\Pipeline\Pipeline-&gt;then(Object(Closure))
+#60 /Users/cofa/Documents/GitHub/Kids_area_multitenancy/vendor/laravel/framework/src/Illuminate/Foundation/Http/Kernel.php(144): Illuminate\Foundation\Http\Kernel-&gt;sendRequestThroughRouter(Object(Illuminate\Http\Request))
+#61 /Users/cofa/Documents/GitHub/Kids_area_multitenancy/vendor/laravel/framework/src/Illuminate/Foundation/Testing/Concerns/MakesHttpRequests.php(607): Illuminate\Foundation\Http\Kernel-&gt;handle(Object(Illuminate\Http\Request))
+#62 /Users/cofa/Documents/GitHub/Kids_area_multitenancy/vendor/laravel/framework/src/Illuminate/Foundation/Testing/Concerns/MakesHttpRequests.php(573): Illuminate\Foundation\Testing\TestCase-&gt;call('POST', '/api/v1/landlor...', Array, Array, Array, Array, '{"refreshToken"...')
+#63 /Users/cofa/Documents/GitHub/Kids_area_multitenancy/vendor/laravel/framework/src/Illuminate/Foundation/Testing/Concerns/MakesHttpRequests.php(411): Illuminate\Foundation\Testing\TestCase-&gt;json('POST', '/api/v1/landlor...', Array, Array, 0)
+#64 /Users/cofa/Documents/GitHub/Kids_area_multitenancy/tests/Feature/RefreshTokenTest.php(30): Illuminate\Foundation\Testing\TestCase-&gt;postJson('/api/v1/landlor...', Array, Array)
+#65 /Users/cofa/Documents/GitHub/Kids_area_multitenancy/vendor/phpunit/phpunit/src/Framework/TestCase.php(1667): Tests\Feature\RefreshTokenTest-&gt;test_landlord_can_refresh_token()
+#66 /Users/cofa/Documents/GitHub/Kids_area_multitenancy/vendor/phpunit/phpunit/src/Framework/TestCase.php(519): PHPUnit\Framework\TestCase-&gt;runTest()
+#67 /Users/cofa/Documents/GitHub/Kids_area_multitenancy/vendor/phpunit/phpunit/src/Framework/TestRunner/TestRunner.php(87): PHPUnit\Framework\TestCase-&gt;runBare()
+#68 /Users/cofa/Documents/GitHub/Kids_area_multitenancy/vendor/phpunit/phpunit/src/Framework/TestCase.php(365): PHPUnit\Framework\TestRunner-&gt;run(Object(Tests\Feature\RefreshTokenTest))
+#69 /Users/cofa/Documents/GitHub/Kids_area_multitenancy/vendor/phpunit/phpunit/src/Framework/TestSuite.php(369): PHPUnit\Framework\TestCase-&gt;run()
+#70 /Users/cofa/Documents/GitHub/Kids_area_multitenancy/vendor/phpunit/phpunit/src/TextUI/TestRunner.php(64): PHPUnit\Framework\TestSuite-&gt;run()
+#71 /Users/cofa/Documents/GitHub/Kids_area_multitenancy/vendor/phpunit/phpunit/src/TextUI/Application.php(211): PHPUnit\TextUI\TestRunner-&gt;run(Object(PHPUnit\TextUI\Configuration\Configuration), Object(PHPUnit\Runner\ResultCache\DefaultResultCache), Object(PHPUnit\Framework\TestSuite))
+#72 /Users/cofa/Documents/GitHub/Kids_area_multitenancy/vendor/phpunit/phpunit/phpunit(104): PHPUnit\TextUI\Application-&gt;run(Array)
+#73 {main}
+
+----------------------------------------------------------------------------------
+
+Illuminate\Database\Connectors\SQLiteConnector::parseDatabasePath(): Argument #1 ($path) must be of type string, null given, called in /Users/cofa/Documents/GitHub/Kids_area_multitenancy/vendor/laravel/framework/src/Illuminate/Database/Connectors/SQLiteConnector.php on line 19
+
+/Users/cofa/Documents/GitHub/Kids_area_multitenancy/vendor/laravel/framework/src/Illuminate/Testing/TestResponseAssert.php:45
+/Users/cofa/Documents/GitHub/Kids_area_multitenancy/vendor/laravel/framework/src/Illuminate/Testing/TestResponse.php:174
+/Users/cofa/Documents/GitHub/Kids_area_multitenancy/tests/Feature/RefreshTokenTest.php:34</failure>
+    </testcase>
+    <testcase name="test_tenant_can_refresh_token" file="/Users/cofa/Documents/GitHub/Kids_area_multitenancy/tests/Feature/RefreshTokenTest.php" line="41" class="Tests\Feature\RefreshTokenTest" classname="Tests.Feature.RefreshTokenTest" assertions="1" time="0.145295">
+      <failure type="PHPUnit\Framework\ExpectationFailedException">Tests\Feature\RefreshTokenTest::test_tenant_can_refresh_token
+Expected response status code [200] but received 400.
+Failed asserting that 400 is identical to 200.
+
+/Users/cofa/Documents/GitHub/Kids_area_multitenancy/vendor/laravel/framework/src/Illuminate/Testing/TestResponseAssert.php:45
+/Users/cofa/Documents/GitHub/Kids_area_multitenancy/vendor/laravel/framework/src/Illuminate/Testing/TestResponse.php:174
+/Users/cofa/Documents/GitHub/Kids_area_multitenancy/tests/Feature/RefreshTokenTest.php:52</failure>
+    </testcase>
+    <testcase name="test_refresh_token_fails_with_invalid_token" file="/Users/cofa/Documents/GitHub/Kids_area_multitenancy/tests/Feature/RefreshTokenTest.php" line="59" class="Tests\Feature\RefreshTokenTest" classname="Tests.Feature.RefreshTokenTest" assertions="1" time="0.117404"/>
+  </testsuite>
+</testsuites>
