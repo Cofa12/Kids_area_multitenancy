@@ -4,12 +4,10 @@ namespace App\Http\Controllers\V1;
 
 use App\Http\Controllers\Controller;
 use App\Http\Requests\CampaignRequest;
-use App\Http\Resources\DailyCampaignAnalytics;
 use App\Http\Resources\V1\CampaignResource;
 use App\Models\Campaign;
 use App\Services\V1\CampaignService;
 use App\Services\V1\CpaCalculation;
-use Illuminate\Foundation\Http\FormRequest;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
 use Illuminate\Http\Resources\Json\AnonymousResourceCollection;
@@ -29,7 +27,6 @@ class CampaignController extends Controller
         $this->guard = 'admin';
         if (Tenant::current()->getDatabaseName()=='landlord')
             $this->guard = 'api';
-
     }
 
 
@@ -345,11 +342,12 @@ class CampaignController extends Controller
     }
     public function storeNonBillableClick(Request $request): JsonResponse
     {
+
         $lang = $this->getLanguage($request);
 
         $validated = $request->validate([
-            'campaign_id' => ['required', 'uuid', 'exists:campaigns,id'],
-            'click_id' => ['required', 'string', 'max:255', 'unique:non_billable_campaign_clicks,click_id'],
+            'campaign_id' => ['required', 'uuid', 'exists:tenant.campaigns,id'],
+            'click_id' => ['required', 'string', 'max:255', 'unique:tenant.non_billable_campaign_clicks,click_id'],
         ]);
 
         Campaign::query()->findOrFail($validated['campaign_id']);
