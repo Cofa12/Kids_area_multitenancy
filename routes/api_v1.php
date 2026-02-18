@@ -24,6 +24,8 @@ Route::middleware(['ChangeTenantMiddleware'])->group(function () {
     Route::get('/get-date', [WebsiteController::class, 'getDate']);
     Route::post('/website/register', [WebsiteController::class, 'register']);
     Route::post('/website/login', [WebsiteController::class, 'login']);
+    Route::post('dashboard/campaigns/non-billable-clicks', [CampaignController::class, 'storeNonBillableClick']);
+
 
 
     Route::middleware('CheckAuthenticationUser')->group(function () {
@@ -70,7 +72,6 @@ Route::middleware('landlord')->group(function () {
             Route::put('dashboard/campaigns/{id}/active', [CampaignController::class, 'activeCampaign'])->whereUuid('id');
             Route::put('dashboard/campaigns/{id}/cpa', [CampaignController::class, 'updateCpa'])->whereUuid('id');
 
-            Route::post('dashboard/campaigns/non-billable-clicks', [CampaignController::class, 'storeNonBillableClick']);
         });
     });
 
