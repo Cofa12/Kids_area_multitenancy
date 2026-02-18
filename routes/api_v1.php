@@ -12,9 +12,9 @@ use Illuminate\Support\Facades\Route;
 
 use App\Http\Controllers\V1\Landlord\TenantController;
 
+Route::get('/category/{id}/videos/search', [CategoryController::class, 'searchVideos']);
 Route::apiResource('/categories', CategoryController::class);
 Route::get('/all/categories-with-videos', [CategoryController::class, 'getCategoriesWithVideos']);
-Route::get('/category/{id}/videos/search', [CategoryController::class, 'searchVideos']);
 Route::get('/videos', [VideoController::class, 'index']);
 Route::get('/videos/search', [VideoController::class, 'search']);
 
