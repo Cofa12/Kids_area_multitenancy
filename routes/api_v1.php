@@ -27,6 +27,10 @@ Route::middleware(['ChangeTenantMiddleware'])->group(function () {
     Route::post('dashboard/campaigns/non-billable-clicks', [CampaignController::class, 'storeNonBillableClick']);
 
 
+    Route::get('/get-unaccepted-child-photos', [DashboardController::class, 'getUnAcceptedChildPhotos']);
+    Route::get('/get-accepted-child-photos', [DashboardController::class, 'getAcceptedChildPhotos']);
+
+
 
     Route::middleware('CheckAuthenticationUser')->group(function () {
         Route::post('/upload-child-photo', [WebsiteController::class, 'uploadChildPhoto']);
@@ -47,8 +51,7 @@ Route::middleware('landlord')->group(function () {
     Route::post('/admin/login', [AdminAuthController::class, 'login']);
     Route::post('/refresh-token', [AdminAuthController::class, 'refreshToken']);
 
-    Route::get('/get-unaccepted-child-photos', [DashboardController::class, 'getUnAcceptedChildPhotos']);
-    Route::get('/get-accepted-child-photos', [DashboardController::class, 'getAcceptedChildPhotos']);
+    
     Route::middleware('LandlordAuthenticationUser')->group(function () {
         Route::apiResource('/videos', VideoController::class)->except('index');
         Route::middleware('ChangeTenantMiddleware')->group(function () {
