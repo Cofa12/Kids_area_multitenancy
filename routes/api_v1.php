@@ -15,7 +15,6 @@ use App\Http\Controllers\V1\Landlord\TenantController;
 Route::get('/category/{id}/videos/search', [CategoryController::class, 'searchVideos']);
 Route::apiResource('/categories', CategoryController::class);
 Route::get('/all/categories-with-videos', [CategoryController::class, 'getCategoriesWithVideos']);
-Route::get('/videos', [VideoController::class, 'index']);
 
 
 Route::middleware(['ChangeTenantMiddleware'])->group(function () {
@@ -32,9 +31,8 @@ Route::middleware(['ChangeTenantMiddleware'])->group(function () {
 
 
     Route::middleware('CheckAuthenticationUser')->group(function () {
-        Route::post('/upload-child-photo', [WebsiteController::class, 'uploadChildPhoto']);
         Route::get('/videos/random', [VideoController::class, 'randomVideos']);
-
+        Route::post('/upload-child-photo', [WebsiteController::class, 'uploadChildPhoto']);
     });
 
 
@@ -78,7 +76,7 @@ Route::middleware('landlord')->group(function () {
     });
 
 });
-
+Route::get('/videos', [VideoController::class, 'index']);
 Route::get('/videos/{id}', [VideoController::class, 'show']);
 Route::middleware('CheckAuthenticationUser')->get('/category/{id}/videos', [CategoryController::class, 'show']);
 

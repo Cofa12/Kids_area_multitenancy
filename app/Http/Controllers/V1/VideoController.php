@@ -164,7 +164,6 @@ class VideoController extends Controller
             DB::reconnect('landlord');
         }
 
-
         $lang = $request->header('Accept-Language');
         $lang = $lang ? substr($lang, 0, 2) : 'en';
 
