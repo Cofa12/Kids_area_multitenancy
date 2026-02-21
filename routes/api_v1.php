@@ -29,9 +29,10 @@ Route::middleware(['ChangeTenantMiddleware'])->group(function () {
     Route::get('/get-accepted-child-photos', [DashboardController::class, 'getAcceptedChildPhotos']);
 
 
+            Route::get('/videos/random', [VideoController::class, 'randomVideos']);
+
 
     Route::middleware('CheckAuthenticationUser')->group(function () {
-        Route::get('/videos/random', [VideoController::class, 'randomVideos']);
         Route::post('/upload-child-photo', [WebsiteController::class, 'uploadChildPhoto']);
     });
 
