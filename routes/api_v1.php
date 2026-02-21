@@ -47,12 +47,11 @@ Route::middleware('landlord')->group(function () {
     Route::post('/admin/login', [AdminAuthController::class, 'login']);
     Route::post('/refresh-token', [AdminAuthController::class, 'refreshToken']);
 
-
+    Route::get('/get-unaccepted-child-photos', [DashboardController::class, 'getUnAcceptedChildPhotos']);
+    Route::get('/get-accepted-child-photos', [DashboardController::class, 'getAcceptedChildPhotos']);
     Route::middleware('LandlordAuthenticationUser')->group(function () {
         Route::apiResource('/videos', VideoController::class)->except('index');
         Route::middleware('ChangeTenantMiddleware')->group(function () {
-            Route::get('/get-unaccepted-child-photos', [DashboardController::class, 'getUnAcceptedChildPhotos']);
-            Route::get('/get-accepted-child-photos', [DashboardController::class, 'getAcceptedChildPhotos']);
             Route::put('/accept-child-photo/{id}', [DashboardController::class, 'acceptChildPhoto']);
             Route::delete('/reject-child-photo/{id}', [DashboardController::class, 'rejectChildPhoto']);
             Route::get('/analytics', [DashboardController::class, 'getAnalytics']);
