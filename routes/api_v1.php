@@ -16,8 +16,8 @@ Route::get('/category/{id}/videos/search', [CategoryController::class, 'searchVi
 Route::apiResource('/categories', CategoryController::class);
 Route::get('/all/categories-with-videos', [CategoryController::class, 'getCategoriesWithVideos']);
 Route::get('/videos', [VideoController::class, 'index']);
-Route::get('/videos/{id}', [VideoController::class, 'show']);
 Route::get('/videos/search', [VideoController::class, 'search']);
+Route::get('/videos/{id}', [VideoController::class, 'show']);
 
 
 Route::middleware(['ChangeTenantMiddleware'])->group(function () {
