@@ -14,9 +14,9 @@ use App\Http\Controllers\V1\Landlord\TenantController;
 
 Route::get('/category/{id}/videos/search', [CategoryController::class, 'searchVideos']);
 Route::apiResource('/categories', CategoryController::class);
+Route::get('/videos/search', [VideoController::class, 'search']);
 Route::get('/all/categories-with-videos', [CategoryController::class, 'getCategoriesWithVideos']);
 Route::get('/videos', [VideoController::class, 'index']);
-Route::get('/videos/search', [VideoController::class, 'search']);
 Route::get('/videos/{id}', [VideoController::class, 'show']);
 
 
