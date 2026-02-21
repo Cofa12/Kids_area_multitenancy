@@ -3,7 +3,6 @@
 namespace App\Http\Controllers\V1;
 
 use App\Http\Controllers\Controller;
-use App\Http\Exceptions\UnAuthenticatedUserException;
 use App\Http\Requests\V1\ChildPhotoRequest;
 use App\Http\Requests\V1\RegisterFromLandingRequest;
 use App\Http\Requests\V1\SafaricomLoginRequest;
@@ -16,6 +15,7 @@ use App\Services\V1\WebsiteRegisterService;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Support\Facades\DB;
 use Spatie\Multitenancy\Models\Tenant;
+use Illuminate\Support\Facades\Config;
 
 /**
  * @psalm-suppress UnusedClass
@@ -41,6 +41,11 @@ class WebsiteController extends Controller
 
     public function register(RegisterFromLandingRequest $request): AuthenticatedUser
     {
+    
+        Tenant::forgetCurrent();
+
+        Config::set('database.default', 'landlord');
+        DB::purge('tenant');
         $this->websiteRegisterService->register($request->toArray());
 
         $tokens = $this->loginService->Authenticate([
