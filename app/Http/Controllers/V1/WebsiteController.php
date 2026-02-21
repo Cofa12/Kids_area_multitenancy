@@ -13,7 +13,6 @@ use App\Services\V1\LoginService;
 use App\Services\V1\SubscriptionHandling;
 use App\Services\V1\WebsiteRegisterService;
 use Illuminate\Http\JsonResponse;
-use Illuminate\Support\Facades\DB;
 use Spatie\Multitenancy\Models\Tenant;
 use Illuminate\Support\Facades\Config;
 
@@ -41,16 +40,11 @@ class WebsiteController extends Controller
 
     public function register(RegisterFromLandingRequest $request): AuthenticatedUser
     {
-    
-        Tenant::forgetCurrent();
-        DB::setDefaultConnection('landlord');
         $this->websiteRegisterService->register($request->toArray());
-
         $tokens = $this->loginService->Authenticate([
             'name' => $request['name'],
             'password' => $request['password']
         ]);
-
 
         return new AuthenticatedUser($tokens, auth()->user());
 
@@ -60,7 +54,6 @@ class WebsiteController extends Controller
     {
 
         $tokens = $this->loginService->Authenticate($request->toArray());
-
         return new AuthenticatedUser($tokens, auth()->user());
     }
 
