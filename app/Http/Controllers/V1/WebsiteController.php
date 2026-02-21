@@ -43,9 +43,7 @@ class WebsiteController extends Controller
     {
     
         Tenant::forgetCurrent();
-
-        Config::set('database.default', 'landlord');
-        DB::purge('tenant');
+        DB::setDefaultConnection('landlord');
         $this->websiteRegisterService->register($request->toArray());
 
         $tokens = $this->loginService->Authenticate([
