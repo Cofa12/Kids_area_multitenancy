@@ -50,8 +50,6 @@ class VideoController extends Controller
 
         return VideoResource::collection($query->paginate(10));
     }
-
-
     /**
      * Store a newly created resource in storage.
      */
@@ -71,7 +69,6 @@ class VideoController extends Controller
         Video::create($dataWithoutThumbnail);
         return response()->json(['message' => 'Video Created Successfully'], Response::HTTP_CREATED);
     }
-
     /**
      * Search in all videos by name/title.
      */
@@ -89,7 +86,6 @@ class VideoController extends Controller
 
         return VideoResource::collection($builder->paginate(10));
     }
-
     /**
      * Display the specified resource.
      */
@@ -101,8 +97,6 @@ class VideoController extends Controller
 
         return new ShowSingleVideoResource($video);
     }
-
-
     /**
      * Update the specified resource in storage.
      */
@@ -129,7 +123,6 @@ class VideoController extends Controller
         $video->update($dataWithoutThumbnail);
         return response()->json(['message' => 'Video Updated Successfully'], Response::HTTP_OK);
     }
-
     /**
      * Remove the specified resource from storage.
      */
@@ -149,21 +142,11 @@ class VideoController extends Controller
         $video->delete();
         return response()->json(['message' => 'Video Deleted Successfully'], Response::HTTP_OK);
     }
-
     /**
      * Display a listing of the resource in random order.
      */
     public function randomVideos(Request $request): AnonymousResourceCollection
     {
-        Tenant::forgetCurrent();
-
-        Config::set('database.default', 'landlord');
-        DB::purge('tenant');
-
-        if (!app()->environment('testing')) {
-            DB::reconnect('landlord');
-        }
-
         $lang = $request->header('Accept-Language');
         $lang = $lang ? substr($lang, 0, 2) : 'en';
 
