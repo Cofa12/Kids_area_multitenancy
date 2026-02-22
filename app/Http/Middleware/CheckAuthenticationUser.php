@@ -31,7 +31,7 @@ class CheckAuthenticationUser
         $payload = JWTAuth::parseToken()->getPayload();
         $user = User::where('id',$payload['sub'])->where('phone',$payload['phone'])->first();
 
-        if (!$user || ($user->expiration_date && $user->expiration_date>=today())) {
+        if (!$user) {
             throw new UnAuthorizedException();
         }
         return $next($request);
