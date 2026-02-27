@@ -22,8 +22,24 @@ class ChildPhotoRequest extends FormRequest
     public function rules(): array
     {
         return [
-'photo' => 'required|file|mimes:jpeg,png,jpg,gif,svg,webp,bmp',
-            'description'=>'required|string'
+            'photo' => 'required|file|mimes:jpeg,png,jpg,gif,svg,webp,bmp,PNG,JPEG,GIF,SVG,WEBP,BMP',
+            'description' => 'required|string'
+        ];
+    }
+
+    /**
+     * Get the custom messages for validator errors.
+     *
+     * @return array<string, string>
+     */
+    public function messages(): array
+    {
+        return [
+            'photo.required' => 'The child photo is required.',
+            'photo.file' => 'The uploaded file is invalid or failed to upload.',
+            'photo.mimes' => 'The photo must be an image of type: jpeg, png, jpg, gif, svg, webp, or bmp.',
+            'description.required' => 'A description for the photo is required.',
+            'description.string' => 'The description must be a valid text string.',
         ];
     }
 }
