@@ -32,10 +32,10 @@ class CampaignRequest extends FormRequest
             'start_date' => 'required|date_format:Y-m-d|after:yesterday',
             'end_date' => 'sometimes|date_format:Y-m-d|after:startDate',
             'agency_id' => 'sometimes|string',
-            'cpa' => 'sometimes|numeric|min:0',
+            'cpa' => 'sometimes|decimal|min:0',
             'type' => 'required|in:billable,non-billable',
             'influencer_id' => 'sometimes|string',
-            'influencer_cost' => 'sometimes|numeric|min:0',
+            'influencer_cost' => 'sometimes|decimal|min:0',
             'campaign_id' => 'required|string|exists:tenant.campaigns,id',
         ];
     }

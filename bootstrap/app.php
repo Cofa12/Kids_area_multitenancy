@@ -24,6 +24,7 @@ return Application::configure(basePath: dirname(__DIR__))
             'LandlordAuthenticationUser' => LandlordAuthenticationUser::class,
             'ChangeTenantMiddleware' => ChangeTenantMiddleware::class,
             'CheckTenant' => CheckTenantsLog::class,
+            'UnifiedPhotoAuth' => \App\Http\Middleware\UnifiedPhotoAuthMiddleware::class,
         ]);
     })
     ->withExceptions(function (Exceptions $exceptions): void {

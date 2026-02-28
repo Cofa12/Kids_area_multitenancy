@@ -49,16 +49,14 @@ Route::middleware('landlord')->group(function () {
     Route::post('/admin/login', [AdminAuthController::class, 'login']);
     Route::post('/refresh-token', [AdminAuthController::class, 'refreshToken']);
 
-    
+
     Route::middleware('LandlordAuthenticationUser')->group(function () {
-        Route::apiResource('/videos', VideoController::class)->except(['index','show']);
+        Route::apiResource('/videos', VideoController::class)->except(['index', 'show']);
         Route::get('/videos/search', [VideoController::class, 'search']);
         Route::middleware('ChangeTenantMiddleware')->group(function () {
             Route::put('/accept-child-photo/{id}', [DashboardController::class, 'acceptChildPhoto']);
             Route::delete('/reject-child-photo/{id}', [DashboardController::class, 'rejectChildPhoto']);
             Route::get('/analytics', [DashboardController::class, 'getAnalytics']);
-            Route::get('/child-photo/{id}', [DashboardController::class, 'showChildPhoto']);
-
 
             Route::get('dashboard/campaigns', [CampaignController::class, 'index']);
             Route::get('dashboard/campaigns/daily/analytics', [CampaignController::class, 'getDailyAnalytics']);
@@ -77,6 +75,8 @@ Route::middleware('landlord')->group(function () {
     });
 
 });
+Route::middleware(['ChangeTenantMiddleware', 'UnifiedPhotoAuth'])->get('/child-photo/{id}', [DashboardController::class, 'showChildPhoto']);
+
 Route::get('/videos', [VideoController::class, 'index']);
 Route::get('/videos/{id}', [VideoController::class, 'show']);
 Route::middleware('CheckAuthenticationUser')->get('/category/{id}/videos', [CategoryController::class, 'show']);
