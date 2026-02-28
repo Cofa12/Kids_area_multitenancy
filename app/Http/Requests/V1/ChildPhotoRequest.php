@@ -22,7 +22,7 @@ class ChildPhotoRequest extends FormRequest
     public function rules(): array
     {
         return [
-            'photo' => 'required|file|mimes:jpeg,png,jpg,gif,svg,webp,bmp,PNG,JPEG,GIF,SVG,WEBP,BMP|size:10500',
+            'photo' => 'required|file|mimes:jpeg,png,jpg,gif,svg,webp,bmp,PNG,JPEG,GIF,SVG,WEBP,BMP|max:20480',
             'description' => 'required|string'
         ];
     }
