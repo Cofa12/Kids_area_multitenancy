@@ -25,7 +25,7 @@ class CampaignController extends Controller
     public function __construct(private CampaignService $campaignService, private CpaCalculation $CpaCalculation)
     {
         $this->guard = 'admin';
-        if (Tenant::current()->getDatabaseName()=='landlord')
+        if (Tenant::current()->getDatabaseName() == 'landlord')
             $this->guard = 'api';
     }
 
@@ -99,7 +99,7 @@ class CampaignController extends Controller
     {
         $lang = $this->getLanguage($request);
         $validated = $request->validate([
-            'cpa' => ['required', 'integer', 'min:0']
+            'cpa' => ['required', 'decimal:1,2', 'min:0']
         ]);
 
         $campaign = Campaign::query()->findOrFail($id);

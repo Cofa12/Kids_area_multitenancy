@@ -11,20 +11,20 @@ use Carbon\Carbon;
 
 class CampaignService
 {
-    public function returnCampaignStatusDependOnDate(string $startDate):string
+    public function returnCampaignStatusDependOnDate(string $startDate): string
     {
-        return date($startDate) > date(now())?'scheduled':'active';
+        return date($startDate) > date(now()) ? 'scheduled' : 'active';
     }
 
-    public function checkIfHasAgencyWithCpAndReturnException(string|null $agencyId, int|null $cpa,string $lang) :void
+    public function checkIfHasAgencyWithCpAndReturnException(string|null $agencyId, float|null $cpa, string $lang): void
     {
-        if($agencyId && !$cpa)
+        if ($agencyId && !$cpa)
             throw new CpaNotProvidedException($lang);
     }
 
-    public function checkIfHasInfluencerWithCostAndReturnException(string|null $influencer_id, int|null $cost, string $lang):void
+    public function checkIfHasInfluencerWithCostAndReturnException(string|null $influencer_id, float|null $cost, string $lang): void
     {
-        if($influencer_id && !$cost)
+        if ($influencer_id && !$cost)
             throw new CostNotProvidedException($lang);
     }
 
@@ -74,7 +74,7 @@ class CampaignService
 
                     if ($totalNewSubs > 0 && $campaign->influencer_cost) {
                         // Both billable and non-billable use the same denominator per latest clarification
-                        $cpa = round(((float)$campaign->influencer_cost) / $totalNewSubs, 2);
+                        $cpa = round(((float) $campaign->influencer_cost) / $totalNewSubs, 2);
                     } else {
                         $cpa = null;
                     }
