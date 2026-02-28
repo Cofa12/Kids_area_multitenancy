@@ -32,7 +32,7 @@ class CampaignController extends Controller
 
     public function index(): AnonymousResourceCollection
     {
-        $campaigns = Campaign::query()->latest()->get();
+        $campaigns = Campaign::query()->latest()->paginate(10);
         return CampaignResource::collection($campaigns);
     }
 
@@ -68,6 +68,16 @@ class CampaignController extends Controller
         return response()->json([
             'message' => $lang == 'en' ? 'campaign was created successfully' : 'تم انشاء الحملة بنجاح'
         ], JsonResponse::HTTP_CREATED);
+    }
+
+    public function destroy(string $id): JsonResponse
+    {
+        $campaign = Campaign::query()->findOrFail($id);
+        $campaign->delete();
+
+        return response()->json([
+            'message' => app()->getLocale() == 'en' ? 'Campaign deleted successfully' : 'تم حذف الحملة بنجاح'
+        ], JsonResponse::HTTP_OK);
     }
 
     public function endCampaign(Request $request, string $id): JsonResponse
@@ -211,14 +221,6 @@ class CampaignController extends Controller
                 ];
             }
 
-            $paginator = new LengthAwarePaginator(
-                $months,
-                $totalMonths,
-                $monthsPerPage,
-                $monthsPage,
-                ['path' => request()->url(), 'query' => request()->query(), 'pageName' => 'months_page']
-            );
-
             return [
                 'agency_id' => $campaign->agency_id,
                 'influencer_id' => $campaign->influencer_id,
@@ -226,7 +228,7 @@ class CampaignController extends Controller
                 'country' => $campaign->country,
                 'operator' => $campaign->operator,
                 'type' => $campaign->type,
-                'data' => $paginator
+                'data' => $months
             ];
         });
 

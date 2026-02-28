@@ -70,6 +70,7 @@ Route::middleware('landlord')->group(function () {
             Route::put('dashboard/campaigns/{id}/pause', [CampaignController::class, 'pauseCampaign'])->whereUuid('id');
             Route::put('dashboard/campaigns/{id}/active', [CampaignController::class, 'activeCampaign'])->whereUuid('id');
             Route::put('dashboard/campaigns/{id}/cpa', [CampaignController::class, 'updateCpa'])->whereUuid('id');
+            Route::delete('dashboard/campaigns/{id}', [CampaignController::class, 'destroy'])->whereUuid('id');
 
         });
     });
