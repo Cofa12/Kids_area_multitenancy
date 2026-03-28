@@ -76,9 +76,10 @@ Route::middleware('landlord')->group(function () {
     });
 
 });
-Route::middleware(['ChangeTenantMiddleware', 'UnifiedPhotoAuth'])->get('/child-photo/{id}', [DashboardController::class, 'showChildPhoto']);
-
-Route::get('/videos', [VideoController::class, 'index']);
-Route::get('/videos/{id}', [VideoController::class, 'show']);
-Route::middleware('CheckAuthenticationUser')->get('/category/{id}/videos', [CategoryController::class, 'show']);
+Route::middleware(['ChangeTenantMiddleware', 'UnifiedPhotoAuth'])->group(function () {
+    Route::get('/child-photo/{id}', [DashboardController::class, 'showChildPhoto']);
+    Route::get('/videos', [VideoController::class, 'index']);
+    Route::get('/videos/{id}', [VideoController::class, 'show']);
+    Route::get('/category/{id}/videos', [CategoryController::class, 'show']);
+});
 
