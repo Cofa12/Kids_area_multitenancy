@@ -78,6 +78,10 @@ Route::middleware('landlord')->group(function () {
 });
 Route::middleware(['ChangeTenantMiddleware', 'UnifiedPhotoAuth'])->group(function () {
     Route::get('/child-photo/{id}', [DashboardController::class, 'showChildPhoto']);
+});
+
+// Videos: landlord token works without X-Tenant; tenant token requires X-Tenant header
+Route::middleware('UnifiedVideoAuth')->group(function () {
     Route::get('/videos', [VideoController::class, 'index']);
     Route::get('/videos/{id}', [VideoController::class, 'show']);
     Route::get('/category/{id}/videos', [CategoryController::class, 'show']);

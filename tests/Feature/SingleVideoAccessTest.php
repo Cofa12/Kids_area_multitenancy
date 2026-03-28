@@ -17,103 +17,82 @@ class SingleVideoAccessTest extends TestCase
 
     protected bool $tenancy = true;
     private $tenant;
+    private $category;
+    private $landlordUser;
+    private $video;
 
     protected function setUp(): void
     {
         parent::setUp();
         $this->tenant = Tenant::first();
-    }
 
-    /** @test */
-    public function landlord_user_can_access_single_video()
-    {
-        // 1. Create a landlord user
-        $landlordUser = LandlordUser::create([
-            'name' => 'Landlord Admin',
-            'phone' => '1234567890',
+        $this->landlordUser = LandlordUser::create([
+            'name'     => 'Landlord Admin',
+            'phone'    => '1234567890',
             'password' => bcrypt('password'),
         ]);
 
-        // 2. Create a category and video in landlord DB
-        $category = Category::create(['title_en' => 'Test Cat', 'title_ar' => 'اختبار']);
-        $video = Video::create([
-            'title_en' => 'Test Video',
+        $this->category = Category::create(['title_en' => 'Test Cat', 'title_ar' => 'اختبار']);
+        $this->video = Video::create([
+            'title_en'     => 'Test Video',
             'video_url_en' => 'http://example.com/video.mp4',
-            'category_id' => $category->id,
-            'user_id' => $landlordUser->id,
+            'category_id'  => $this->category->id,
+            'user_id'      => $this->landlordUser->id,
         ]);
-
-        // 3. Generate token
-        $token = JWTAuth::fromUser($landlordUser);
-
-        // 4. Request
-        $response = $this->withHeader('Authorization', 'Bearer ' . $token)
-            ->withHeader('X-Tenant', $this->tenant->name)
-            ->getJson("/api/v1/videos/{$video->id}");
-
-        if ($response->status() !== 200) {
-            dd($response->json());
-        }
-        $response->assertStatus(200);
-        $response->assertJsonPath('id', $video->id);
     }
 
-    /** @test */
-    public function tenant_user_can_access_single_video()
+    #[\PHPUnit\Framework\Attributes\Test]
+    public function landlord_can_access_single_video_without_x_tenant()
     {
-        // 1. Create a tenant user
+        $token = JWTAuth::fromUser($this->landlordUser);
+
+        // No X-Tenant header needed for landlord users
+        $response = $this->withHeader('Authorization', 'Bearer ' . $token)
+            ->getJson("/api/v1/videos/{$this->video->id}");
+
+        $response->assertStatus(200);
+        $response->assertJsonPath('id', $this->video->id);
+    }
+
+    #[\PHPUnit\Framework\Attributes\Test]
+    public function landlord_can_also_access_single_video_with_x_tenant()
+    {
+        $token = JWTAuth::fromUser($this->landlordUser);
+
+        // X-Tenant is optional but still accepted for landlord users
+        $response = $this->withHeader('Authorization', 'Bearer ' . $token)
+            ->withHeader('X-Tenant', $this->tenant->name)
+            ->getJson("/api/v1/videos/{$this->video->id}");
+
+        $response->assertStatus(200);
+        $response->assertJsonPath('id', $this->video->id);
+    }
+
+    #[\PHPUnit\Framework\Attributes\Test]
+    public function tenant_user_can_access_single_video_with_x_tenant()
+    {
         $this->tenant->makeCurrent();
         $tenantUser = User::create([
-            'name' => 'Tenant User',
-            'phone' => '0987654321',
+            'name'     => 'Tenant User',
+            'phone'    => '0987654321',
             'password' => bcrypt('password'),
         ]);
 
-        // 2. Create a landlord admin for video ownership
-        $landlordUser = LandlordUser::create([
-            'name' => 'Admin',
-            'phone' => '1112223333',
-            'password' => bcrypt('password'),
-        ]);
-
-        // 3. Create a video in landlord DB
-        $category = Category::create(['title_en' => 'Test Cat', 'title_ar' => 'اختبار']);
-        $video = Video::create([
-            'title_en' => 'Test Video',
-            'video_url_en' => 'http://example.com/video.mp4',
-            'category_id' => $category->id,
-            'user_id' => $landlordUser->id,
-        ]);
-
-        // 4. Generate token for tenant user
         $token = JWTAuth::fromUser($tenantUser);
 
-        // 5. Request
-        $this->tenant->makeCurrent(); // Ensure connection is tenant for middleware to find user
         $response = $this->withHeader('Authorization', 'Bearer ' . $token)
             ->withHeader('X-Tenant', $this->tenant->name)
-            ->getJson("/api/v1/videos/{$video->id}");
+            ->getJson("/api/v1/videos/{$this->video->id}");
 
-        if ($response->status() !== 200) {
-            dd($response->json());
-        }
         $response->assertStatus(200);
-        $response->assertJsonPath('id', $video->id);
+        $response->assertJsonPath('id', $this->video->id);
     }
 
-    /** @test */
-    public function unauthorized_user_cannot_access_single_video()
+    #[\PHPUnit\Framework\Attributes\Test]
+    public function unauthenticated_request_returns_401()
     {
-        $category = Category::create(['title_en' => 'Test Cat', 'title_ar' => 'اختبار']);
-        $video = Video::create([
-            'title_en' => 'Test Video',
-            'video_url_en' => 'http://example.com/video.mp4',
-            'category_id' => $category->id,
-            'user_id' => 1,
-        ]);
-
-        $response = $this->withHeader('X-Tenant', $this->tenant->name)
-            ->getJson("/api/v1/videos/{$video->id}");
+        // No token at all
+        $response = $this->getJson("/api/v1/videos/{$this->video->id}");
 
         $response->assertStatus(401);
     }

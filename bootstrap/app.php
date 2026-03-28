@@ -25,6 +25,7 @@ return Application::configure(basePath: dirname(__DIR__))
             'ChangeTenantMiddleware' => ChangeTenantMiddleware::class,
             'CheckTenant' => CheckTenantsLog::class,
             'UnifiedPhotoAuth' => \App\Http\Middleware\UnifiedPhotoAuthMiddleware::class,
+            'UnifiedVideoAuth' => \App\Http\Middleware\UnifiedVideoAuthMiddleware::class,
         ]);
     })
     ->withExceptions(function (Exceptions $exceptions): void {
