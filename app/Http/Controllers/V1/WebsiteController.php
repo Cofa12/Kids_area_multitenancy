@@ -76,6 +76,9 @@ class WebsiteController extends Controller
     public function updateProfile(UpdateProfileRequest $request):JsonResponse
     {
         $user = Auth::user();
+        if (empty($user->referral_code)) {
+            $callbackPayload['referral_code'] = $this->generateRandomReferralCode();
+        }
         $user->update($request->all());
 
         return response()->json([
@@ -93,5 +96,14 @@ class WebsiteController extends Controller
         return $user->subscription_status;   
     }
 
+
+        private function generateRandomReferralCode(): string
+    {
+        do {
+            $referralCode = (string) random_int(100000, 999999);
+        } while (User::where('referral_code', $referralCode)->exists());
+
+        return $referralCode;
+    }
 
 }
