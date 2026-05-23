@@ -28,8 +28,15 @@ class LoginService
 
         // Set access-token TTL before logging the user in.
         // TTL = 0 means the token never expires (used by the website registration flow).
+        $requiredClaims = config('jwt.required_claims');
+
         if ($ttl !== null) {
             JWTAuth::factory()->setTTL($ttl === 0 ? null : $ttl);
+        }
+
+        if ($ttl === 0) {
+            $validator = app('tymon.jwt.validators.payload');
+            $validator->setRequiredClaims(array_values(array_diff($requiredClaims, ['exp'])));
         }
 
         if (array_key_exists('password', $credentials)) {
@@ -48,6 +55,10 @@ class LoginService
 
         if (!$token) {
             throw new UnAuthenticatedUserException();
+        }
+
+        if ($ttl === 0) {
+            app('tymon.jwt.validators.payload')->setRequiredClaims($requiredClaims);
         }
 
         // Always generate the refresh token with the configured refresh TTL.
