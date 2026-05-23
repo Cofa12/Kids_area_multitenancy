@@ -39,7 +39,7 @@ class LandingPage extends Controller
             );
         }
 
-        $subscriptionStatus = $userStatus === 1;
+        $subscriptionStatus = $userStatus === 1 ? 1 : 0;
 
         // ── Find existing user by phone ───────────────────────────────────────
         $user = User::where('phone', $msisdn)->first();
@@ -50,7 +50,7 @@ class LandingPage extends Controller
                 'transaction_id'      => $transactionId,
             ]);
 
-            $msg = $subscriptionStatus ? 'User subscribed successfully' : 'User unsubscribed successfully';
+            $msg = $subscriptionStatus ? 'User subscribed successfully' : 'User is deactivated successfully';
             return response()->json(['message' => $msg], JsonResponse::HTTP_OK);
         }
 
@@ -59,7 +59,7 @@ class LandingPage extends Controller
         if ($subscriptionStatus) {
             User::create([
                 'phone'               => $msisdn,
-                'subscription_status' => true,
+                'subscription_status' => $subscriptionStatus,
                 'transaction_id'      => $transactionId,
             ]);
 
