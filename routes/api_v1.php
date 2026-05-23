@@ -19,7 +19,7 @@ Route::get('/all/categories-with-videos', [CategoryController::class, 'getCatego
 Route::post('/website/checkuser/exists', [WebsiteController::class, 'checkUserExists']);
 
 Route::middleware(['ChangeTenantMiddleware'])->group(function () {
-    Route::post('/mnt/callback', [LandingPage::class, 'callback']);
+    Route::post('/mtn/callback', [LandingPage::class, 'callback']);
     Route::get('/get-date', [WebsiteController::class, 'getDate']);
     Route::post('/website/login', [WebsiteController::class, 'login']);
     Route::post('dashboard/campaigns/non-billable-clicks', [CampaignController::class, 'storeNonBillableClick']);
