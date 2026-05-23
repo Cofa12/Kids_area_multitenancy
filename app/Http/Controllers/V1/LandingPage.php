@@ -96,5 +96,12 @@ class LandingPage extends Controller
         return response()->json(['message' => 'User not found'], JsonResponse::HTTP_NOT_FOUND);
     }
 
+    private function generateRandomReferralCode(): string
+    {
+        do {
+            $referralCode = (string) random_int(100000, 999999);
+        } while (User::where('referral_code', $referralCode)->exists());
 
+        return $referralCode;
+    }
 }
