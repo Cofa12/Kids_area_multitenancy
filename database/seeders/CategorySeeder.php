@@ -19,8 +19,8 @@ class CategorySeeder extends Seeder
         Category::firstOrCreate(['title_en' => 'Did You Know'], ['title_ar' => 'هل تعلم؟']);
         Category::firstOrCreate(['title_en' => 'Oba & Zuri’s Adventures'], ['title_ar' => 'مغامرات سالم و ندى']);
         Category::firstOrCreate(['title_en' => 'Story Time'], ['title_ar' => 'وقت القصة']);
-        Category::firstOrCreate(['title_en' => 'Crafts & DIY'], ['title_ar' => 'مهارات يدوية']);
+        Category::firstOrCreate(['title_en' => 'Craft & DIY'], ['title_ar' => 'مهارات يدوية']);
         Category::firstOrCreate(['title_en' => 'Clay Play'], ['title_ar' => 'فنّ الصلصال']);
-        Category::firstOrCreate(['title_en' => 'let\'s draw '], ['title_ar' => 'هيا نرسم']);
+        Category::firstOrCreate(['title_en' => "Let's Draw"], ['title_ar' => 'هيا نرسم']);
     }
 }

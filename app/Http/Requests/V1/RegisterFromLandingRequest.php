@@ -23,11 +23,7 @@ class RegisterFromLandingRequest extends FormRequest
     public function rules(): array
     {
         return [
-            'name' => 'string|required',
             'phone' => 'string|required',
-            'password' => 'required|string|min:8',
-            'campaign_id' => 'sometimes|uuid|exists:tenant.campaigns,id',
-            'referral_code' => 'sometimes|max:6|exists:tenant.users,referral_code',
         ];
     }
 }

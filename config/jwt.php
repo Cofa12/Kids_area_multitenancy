@@ -101,7 +101,7 @@ return [
     |
     */
 
-    'ttl' => env('JWT_TTL', 24*60),
+    'ttl' => env('JWT_TTL') !== null ? (int) env('JWT_TTL') : null,
 
     /*
     |--------------------------------------------------------------------------
@@ -118,9 +118,10 @@ return [
     | This is not particularly recommended, so make sure you have appropriate
     | systems in place to revoke the token if necessary.
     |
+    |
     */
 
-    'refresh_ttl' => env('JWT_REFRESH_TTL', 525600),
+    'refresh_ttl' => env('JWT_REFRESH_TTL') !== null ? (int) env('JWT_REFRESH_TTL') : 525600,
 
     /*
     |--------------------------------------------------------------------------

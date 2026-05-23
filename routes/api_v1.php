@@ -20,7 +20,7 @@ Route::get('/all/categories-with-videos', [CategoryController::class, 'getCatego
 Route::middleware(['ChangeTenantMiddleware'])->group(function () {
     Route::post('/safaricom/callback', [LandingPage::class, 'callback']);
     Route::get('/get-date', [WebsiteController::class, 'getDate']);
-    Route::post('/website/register', [WebsiteController::class, 'register']);
+    Route::post('/website/checkuser/exists', [WebsiteController::class, 'checkUserExists']);
     Route::post('/website/login', [WebsiteController::class, 'login']);
     Route::post('dashboard/campaigns/non-billable-clicks', [CampaignController::class, 'storeNonBillableClick']);
 
@@ -34,6 +34,7 @@ Route::middleware(['ChangeTenantMiddleware'])->group(function () {
     Route::middleware('CheckAuthenticationUser')->group(function () {
         Route::get('/videos/random', [VideoController::class, 'randomVideos']);
         Route::post('/upload-child-photo', [WebsiteController::class, 'uploadChildPhoto']);
+        Route::post('/user/profile/update',[WebsiteController::class,'updateProfile']);
     });
 
 

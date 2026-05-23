@@ -39,8 +39,10 @@ class ChangeTenantMiddleware
 
         $response = $next($request);
 
-        Tenant::forgetCurrent();
-        DB::setDefaultConnection('landlord');
+        if (app()->environment() !== 'testing') {
+            Tenant::forgetCurrent();
+            DB::setDefaultConnection('landlord');
+        }
 
         return $response;
     }
