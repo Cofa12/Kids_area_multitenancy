@@ -74,6 +74,14 @@ class VideoTest extends TestCase
             'title_ar' => 'اختبار'
         ]);
 
+        $user = LandlordUser::create([
+            'name' => 'cofa',
+            'phone' => '+201012345671',
+            'password' => bcrypt('CDCD12345##')
+        ]);
+
+        $userToken = auth('admin')->attempt(['phone' => $user->phone, 'password' => 'CDCD12345##']);
+
         Video::create([
             'title_en' => 'Test Video',
             'title_ar' => 'اختبار',
@@ -84,11 +92,12 @@ class VideoTest extends TestCase
             'video_url_en' => "video.mp4",
             'video_url_ar' => "video1.mp4",
             'category_id' => $category->id,
-            'user_id' => 1
+            'user_id' => $user->id
         ]);
 
         $sut = $this->getJson('/api/v1/videos', headers: [
             'Accept' => 'application/json',
+            'Authorization' => 'Bearer ' . $userToken,
             'x-api-key' => 'qNw0_Is6InOnG1HiDCT2fstk33JGwuD-6ftdGa4d8hn3RcXx5GT86kvTLop6BgZx732rdGWXnqhUhUJGjQU6pr-40PYzLceAX-up8hiDfyPQ1IJcTR84YPC_IBF2FzKr3QIX6LroF-lZYr67cg8-hNiSeK39cJWlAoZjbKUU6FSLOO3-8kW2xmejNSTR3FQBbLpGFgsfmuJra90jbI1dI7SNO9TDqOZgD6kYZYyEdGA684Iri2-mSB-zKvYLON7vJtadbFcpbHkac1F6Iqil7ZsDSJFrQVYLVGt9kYJDkf3wgkgOmRpsOijWeQ9eE63sywD4sGMmckdqZ27kU2cl6A',
         ]);
 
