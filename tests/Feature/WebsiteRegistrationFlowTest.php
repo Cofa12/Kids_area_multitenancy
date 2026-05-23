@@ -55,25 +55,6 @@ class WebsiteRegistrationFlowTest extends TestCase
             'subscription_status' => true,
         ]);
 
-        $fakeTokens = [
-            'access_token'       => 'no-expire.access.token',
-            'expires_in'         => 0,        // ← must be 0 for non-expiring
-            'refresh_token'      => 'refresh.token.xyz',
-            'refresh_expires_in' => 20160,
-        ];
-
-        $this->mock(LoginService::class, function ($mock) use ($fakeTokens) {
-            $mock->shouldReceive('Authenticate')
-                ->once()
-                ->withArgs(function (array $credentials, int $ttl) {
-                    // Verify the controller is requesting TTL = 0 (non-expiring)
-                    return $ttl === 0;
-                })
-                ->andReturn($fakeTokens);
-        });
-
-        $this->actingAs($user);
-
         $response = $this->postJson(
             'http://test.localhost/api/v1/website/checkuser/exists',
             ['phone' => $phone],
@@ -89,10 +70,8 @@ class WebsiteRegistrationFlowTest extends TestCase
             'refresh_expires_in',
         ]);
 
-        // expires_in = 0 signals a non-expiring token
         $response->assertJsonFragment([
-            'access_token' => 'no-expire.access.token',
-            'expires_in'   => 0,
+            'expires_in' => 0,
         ]);
     }
 

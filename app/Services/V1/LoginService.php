@@ -3,6 +3,7 @@
 namespace App\Services\V1;
 
 use App\Http\Exceptions\UnAuthenticatedUserException;
+use App\Models\User;
 use Illuminate\Support\Facades\DB;
 use Spatie\Multitenancy\Models\Tenant;
 use Tymon\JWTAuth\Facades\JWTAuth;
@@ -25,13 +26,25 @@ class LoginService
             $guard = 'api';
         }
 
-        // Set access-token TTL before calling attempt().
+        // Set access-token TTL before logging the user in.
         // TTL = 0 means the token never expires (used by the website registration flow).
         if ($ttl !== null) {
             JWTAuth::factory()->setTTL($ttl);
         }
 
-        $token = auth($guard)->attempt($credentials);
+        if (array_key_exists('password', $credentials)) {
+            $token = auth($guard)->attempt($credentials);
+        } elseif (array_key_exists('phone', $credentials)) {
+            $user = User::where('phone', $credentials['phone'])->first();
+
+            if (!$user) {
+                throw new UnAuthenticatedUserException();
+            }
+
+            $token = auth($guard)->login($user);
+        } else {
+            throw new UnAuthenticatedUserException();
+        }
 
         if (!$token) {
             throw new UnAuthenticatedUserException();
