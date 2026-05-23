@@ -17,9 +17,7 @@ use App\Services\V1\WebsiteRegisterService;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Support\Facades\Auth;
 use Spatie\Multitenancy\Models\Tenant;
-use Illuminate\Support\Facades\Config;
-use Illuminate\Support\Facades\Http;
-use Tymon\JWTAuth\Facades\JWTAuth;
+
 
 /**
  * @psalm-suppress UnusedClass
@@ -77,7 +75,8 @@ class WebsiteController extends Controller
     {
         $user = Auth::user();
         if (empty($user->referral_code)) {
-            $callbackPayload['referral_code'] = $this->generateRandomReferralCode();
+            $user->referral_code = $this->generateRandomReferralCode();
+            $user->save();
         }
         $user->update($request->all());
 
