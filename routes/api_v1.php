@@ -34,7 +34,7 @@ Route::middleware(['ChangeTenantMiddleware'])->group(function () {
     Route::middleware('CheckAuthenticationUser')->group(function () {
         Route::get('/videos/random', [VideoController::class, 'randomVideos']);
         Route::post('/upload-child-photo', [WebsiteController::class, 'uploadChildPhoto']);
-        Route::post('/website/user/profile/update',[WebsiteController::class,'updateProfile']);
+        Route::put('/website/user/profile/update',[WebsiteController::class,'updateProfile']);
     });
 
 
