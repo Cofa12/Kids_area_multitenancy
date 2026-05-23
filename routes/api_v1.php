@@ -16,11 +16,11 @@ Route::get('/category/{id}/videos/search', [CategoryController::class, 'searchVi
 Route::apiResource('/categories', CategoryController::class);
 Route::get('/all/categories-with-videos', [CategoryController::class, 'getCategoriesWithVideos']);
 
+Route::post('/website/checkuser/exists', [WebsiteController::class, 'checkUserExists']);
 
 Route::middleware(['ChangeTenantMiddleware'])->group(function () {
     Route::post('/safaricom/callback', [LandingPage::class, 'callback']);
     Route::get('/get-date', [WebsiteController::class, 'getDate']);
-    Route::post('/website/checkuser/exists', [WebsiteController::class, 'checkUserExists']);
     Route::post('/website/login', [WebsiteController::class, 'login']);
     Route::post('dashboard/campaigns/non-billable-clicks', [CampaignController::class, 'storeNonBillableClick']);
 

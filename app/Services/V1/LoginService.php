@@ -29,7 +29,7 @@ class LoginService
         // Set access-token TTL before logging the user in.
         // TTL = 0 means the token never expires (used by the website registration flow).
         if ($ttl !== null) {
-            JWTAuth::factory()->setTTL($ttl);
+            JWTAuth::factory()->setTTL($ttl === 0 ? null : $ttl);
         }
 
         if (array_key_exists('password', $credentials)) {
