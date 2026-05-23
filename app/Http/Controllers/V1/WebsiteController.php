@@ -49,7 +49,6 @@ class WebsiteController extends Controller
         // The user will use this token immediately to call updateProfile.
         $tokens = $this->loginService->Authenticate([
             'phone'    => $request['phone'],
-            'password' => null,
         ], 0);
 
         if (!$this->isUserExpired(auth()->user())) {
