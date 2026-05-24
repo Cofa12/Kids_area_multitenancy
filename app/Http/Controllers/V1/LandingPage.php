@@ -5,6 +5,7 @@ namespace App\Http\Controllers\V1;
 use App\Http\Controllers\Controller;
 use App\Http\Requests\V1\SafaricomRequest;
 use App\Models\User;
+use App\Enums\SubscriptionAction;
 use Illuminate\Http\JsonResponse;
 
 /**
@@ -40,6 +41,9 @@ class LandingPage extends Controller
         $endDate       = $request->get('endDate');
         $language      = $request->get('language');
 
+        // Map incoming action + status to a concrete enum case
+        $subscriptionAction = SubscriptionAction::fromCallback((string) $action, $userStatus);
+
         // ── Deduplication ────────────────────────────────────────────────────
         // If this exact transactionId has already been processed, skip silently.
         if (User::where('transaction_id', $transactionId)->exists()) {
@@ -49,22 +53,31 @@ class LandingPage extends Controller
             );
         }
 
-        $subscriptionStatus = $userStatus === 1 ? 1 : 0;
-
+        // Build callback payload (exclude `subscription_status` by default so we can
+        // decide whether to set it depending on the resolved action case).
         $callbackPayload = [
-            'subscription_status' => $subscriptionStatus,
-            'transaction_id'      => $transactionId,
-            'vendor_name'         => $vendorName,
-            'circle'              => $circle,
-            'amount'              => $amount,
-            'action'              => $action,
-            'operator'            => $operator,
-            'channel'             => $channel,
-            'pack_name'           => $packName,
-            'start_date'          => $startDate,
-            'end_date'            => $endDate,
-            'language'            => $language,
+            'transaction_id' => $transactionId,
+            'vendor_name'    => $vendorName,
+            'circle'         => $circle,
+            'amount'         => $amount,
+            'action'         => $action,
+            'operator'       => $operator,
+            'channel'        => $channel,
+            'pack_name'      => $packName,
+            'start_date'     => $startDate,
+            'end_date'       => $endDate,
+            'language'       => $language,
         ];
+
+        // Decide whether to include subscription_status in the payload:
+        // - SUBSCRIBED_NEW => set subscription_status = 1 (new subscriber)
+        // - SUBSCRIBED_RENEWAL => do NOT modify subscription_status (just update data)
+        // - UNSUBSCRIBED => set subscription_status = 0 (deactivate)
+        if ($subscriptionAction === SubscriptionAction::SUBSCRIBED_NEW) {
+            $callbackPayload['subscription_status'] = 1;
+        } elseif ($subscriptionAction === SubscriptionAction::UNSUBSCRIBED) {
+            $callbackPayload['subscription_status'] = 0;
+        }
 
         // ── Find existing user by phone ───────────────────────────────────────
         $user = User::where('phone', $msisdn)->first();
@@ -76,13 +89,17 @@ class LandingPage extends Controller
 
             $user->update($callbackPayload);
 
-            $msg = $subscriptionStatus ? 'User subscribed successfully' : 'User is deactivated successfully';
-            return response()->json(['message' => $msg], JsonResponse::HTTP_OK);
+            if ($subscriptionAction === SubscriptionAction::UNSUBSCRIBED) {
+                return response()->json(['message' => 'User is deactivated successfully'], JsonResponse::HTTP_OK);
+            }
+
+            return response()->json(['message' => 'User updated successfully'], JsonResponse::HTTP_OK);
         }
 
         // ── No user found ─────────────────────────────────────────────────────
         // Only create a new record when the action is a subscription.
-        if ($subscriptionStatus) {
+        // No user found: only create when this is a new subscription.
+        if ($subscriptionAction === SubscriptionAction::SUBSCRIBED_NEW) {
             $callbackPayload['referral_code'] = $this->generateRandomReferralCode();
 
             User::create(array_merge([
