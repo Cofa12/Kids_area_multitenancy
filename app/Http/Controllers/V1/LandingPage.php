@@ -75,7 +75,7 @@ class LandingPage extends Controller
         // - UNSUBSCRIBED => set subscription_status = 0 (deactivate)
         if ($subscriptionAction === SubscriptionAction::SUBSCRIBED_NEW) {
             $callbackPayload['subscription_status'] = 1;
-        } elseif ($subscriptionAction === SubscriptionAction::UNSUBSCRIBED) {
+        } elseif ($subscriptionAction === SubscriptionAction::UNSUBSCRIPTION) {
             $callbackPayload['subscription_status'] = 0;
         }
 
@@ -89,7 +89,7 @@ class LandingPage extends Controller
 
             $user->update($callbackPayload);
 
-            if ($subscriptionAction === SubscriptionAction::UNSUBSCRIBED) {
+            if ($subscriptionAction === SubscriptionAction::UNSUBSCRIPTION) {
                 return response()->json(['message' => 'User is deactivated successfully'], JsonResponse::HTTP_OK);
             }
 
