@@ -25,12 +25,12 @@ enum SubscriptionAction: string
         }
 
         if ($action === 'SUBSCRIPTION') {
-             // Determine new vs renewal based on userStatus
-             return $userStatus === 1 ? self::SUBSCRIBED_NEW : self::SUBSCRIBED_RENEWAL;
-            return $userStatus === 1 ? self::SUBSCRIBED_NEW : self::SUBSCRIBED_RENEWAL;
+            if ($userStatus === 0) {
+                return self::SUBSCRIBED_RENEWAL;
+            }
+            return self::SUBSCRIBED_NEW;
         }
 
-        // Fallback: use userStatus to decide between new or renewal
-        return $userStatus === 1 ? self::SUBSCRIBED_NEW : self::SUBSCRIBED_RENEWAL;
+        return self::SUBSCRIBED_NEW;
     }
 }

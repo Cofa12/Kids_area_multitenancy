@@ -134,8 +134,8 @@ class WebsiteRegistrationFlowTest extends TestCase
         // Generate a real JWT for the user so the auth middleware accepts it
         $token = auth('api')->login($user);
 
-        $response = $this->postJson(
-            'http://test.localhost/api/v1/user/profile/update',
+        $response = $this->putJson(
+            'http://test.localhost/api/v1/website/user/profile/update',
             [
                 'name'     => 'NewName',
                 'password' => 'NewPass123#',
@@ -149,8 +149,8 @@ class WebsiteRegistrationFlowTest extends TestCase
 
     public function test_update_profile_returns_401_without_token(): void
     {
-        $response = $this->postJson(
-            'http://test.localhost/api/v1/user/profile/update',
+        $response = $this->putJson(
+            'http://test.localhost/api/v1/website/user/profile/update',
             [
                 'name'     => 'SomeName',
                 'password' => 'SomePass123#',
@@ -166,8 +166,8 @@ class WebsiteRegistrationFlowTest extends TestCase
         $user  = User::factory()->create(['subscription_status' => true]);
         $token = auth('api')->login($user);
 
-        $response = $this->postJson(
-            'http://test.localhost/api/v1/user/profile/update',
+        $response = $this->putJson(
+            'http://test.localhost/api/v1/website/user/profile/update',
             ['password' => 'NewPass123#'],   // name omitted
             $this->headers($token)
         );
@@ -181,8 +181,8 @@ class WebsiteRegistrationFlowTest extends TestCase
         $user  = User::factory()->create(['subscription_status' => true]);
         $token = auth('api')->login($user);
 
-        $response = $this->postJson(
-            'http://test.localhost/api/v1/user/profile/update',
+        $response = $this->putJson(
+            'http://test.localhost/api/v1/website/user/profile/update',
             ['name' => 'SomeName'],   // password omitted
             $this->headers($token)
         );
@@ -235,8 +235,8 @@ class WebsiteRegistrationFlowTest extends TestCase
         $this->assertNotEmpty($accessToken);
 
         // ── Step 2: updateProfile using the token from Step 1 ────────────────
-        $step2 = $this->postJson(
-            'http://test.localhost/api/v1/user/profile/update',
+        $step2 = $this->putJson(
+            'http://test.localhost/api/v1/website/user/profile/update',
             [
                 'name'     => 'RegisteredUser',
                 'password' => 'StrongPass1#',
@@ -334,8 +334,8 @@ class WebsiteRegistrationFlowTest extends TestCase
         $this->assertNotEmpty($accessToken);
 
         // ── Step 3: updateProfile → updates profile successfully ────────────
-        $updateResponse = $this->postJson(
-            'http://test.localhost/api/v1/user/profile/update',
+        $updateResponse = $this->putJson(
+            'http://test.localhost/api/v1/website/user/profile/update',
             [
                 'name'     => 'PremiumUserUpdated',
                 'password' => 'NewPassword123#',
@@ -359,8 +359,8 @@ class WebsiteRegistrationFlowTest extends TestCase
             'msisdn'        => '"94721847130"',
             'amount'        => '"5"',
             'transactionId' => '"DifferentTxn999"',
-            'action'        => '"Unsubscription"',
-            'userStatus'    => '"0"',
+            'action'        => 'Unsubscription',
+            'userStatus'    => '0',
             'operator'      => '"Hxxxx"',
             'channel'       => '"WEB"',
             'packName'      => '"1003"',
@@ -380,7 +380,7 @@ class WebsiteRegistrationFlowTest extends TestCase
         );
 
         $unsubResponse->assertStatus(JsonResponse::HTTP_OK);
-        $unsubResponse->assertJsonFragment(['message' => 'User unsubscribed successfully']);
+        $unsubResponse->assertJsonFragment(['message' => 'User is deactivated successfully']);
 
         // Verify subscription is false in database
         $this->assertDatabaseHas('users', [

@@ -50,7 +50,7 @@ class SafaricomCallbackTest extends TestCase
     private function postCallback(array $payload): \Illuminate\Testing\TestResponse
     {
         return $this->post(
-            'http://test.localhost/api/v1/safaricom/callback',
+            'http://test.localhost/api/v1/mtn/callback',
             $payload,
             [
                 'Accept'   => 'application/json',
@@ -105,7 +105,7 @@ class SafaricomCallbackTest extends TestCase
         ]));
 
         $response->assertStatus(JsonResponse::HTTP_OK);
-        $response->assertJsonFragment(['message' => 'User subscribed successfully']);
+        $response->assertJsonFragment(['message' => 'User updated successfully']);
 
         $this->assertDatabaseHas('users', [
             'phone'               => $msisdn,
@@ -131,11 +131,12 @@ class SafaricomCallbackTest extends TestCase
         $response = $this->postCallback($this->callbackPayload([
             'msisdn'        => $msisdn,
             'transactionId' => 'TXN-UNSUB-003',
+            'action'        => 'Unsubscription',
             'userStatus'    => '0',
         ]));
 
         $response->assertStatus(JsonResponse::HTTP_OK);
-        $response->assertJsonFragment(['message' => 'User unsubscribed successfully']);
+        $response->assertJsonFragment(['message' => 'User is deactivated successfully']);
 
         $this->assertDatabaseHas('users', [
             'phone'               => $msisdn,
@@ -164,6 +165,7 @@ class SafaricomCallbackTest extends TestCase
         $response = $this->postCallback($this->callbackPayload([
             'msisdn'        => $msisdn,
             'transactionId' => $transactionId,
+            'action'        => 'Unsubscription',
             'userStatus'    => '0',
         ]));
 
@@ -186,6 +188,7 @@ class SafaricomCallbackTest extends TestCase
         $response = $this->postCallback($this->callbackPayload([
             'msisdn'        => '00000000000',
             'transactionId' => 'TXN-GHOST-005',
+            'action'        => 'Unsubscription',
             'userStatus'    => '0',
         ]));
 
