@@ -159,6 +159,22 @@ class WebsiteRegistrationFlowTest extends TestCase
 
         $response->assertStatus(JsonResponse::HTTP_OK);
         $response->assertJsonFragment(['message' => 'Profile is updated Successfully']);
+        $response->assertJsonStructure([
+            'message',
+            'id',
+            'name',
+            'phone',
+            'referral_code',
+            'referral code',
+            'number_of_referrals',
+            'number of referrals',
+        ]);
+        $response->assertJsonFragment([
+            'id' => $user->id,
+            'name' => 'NewName',
+            'phone' => '+201012345679',
+            'number_of_referrals' => 0,
+        ]);
     }
 
     public function test_update_profile_returns_401_without_token(): void

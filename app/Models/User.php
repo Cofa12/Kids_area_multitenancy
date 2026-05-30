@@ -82,4 +82,9 @@ class User extends Authenticatable implements JWTSubject
     {
         return $this->hasMany(Referral::class, 'owner_id', 'id');
     }
+
+    public function getNumberOfReferralsAttribute(): int
+    {
+        return $this->referrals()->count();
+    }
 }

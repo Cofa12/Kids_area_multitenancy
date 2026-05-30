@@ -87,8 +87,13 @@ class WebsiteController extends Controller
         $user->update($request->all());
 
         return response()->json([
-            'message'=>'Profile is updated Successfully'
-        ],JsonResponse::HTTP_OK);
+            'message' => 'Profile is updated Successfully',
+            'id' => $user->id,
+            'name' => $user->name,
+            'phone' => $user->phone,
+            'referral_code' => $user->referral_code,
+            'number_of_referrals' => $user->number_of_referrals,
+        ], JsonResponse::HTTP_OK);
     }
 
     public function getDate()
