@@ -119,6 +119,20 @@ class WebsiteRegistrationFlowTest extends TestCase
         $response->assertJsonValidationErrors(['phone']);
     }
 
+    public function test_check_non_existent_user_returns_401_with_not_registered_message(): void
+    {
+        $phone = '+201000000000';
+
+        $response = $this->postJson(
+            'http://test.localhost/api/v1/website/checkuser/exists',
+            ['phone' => $phone],
+            $this->headers()
+        );
+
+        $response->assertStatus(JsonResponse::HTTP_UNAUTHORIZED);
+        $response->assertJsonFragment(['error' => 'this user is not registered']);
+    }
+
     // ─────────────────────────────────────────────────────────────────────────
     // Step 2 – updateProfile  (uses the JWT from Step 1)
     // ─────────────────────────────────────────────────────────────────────────

@@ -14,6 +14,8 @@ use App\Services\V1\FileHandling;
 use App\Services\V1\LoginService;
 use App\Services\V1\SubscriptionHandling;
 use App\Services\V1\WebsiteRegisterService;
+use App\Http\Exceptions\UnAuthenticatedUserException;
+use App\Http\Exceptions\UserNotRegisteredException;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Support\Facades\Auth;
 use Spatie\Multitenancy\Models\Tenant;
@@ -45,9 +47,13 @@ class WebsiteController extends Controller
     {
         // TTL = 0 → non-expiring access token for the website registration flow.
         // The user will use this token immediately to call updateProfile.
-        $tokens = $this->loginService->Authenticate([
-            'phone'    => $request['phone'],
-        ], 0);
+        try {
+            $tokens = $this->loginService->Authenticate([
+                'phone'    => $request['phone'],
+            ], 0);
+        } catch (UnAuthenticatedUserException $e) {
+            throw new UserNotRegisteredException();
+        }
 
         if (!$this->isUserExpired(auth()->user())) {
             return response()->json([
