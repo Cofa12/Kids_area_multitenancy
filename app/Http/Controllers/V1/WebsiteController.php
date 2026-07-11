@@ -84,6 +84,7 @@ class WebsiteController extends Controller
             $user->referral_code = $this->generateRandomReferralCode();
             $user->save();
         }
+        
         $user->update($request->all());
 
         return response()->json([

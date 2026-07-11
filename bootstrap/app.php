@@ -5,6 +5,7 @@ use App\Http\Middleware\CheckAuthenticationUser;
 use App\Http\Middleware\CheckTenantsLog;
 use App\Http\Middleware\ForceLandlordConnection;
 use App\Http\Middleware\LandlordAuthenticationUser;
+use App\Http\Middleware\UseMtnCallbackTenant;
 use Illuminate\Foundation\Application;
 use Illuminate\Foundation\Configuration\Exceptions;
 use Illuminate\Foundation\Configuration\Middleware;
@@ -23,6 +24,7 @@ return Application::configure(basePath: dirname(__DIR__))
             'CheckAuthenticationUser' => CheckAuthenticationUser::class,
             'LandlordAuthenticationUser' => LandlordAuthenticationUser::class,
             'ChangeTenantMiddleware' => ChangeTenantMiddleware::class,
+            'UseMtnCallbackTenant' => UseMtnCallbackTenant::class,
             'CheckTenant' => CheckTenantsLog::class,
             'UnifiedPhotoAuth' => \App\Http\Middleware\UnifiedPhotoAuthMiddleware::class,
             'UnifiedVideoAuth' => \App\Http\Middleware\UnifiedVideoAuthMiddleware::class,

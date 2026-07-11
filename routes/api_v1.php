@@ -18,8 +18,12 @@ Route::get('/all/categories-with-videos', [CategoryController::class, 'getCatego
 
 Route::post('/website/checkuser/exists', [WebsiteController::class, 'checkUserExists']);
 
-Route::middleware(['ChangeTenantMiddleware'])->group(function () {
+Route::middleware(['UseMtnCallbackTenant'])->group(function () {
+    // MTN callbacks do not include X-Tenant; this middleware selects the configured callback tenant.
     Route::post('/mtn/callback', [LandingPage::class, 'callback']);
+});
+
+Route::middleware(['ChangeTenantMiddleware'])->group(function () {
     Route::get('/get-date', [WebsiteController::class, 'getDate']);
     Route::post('/website/login', [WebsiteController::class, 'login']);
     Route::post('dashboard/campaigns/non-billable-clicks', [CampaignController::class, 'storeNonBillableClick']);
@@ -87,4 +91,3 @@ Route::middleware('UnifiedVideoAuth')->group(function () {
     Route::get('/videos/{id}', [VideoController::class, 'show']);
     Route::get('/category/{id}/videos', [CategoryController::class, 'show']);
 });
-

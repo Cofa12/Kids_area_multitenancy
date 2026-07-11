@@ -11,12 +11,6 @@ use App\Models\ChildPhoto;
 use App\Models\User;
 use App\Models\Video;
 use Illuminate\Http\JsonResponse;
-use Illuminate\Http\Request;
-use Illuminate\Routing\Controllers\HasMiddleware;
-use Illuminate\Routing\Controllers\Middleware;
-use Illuminate\Support\Facades\DB;
-use Illuminate\Support\Facades\Schema;
-
 
 /**
  * @psalm-suppress UnusedClass

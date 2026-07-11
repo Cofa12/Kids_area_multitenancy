@@ -3,6 +3,7 @@
 namespace Tests\Feature;
 
 use App\Models\User;
+use Illuminate\Support\Facades\Config;
 use Illuminate\Foundation\Testing\RefreshDatabase;
 use Illuminate\Http\JsonResponse;
 use Tests\TestCase;
@@ -23,6 +24,13 @@ class SafaricomCallbackTest extends TestCase
     use RefreshDatabase;
 
     private string $apiKey = 'qNw0_Is6InOnG1HiDCT2fstk33JGwuD-6ftdGa4d8hn3RcXx5GT86kvTLop6BgZx732rdGWXnqhUhUJGjQU6pr-40PYzLceAX-up8hiDfyPQ1IJcTR84YPC_IBF2FzKr3QIX6LroF-lZYr67cg8-hNiSeK39cJWlAoZjbKUU6FSLOO3-8kW2xmejNSTR3FQBbLpGFgsfmuJra90jbI1dI7SNO9TDqOZgD6kYZYyEdGA684Iri2-mSB-zKvYLON7vJtadbFcpbHkac1F6Iqil7ZsDSJFrQVYLVGt9kYJDkf3wgkgOmRpsOijWeQ9eE63sywD4sGMmckdqZ27kU2cl6A';
+
+    protected function setUp(): void
+    {
+        parent::setUp();
+
+        Config::set('services.mtn.tenant', 'Test Tenant');
+    }
 
     // ─────────────────────────────────────────────────────────────────────────
     // Helpers
@@ -55,7 +63,6 @@ class SafaricomCallbackTest extends TestCase
             [
                 'Accept'   => 'application/json',
                 'x-api-key' => $this->apiKey,
-                'X-Tenant' => 'test.localhost',   // required by ChangeTenantMiddleware
             ]
         );
     }

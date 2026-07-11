@@ -37,6 +37,11 @@ return [
 
     'accessKey'=>[
         'privateKey'=>storage_path('ApiKeys/private_key.pem')
-    ]
+    ],
+
+    'mtn' => [
+        // The naijria tenant name or domain whose users receive /mtn/* callbacks.
+        'tenant' => env('MTN_TENANT', 'naijria'),
+    ],
 
 ];
