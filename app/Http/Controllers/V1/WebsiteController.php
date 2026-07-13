@@ -91,7 +91,7 @@ class WebsiteController extends Controller
         // Guard 2: profile already updated (name column has a value)
         if (!empty($user->name)) {
             return response()->json([
-                'message' => 'This user is updated before',
+                'message' => 'This user is already existed',
             ], JsonResponse::HTTP_CONFLICT);
         }
 
