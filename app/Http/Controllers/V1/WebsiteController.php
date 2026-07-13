@@ -77,9 +77,9 @@ class WebsiteController extends Controller
         return new AuthenticatedUser($tokens, auth()->user());
     }
 
-    public function updateProfile(UpdateProfileRequest $request):JsonResponse
+    public function updateProfile(UpdateProfileRequest $request): JsonResponse
     {
-        $user = Auth::user();
+        $user = User::where('phone', $request->phone)->first();
 
         // Guard 1: user not found
         if (!$user) {
@@ -100,7 +100,7 @@ class WebsiteController extends Controller
             $user->save();
         }
 
-        $user->update($request->all());
+        $user->update($request->except('phone'));
 
         return response()->json([
             'message' => 'Profile is updated Successfully',
