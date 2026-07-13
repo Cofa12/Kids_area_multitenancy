@@ -80,11 +80,26 @@ class WebsiteController extends Controller
     public function updateProfile(UpdateProfileRequest $request):JsonResponse
     {
         $user = Auth::user();
+
+        // Guard 1: user not found
+        if (!$user) {
+            return response()->json([
+                'message' => "User doesn't exist",
+            ], JsonResponse::HTTP_NOT_FOUND);
+        }
+
+        // Guard 2: profile already updated (name column has a value)
+        if (!empty($user->name)) {
+            return response()->json([
+                'message' => 'This user is updated before',
+            ], JsonResponse::HTTP_CONFLICT);
+        }
+
         if (empty($user->referral_code)) {
             $user->referral_code = $this->generateRandomReferralCode();
             $user->save();
         }
-        
+
         $user->update($request->all());
 
         return response()->json([
