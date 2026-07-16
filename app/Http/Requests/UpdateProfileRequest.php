@@ -23,8 +23,8 @@ class UpdateProfileRequest extends FormRequest
     {
         return [
             'phone'        => 'required|string',
-            'name'         => 'string|required',
-            'password'     => 'required|string|min:8',
+            'name'         => 'string|sometimes',
+            'password'     => 'sometimes',
             'campaign_id'  => 'sometimes|uuid|exists:tenant.campaigns,id',
             'referral_code' => 'sometimes|max:6|exists:tenant.users,referral_code',
         ];
