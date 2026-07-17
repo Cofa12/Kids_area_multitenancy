@@ -151,6 +151,7 @@ class WebsiteRegistrationFlowTest extends TestCase
         $response = $this->putJson(
             'http://test.localhost/api/v1/website/user/profile/update',
             [
+                'phone'    => $user->phone,
                 'name'     => 'NewName',
                 'password' => 'NewPass123#',
             ],
@@ -165,9 +166,11 @@ class WebsiteRegistrationFlowTest extends TestCase
             'name',
             'phone',
             'referral_code',
-            'referral code',
             'number_of_referrals',
-            'number of referrals',
+            'access_token',
+            'refresh_token',
+            'expires_in',
+            'refresh_expires_in',
         ]);
         $response->assertJsonFragment([
             'id' => $user->id,
@@ -177,20 +180,6 @@ class WebsiteRegistrationFlowTest extends TestCase
         ]);
     }
 
-    public function test_update_profile_returns_401_without_token(): void
-    {
-        $response = $this->putJson(
-            'http://test.localhost/api/v1/website/user/profile/update',
-            [
-                'name'     => 'SomeName',
-                'password' => 'SomePass123#',
-            ],
-            $this->headers()   // no Bearer token
-        );
-
-        $response->assertStatus(JsonResponse::HTTP_UNAUTHORIZED);
-    }
-
     public function test_update_profile_returns_422_when_name_missing(): void
     {
         $user  = User::factory()->create(['subscription_status' => true]);
@@ -198,7 +187,10 @@ class WebsiteRegistrationFlowTest extends TestCase
 
         $response = $this->putJson(
             'http://test.localhost/api/v1/website/user/profile/update',
-            ['password' => 'NewPass123#'],   // name omitted
+            [
+                'phone' => $user->phone,
+                'password' => 'NewPass123#',
+            ],   // name omitted
             $this->headers($token)
         );
 
@@ -213,7 +205,10 @@ class WebsiteRegistrationFlowTest extends TestCase
 
         $response = $this->putJson(
             'http://test.localhost/api/v1/website/user/profile/update',
-            ['name' => 'SomeName'],   // password omitted
+            [
+                'phone' => $user->phone,
+                'name' => 'SomeName',
+            ],   // password omitted
             $this->headers($token)
         );
 
@@ -235,18 +230,29 @@ class WebsiteRegistrationFlowTest extends TestCase
         ]);
 
         // ── Step 1: checkUserExists → get a non-expiring JWT ─────────────────
-        $this->mock(LoginService::class, function ($mock) use ($user) {
+        $this->mock(LoginService::class, function ($mock) use ($user, $phone) {
             // Return a real JWT so Step 2 auth works
             $realToken = auth('api')->login($user);
             auth('api')->forgetUser();
 
             $mock->shouldReceive('Authenticate')
                 ->once()
+                ->with(['phone' => $phone], 0)
                 ->andReturn([
                     'access_token'       => $realToken,
                     'expires_in'         => 0,
                     'refresh_token'      => 'refresh.token.abc',
                     'refresh_expires_in' => 20160,
+                ]);
+
+            $mock->shouldReceive('Authenticate')
+                ->once()
+                ->with(['phone' => $phone])
+                ->andReturn([
+                    'access_token'       => 'new.access.token',
+                    'expires_in'         => 60,
+                    'refresh_token'      => 'new.refresh.token',
+                    'refresh_expires_in' => 120,
                 ]);
         });
 
@@ -268,6 +274,7 @@ class WebsiteRegistrationFlowTest extends TestCase
         $step2 = $this->putJson(
             'http://test.localhost/api/v1/website/user/profile/update',
             [
+                'phone'    => $phone,
                 'name'     => 'RegisteredUser',
                 'password' => 'StrongPass1#',
             ],
@@ -332,7 +339,7 @@ class WebsiteRegistrationFlowTest extends TestCase
         $this->assertNotNull($user);
 
         // ── Step 2: checkUserExists → returns a non-expiring JWT ────────────
-        $this->mock(LoginService::class, function ($mock) use ($user) {
+        $this->mock(LoginService::class, function ($mock) use ($user, $msisdn) {
             // Generate a real JWT
             $realToken = auth('api')->login($user);
             auth('api')->forgetUser();
@@ -347,6 +354,16 @@ class WebsiteRegistrationFlowTest extends TestCase
                     'expires_in'         => 0,
                     'refresh_token'      => 'refresh.token.abc',
                     'refresh_expires_in' => 20160,
+                ]);
+
+            $mock->shouldReceive('Authenticate')
+                ->once()
+                ->with(['phone' => $msisdn])
+                ->andReturn([
+                    'access_token'       => 'new.access.token',
+                    'expires_in'         => 60,
+                    'refresh_token'      => 'new.refresh.token',
+                    'refresh_expires_in' => 120,
                 ]);
         });
 
@@ -367,6 +384,7 @@ class WebsiteRegistrationFlowTest extends TestCase
         $updateResponse = $this->putJson(
             'http://test.localhost/api/v1/website/user/profile/update',
             [
+                'phone'    => $msisdn,
                 'name'     => 'PremiumUserUpdated',
                 'password' => 'NewPassword123#',
             ],

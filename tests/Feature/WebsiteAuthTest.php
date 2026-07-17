@@ -50,9 +50,10 @@ class WebsiteAuthTest extends TestCase
             'refresh_token' => 'refresh.aaa.bbb',
             'refresh_expires_in' => 120,
         ];
-        $this->mock(LoginService::class, function ($mock) use ($tokens) {
+        $this->mock(LoginService::class, function ($mock) use ($tokens, $user) {
             $mock->shouldReceive('Authenticate')
                 ->once()
+                ->with(['phone' => $user->phone])
                 ->andReturn($tokens);
         });
 
@@ -169,7 +170,6 @@ class WebsiteAuthTest extends TestCase
 
         $payload = [
             'phone' => $user->phone,
-            'password' => 'Aa12345#',
         ];
 
         $res = $this->postJson('/api/v1/website/login', $payload, $this->headers);

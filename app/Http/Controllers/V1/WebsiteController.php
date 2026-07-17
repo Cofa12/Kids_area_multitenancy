@@ -66,8 +66,9 @@ class WebsiteController extends Controller
 
     public function login(SafaricomLoginRequest $request)
     {
-
-        $tokens = $this->loginService->Authenticate($request->toArray());
+        $tokens = $this->loginService->Authenticate([
+            'phone' => $request->string('phone')->toString(),
+        ]);
 
         if (!$this->isUserExpired(auth()->user()))
             return response()->json([
@@ -102,6 +103,8 @@ class WebsiteController extends Controller
 
         $user->update($request->except('phone'));
 
+        $tokens = $this->loginService->Authenticate(['phone' => $user->phone]);
+
         return response()->json([
             'message' => 'Profile is updated Successfully',
             'id' => $user->id,
@@ -109,6 +112,10 @@ class WebsiteController extends Controller
             'phone' => $user->phone,
             'referral_code' => $user->referral_code,
             'number_of_referrals' => $user->number_of_referrals,
+            'access_token' => $tokens['access_token'],
+            'refresh_token' => $tokens['refresh_token'],
+            'expires_in' => $tokens['expires_in'],
+            'refresh_expires_in' => $tokens['refresh_expires_in'],
         ], JsonResponse::HTTP_OK);
     }
 

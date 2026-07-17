@@ -24,10 +24,6 @@ class SafaricomLoginRequest extends FormRequest
     {
         return [
             'phone' => 'required|string',
-            'password' => [
-                'required',
-                'string',
-            ],
         ];
     }
 }
