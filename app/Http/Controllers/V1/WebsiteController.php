@@ -66,9 +66,13 @@ class WebsiteController extends Controller
 
     public function login(SafaricomLoginRequest $request)
     {
-        $tokens = $this->loginService->Authenticate([
-            'phone' => $request->string('phone')->toString(),
-        ]);
+        try {
+            $tokens = $this->loginService->Authenticate([
+                'phone' => $request->string('phone')->toString(),
+            ]);
+        } catch (UnAuthenticatedUserException $e) {
+            throw new UserNotRegisteredException();
+        }
 
         if (!$this->isUserExpired(auth()->user()))
             return response()->json([
@@ -126,7 +130,7 @@ class WebsiteController extends Controller
 
     public function isUserExpired(User $user) : bool
     {
-        return $user->subscription_status;   
+        return (bool) $user->subscription_status;   
     }
 
 

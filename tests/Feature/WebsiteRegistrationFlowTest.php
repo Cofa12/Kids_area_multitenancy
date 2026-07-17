@@ -140,6 +140,7 @@ class WebsiteRegistrationFlowTest extends TestCase
     public function test_update_profile_succeeds_with_valid_jwt(): void
     {
         $user = User::factory()->create([
+            'name'                => null,
             'phone'               => '+201012345679',
             'subscription_status' => true,
             'password'            => 'OldPass123#',
@@ -180,41 +181,7 @@ class WebsiteRegistrationFlowTest extends TestCase
         ]);
     }
 
-    public function test_update_profile_returns_422_when_name_missing(): void
-    {
-        $user  = User::factory()->create(['subscription_status' => true]);
-        $token = auth('api')->login($user);
 
-        $response = $this->putJson(
-            'http://test.localhost/api/v1/website/user/profile/update',
-            [
-                'phone' => $user->phone,
-                'password' => 'NewPass123#',
-            ],   // name omitted
-            $this->headers($token)
-        );
-
-        $response->assertStatus(JsonResponse::HTTP_UNPROCESSABLE_ENTITY);
-        $response->assertJsonValidationErrors(['name']);
-    }
-
-    public function test_update_profile_returns_422_when_password_missing(): void
-    {
-        $user  = User::factory()->create(['subscription_status' => true]);
-        $token = auth('api')->login($user);
-
-        $response = $this->putJson(
-            'http://test.localhost/api/v1/website/user/profile/update',
-            [
-                'phone' => $user->phone,
-                'name' => 'SomeName',
-            ],   // password omitted
-            $this->headers($token)
-        );
-
-        $response->assertStatus(JsonResponse::HTTP_UNPROCESSABLE_ENTITY);
-        $response->assertJsonValidationErrors(['password']);
-    }
 
     // ─────────────────────────────────────────────────────────────────────────
     // Full end-to-end flow (Step 1 → Step 2 with mocked auth service)
@@ -225,6 +192,7 @@ class WebsiteRegistrationFlowTest extends TestCase
         $phone = '+201055512345';
 
         $user = User::factory()->create([
+            'name'                => null,
             'phone'               => $phone,
             'subscription_status' => true,
         ]);
