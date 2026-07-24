@@ -6,7 +6,9 @@ use App\Http\Controllers\Controller;
 use App\Http\Requests\V1\SafaricomRequest;
 use App\Models\User;
 use App\Enums\SubscriptionAction;
+use App\Enums\SubscriptionPlan;
 use Illuminate\Http\JsonResponse;
+use Illuminate\Support\Carbon;
 
 /**
  * @psalm-suppress UnusedClass
@@ -36,7 +38,8 @@ class LandingPage extends Controller
         $action        = $request->get('action');
         $operator      = $request->get('operator');
         $channel       = $request->get('channel');
-        $packName      = $request->get('packName');
+        $packName      = $request->get('packName') ?? $request->get('planId') ?? $request->get('plan_id') ?? $request->get('pack_name');
+        $planId        = $request->get('planId') ?? $request->get('plan_id') ?? $request->get('packName') ?? $request->get('pack_name');
         $startDate     = $request->get('startDate');
         $endDate       = $request->get('endDate');
         $language      = $request->get('language');
@@ -53,8 +56,7 @@ class LandingPage extends Controller
             );
         }
 
-        // Build callback payload (exclude `subscription_status` by default so we can
-        // decide whether to set it depending on the resolved action case).
+        // Build callback payload
         $callbackPayload = [
             'transaction_id' => $transactionId,
             'vendor_name'    => $vendorName,
@@ -64,23 +66,29 @@ class LandingPage extends Controller
             'operator'       => $operator,
             'channel'        => $channel,
             'pack_name'      => $packName,
+            'plan_id'        => $planId,
             'start_date'     => $startDate,
             'end_date'       => $endDate,
             'language'       => $language,
         ];
 
-        // Decide whether to include subscription_status in the payload:
-        // - SUBSCRIBED_NEW => set subscription_status = 1 (new subscriber)
-        // - SUBSCRIBED_RENEWAL => do NOT modify subscription_status (just update data)
-        // - UNSUBSCRIBED => set subscription_status = 0 (deactivate)
-        if ($subscriptionAction === SubscriptionAction::SUBSCRIBED_NEW) {
-            $callbackPayload['subscription_status'] = 1;
-        } elseif ($subscriptionAction === SubscriptionAction::UNSUBSCRIPTION) {
-            $callbackPayload['subscription_status'] = 0;
-        }
-
         // ── Find existing user by phone ───────────────────────────────────────
         $user = User::where('phone', $msisdn)->first();
+
+        // Determine subscription status and expiration date based on plan ID
+        if ($subscriptionAction === SubscriptionAction::SUBSCRIBED_NEW || $subscriptionAction === SubscriptionAction::SUBSCRIBED_RENEWAL) {
+            $callbackPayload['subscription_status'] = 1;
+            $days = SubscriptionPlan::getDaysForPlan((string) ($planId ?? $packName));
+
+            if ($user && $user->expiration_date && Carbon::parse($user->expiration_date)->isFuture()) {
+                $callbackPayload['expiration_date'] = Carbon::parse($user->expiration_date)->addDays($days);
+            } else {
+                $callbackPayload['expiration_date'] = now()->addDays($days);
+            }
+        } elseif ($subscriptionAction === SubscriptionAction::UNSUBSCRIPTION) {
+            $callbackPayload['subscription_status'] = 0;
+            $callbackPayload['expiration_date'] = now();
+        }
 
         if ($user) {
             if (empty($user->referral_code)) {

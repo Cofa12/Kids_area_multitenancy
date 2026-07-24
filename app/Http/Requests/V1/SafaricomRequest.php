@@ -21,6 +21,8 @@ class SafaricomRequest extends FormRequest
             'msisdn'        => $this->has('msisdn') ? trim($this->input('msisdn'), '"\'') : null,
             'transactionId' => $this->has('transactionId') ? trim($this->input('transactionId'), '"\'') : null,
             'userStatus'    => $this->has('userStatus') ? trim($this->input('userStatus'), '"\'') : null,
+            'packName'      => $this->input('packName') ?? $this->input('planId') ?? $this->input('plan_id') ?? $this->input('pack_name'),
+            'planId'        => $this->input('planId') ?? $this->input('plan_id') ?? $this->input('packName') ?? $this->input('pack_name'),
         ]);
     }
 
@@ -42,6 +44,8 @@ class SafaricomRequest extends FormRequest
             'operator'      => ['sometimes', 'string'],
             'channel'       => ['sometimes', 'string'],
             'packName'      => ['sometimes', 'string'],
+            'planId'        => ['sometimes', 'string'],
+            'plan_id'       => ['sometimes', 'string'],
             'startDate'     => ['sometimes'],
             'endDate'       => ['sometimes'],
             'language'      => ['sometimes', 'string'],

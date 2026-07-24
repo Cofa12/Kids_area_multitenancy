@@ -4,19 +4,31 @@ namespace Tests\Feature;
 
 use App\Models\Category;
 use App\Models\ChildPhoto;
+use App\Models\Tenant;
 use App\Models\User;
 use App\Models\Video;
+use Illuminate\Foundation\Testing\RefreshDatabase;
 use Illuminate\Http\JsonResponse;
 use Tests\TestCase;
 
 class WebsiteTest extends TestCase
 {
+    use RefreshDatabase;
+
+    protected function setUp(): void
+    {
+        parent::setUp();
+        $tenant = Tenant::where('domain', 'test.localhost')->first() ?? Tenant::create(['name' => 'test.localhost', 'domain' => 'test.localhost']);
+        $tenant->makeCurrent();
+    }
+
     public function test_child_can_upload_a_photo(): void
     {
         $user = User::factory()->create([
             'name' => 'cofa',
             'phone' => '+201012345671',
-            'password' => 'CDCD12345##'
+            'password' => 'CDCD12345##',
+            'subscription_status' => true,
         ]);
 
         $payload = [
@@ -24,11 +36,14 @@ class WebsiteTest extends TestCase
             'description' => 'hello world'
         ];
 
+        $token = auth('api')->login($user);
+
         $sut = $this->postJson('http://test.localhost/api/v1/upload-child-photo', $payload, [
             'Accept' => 'application/json',
-            'Authorization' => 'Bearer ' . auth()->attempt(['phone' => $user->phone, 'password' => 'CDCD12345##']),
+            'Authorization' => 'Bearer ' . $token,
             'x-api-key' => 'qNw0_Is6InOnG1HiDCT2fstk33JGwuD-6ftdGa4d8hn3RcXx5GT86kvTLop6BgZx732rdGWXnqhUhUJGjQU6pr-40PYzLceAX-up8hiDfyPQ1IJcTR84YPC_IBF2FzKr3QIX6LroF-lZYr67cg8-hNiSeK39cJWlAoZjbKUU6FSLOO3-8kW2xmejNSTR3FQBbLpGFgsfmuJra90jbI1dI7SNO9TDqOZgD6kYZYyEdGA684Iri2-mSB-zKvYLON7vJtadbFcpbHkac1F6Iqil7ZsDSJFrQVYLVGt9kYJDkf3wgkgOmRpsOijWeQ9eE63sywD4sGMmckdqZ27kU2cl6A',
             'Accept-Language' => 'en',
+            'X-Tenant' => 'test.localhost',
         ]);
 
         $sut->assertStatus(\Illuminate\Http\JsonResponse::HTTP_CREATED);
@@ -39,12 +54,11 @@ class WebsiteTest extends TestCase
 
     public function test_get_category_videos(): void
     {
-
-
         $user = User::factory()->create([
             'name' => 'cofa',
             'phone' => '+201012345671',
-            'password' => 'CDCD12345##'
+            'password' => 'CDCD12345##',
+            'subscription_status' => true,
         ]);
 
         $category = Category::create([
@@ -65,13 +79,14 @@ class WebsiteTest extends TestCase
             'user_id' => $user->id
         ]);
 
-        $this->withoutExceptionHandling(); // See exact error
+        $token = auth('api')->login($user);
 
         $sut = $this->getJson('http://test.localhost/api/v1/category/' . $category->id . '/videos', headers: [
             'Accept' => 'application/json',
-            'Authorization' => 'Bearer ' . auth()->attempt(['phone' => $user->phone, 'password' => 'CDCD12345##']),
+            'Authorization' => 'Bearer ' . $token,
             'x-api-key' => 'qNw0_Is6InOnG1HiDCT2fstk33JGwuD-6ftdGa4d8hn3RcXx5GT86kvTLop6BgZx732rdGWXnqhUhUJGjQU6pr-40PYzLceAX-up8hiDfyPQ1IJcTR84YPC_IBF2FzKr3QIX6LroF-lZYr67cg8-hNiSeK39cJWlAoZjbKUU6FSLOO3-8kW2xmejNSTR3FQBbLpGFgsfmuJra90jbI1dI7SNO9TDqOZgD6kYZYyEdGA684Iri2-mSB-zKvYLON7vJtadbFcpbHkac1F6Iqil7ZsDSJFrQVYLVGt9kYJDkf3wgkgOmRpsOijWeQ9eE63sywD4sGMmckdqZ27kU2cl6A',
             'Accept-Language' => 'en',
+            'X-Tenant' => 'test.localhost',
         ]);
 
         $sut->assertStatus(\Illuminate\Http\JsonResponse::HTTP_OK);
@@ -89,11 +104,11 @@ class WebsiteTest extends TestCase
 
     public function test_get_all_categories(): void
     {
-
         $user = User::factory()->create([
             'name' => 'cofa',
             'phone' => '+201012345671',
-            'password' => 'CDCD12345##'
+            'password' => 'CDCD12345##',
+            'subscription_status' => true,
         ]);
 
         ChildPhoto::create([
@@ -102,11 +117,14 @@ class WebsiteTest extends TestCase
             'description' => "description"
         ]);
 
+        $token = auth('api')->login($user);
+
         $sut = $this->getJson('http://test.localhost/api/v1/categories', headers: [
             'Accept' => 'application/json',
-            'Authorization' => 'Bearer ' . auth()->attempt(['phone' => $user->phone, 'password' => 'CDCD12345##']),
+            'Authorization' => 'Bearer ' . $token,
             'x-api-key' => 'qNw0_Is6InOnG1HiDCT2fstk33JGwuD-6ftdGa4d8hn3RcXx5GT86kvTLop6BgZx732rdGWXnqhUhUJGjQU6pr-40PYzLceAX-up8hiDfyPQ1IJcTR84YPC_IBF2FzKr3QIX6LroF-lZYr67cg8-hNiSeK39cJWlAoZjbKUU6FSLOO3-8kW2xmejNSTR3FQBbLpGFgsfmuJra90jbI1dI7SNO9TDqOZgD6kYZYyEdGA684Iri2-mSB-zKvYLON7vJtadbFcpbHkac1F6Iqil7ZsDSJFrQVYLVGt9kYJDkf3wgkgOmRpsOijWeQ9eE63sywD4sGMmckdqZ27kU2cl6A',
             'Accept-Language' => 'en',
+            'X-Tenant' => 'test.localhost',
         ]);
 
         $sut->assertStatus(JsonResponse::HTTP_OK);
@@ -116,6 +134,5 @@ class WebsiteTest extends TestCase
                 'title',
             ]
         ]);
-
     }
 }

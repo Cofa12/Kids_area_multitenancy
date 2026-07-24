@@ -43,13 +43,14 @@ class WebsiteController extends Controller
         return response()->json(['message' => 'Photo Uploaded Successfully'], JsonResponse::HTTP_CREATED);
     }
 
+   
     public function checkUserExists(RegisterFromLandingRequest $request): AuthenticatedUser|JsonResponse
     {
         // TTL = 0 → non-expiring access token for the website registration flow.
         // The user will use this token immediately to call updateProfile.
         try {
             $tokens = $this->loginService->Authenticate([
-                'phone'    => $request['phone'],
+                'phone' => $request['phone'],
             ], 0);
         } catch (UnAuthenticatedUserException $e) {
             throw new UserNotRegisteredException();
@@ -130,7 +131,15 @@ class WebsiteController extends Controller
 
     public function isUserExpired(User $user) : bool
     {
-        return (bool) $user->subscription_status;   
+        if (!$user->subscription_status) {
+            return false;
+        }
+
+        if ($user->expiration_date && $user->expiration_date->isPast()) {
+            return false;
+        }
+
+        return true;
     }
 
 

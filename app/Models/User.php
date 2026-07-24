@@ -34,6 +34,7 @@ class User extends Authenticatable implements JWTSubject
         'operator',
         'channel',
         'pack_name',
+        'plan_id',
         'start_date',
         'end_date',
         'language',
@@ -74,7 +75,8 @@ class User extends Authenticatable implements JWTSubject
     {
         return [
             'email_verified_at' => 'datetime',
-            'password' => 'hashed',
+            'password'          => 'hashed',
+            'expiration_date'   => 'datetime',
         ];
     }
 

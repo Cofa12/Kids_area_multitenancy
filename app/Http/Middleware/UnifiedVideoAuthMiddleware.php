@@ -59,7 +59,7 @@ class UnifiedVideoAuthMiddleware
                     ->where('phone', $payload['phone'])
                     ->first();
 
-                if ($tenantUser) {
+                if ($tenantUser && $tenantUser->subscription_status && !($tenantUser->expiration_date && $tenantUser->expiration_date->isPast())) {
                     return $next($request);
                 }
             }

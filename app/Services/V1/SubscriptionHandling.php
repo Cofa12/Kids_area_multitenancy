@@ -6,18 +6,22 @@ use App\Models\User;
 
 class SubscriptionHandling
 {
-
-    public function canAccessContent(User $user):bool
+    public function canAccessContent(User $user): bool
     {
-        return $this->isSubscribed($user) && $this->isRenewable($user);
-    }
-    private function isSubscribed(User $user):bool
-    {
-        return $user->created_at <= now() || $this->isRenewable($user);
+        return $this->isSubscribed($user);
     }
 
-    private function isRenewable(User $user):bool
+    private function isSubscribed(User $user): bool
     {
-        return $user->referrals()->latest('referred_at')->first()?->referred_at <= now();
+        if (!$user->subscription_status) {
+            return false;
+        }
+
+        // expiration_date is cast to datetime in User model
+        if ($user->expiration_date && $user->expiration_date->isPast()) {
+            return false;
+        }
+
+        return true;
     }
 }
