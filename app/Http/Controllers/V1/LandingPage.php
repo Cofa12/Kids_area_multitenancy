@@ -38,8 +38,8 @@ class LandingPage extends Controller
         $action        = $request->get('action');
         $operator      = $request->get('operator');
         $channel       = $request->get('channel');
-        $packName      = $request->get('packName') ?? $request->get('planId') ?? $request->get('plan_id') ?? $request->get('pack_name');
-        $planId        = $request->get('planId') ?? $request->get('plan_id') ?? $request->get('packName') ?? $request->get('pack_name');
+        $packName      = $request->get('packName');
+        $productId     = $request->get('productId'); // plan ID — determines subscription duration
         $startDate     = $request->get('startDate');
         $endDate       = $request->get('endDate');
         $language      = $request->get('language');
@@ -66,7 +66,7 @@ class LandingPage extends Controller
             'operator'       => $operator,
             'channel'        => $channel,
             'pack_name'      => $packName,
-            'plan_id'        => $planId,
+            'plan_id'        => $productId,  // store the productId as plan_id
             'start_date'     => $startDate,
             'end_date'       => $endDate,
             'language'       => $language,
@@ -75,13 +75,13 @@ class LandingPage extends Controller
         // ── Find existing user by phone ───────────────────────────────────────
         $user = User::where('phone', $msisdn)->first();
 
-        // Determine subscription status and expiration date based on plan ID
+        // Determine subscription duration based on productId (plan ID)
         if ($subscriptionAction === SubscriptionAction::SUBSCRIBED_NEW || $subscriptionAction === SubscriptionAction::SUBSCRIBED_RENEWAL) {
             $callbackPayload['subscription_status'] = 1;
-            $days = SubscriptionPlan::getDaysForPlan((string) ($planId ?? $packName));
+            $days = SubscriptionPlan::getDaysForPlan($productId);
 
-            if ($user && $user->expiration_date && Carbon::parse($user->expiration_date)->isFuture()) {
-                $callbackPayload['expiration_date'] = Carbon::parse($user->expiration_date)->addDays($days);
+            if ($user && $user->expiration_date && $user->expiration_date->isFuture()) {
+                $callbackPayload['expiration_date'] = $user->expiration_date->addDays($days);
             } else {
                 $callbackPayload['expiration_date'] = now()->addDays($days);
             }

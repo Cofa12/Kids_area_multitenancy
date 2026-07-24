@@ -17,13 +17,18 @@ class SafaricomRequest extends FormRequest
 
     protected function prepareForValidation(): void
     {
-        $this->merge([
-            'msisdn'        => $this->has('msisdn') ? trim($this->input('msisdn'), '"\'') : null,
+        $data = [
+            'msisdn'        => $this->has('msisdn')        ? trim($this->input('msisdn'),        '"\'') : null,
             'transactionId' => $this->has('transactionId') ? trim($this->input('transactionId'), '"\'') : null,
-            'userStatus'    => $this->has('userStatus') ? trim($this->input('userStatus'), '"\'') : null,
-            'packName'      => $this->input('packName') ?? $this->input('planId') ?? $this->input('plan_id') ?? $this->input('pack_name'),
-            'planId'        => $this->input('planId') ?? $this->input('plan_id') ?? $this->input('packName') ?? $this->input('pack_name'),
-        ]);
+            'userStatus'    => $this->has('userStatus')    ? trim($this->input('userStatus'),    '"\'') : null,
+        ];
+
+        // Only normalise productId when the operator actually sends it
+        if ($this->has('productId')) {
+            $data['productId'] = trim($this->input('productId'), '"\'');
+        }
+
+        $this->merge($data);
     }
 
     /**
@@ -44,8 +49,7 @@ class SafaricomRequest extends FormRequest
             'operator'      => ['sometimes', 'string'],
             'channel'       => ['sometimes', 'string'],
             'packName'      => ['sometimes', 'string'],
-            'planId'        => ['sometimes', 'string'],
-            'plan_id'       => ['sometimes', 'string'],
+            'productId'     => ['sometimes', 'string'],
             'startDate'     => ['sometimes'],
             'endDate'       => ['sometimes'],
             'language'      => ['sometimes', 'string'],

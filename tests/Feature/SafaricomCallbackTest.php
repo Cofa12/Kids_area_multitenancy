@@ -260,7 +260,7 @@ class SafaricomCallbackTest extends TestCase
             'msisdn'        => $msisdn,
             'transactionId' => 'TXN-PLAN-DAILY',
             'userStatus'    => '1',
-            'planId'        => '2341022000051559',
+            'productId'     => '2341022000051559',
         ]));
 
         $response->assertStatus(JsonResponse::HTTP_OK);
@@ -268,7 +268,7 @@ class SafaricomCallbackTest extends TestCase
         $user = User::where('phone', $msisdn)->first();
         $this->assertNotNull($user);
         $this->assertEquals('2341022000051559', $user->plan_id);
-        $this->assertEquals(now()->addDays(1)->toDateString(), \Illuminate\Support\Carbon::parse($user->expiration_date)->toDateString());
+        $this->assertEquals(now()->addDays(1)->toDateString(), $user->expiration_date->toDateString());
     }
 
     public function test_callback_sets_expiration_date_based_on_weekly_plan_id(): void
@@ -279,7 +279,7 @@ class SafaricomCallbackTest extends TestCase
             'msisdn'        => $msisdn,
             'transactionId' => 'TXN-PLAN-WEEKLY',
             'userStatus'    => '1',
-            'planId'        => '2341022000051560',
+            'productId'     => '2341022000051560',
         ]));
 
         $response->assertStatus(JsonResponse::HTTP_OK);
@@ -287,7 +287,7 @@ class SafaricomCallbackTest extends TestCase
         $user = User::where('phone', $msisdn)->first();
         $this->assertNotNull($user);
         $this->assertEquals('2341022000051560', $user->plan_id);
-        $this->assertEquals(now()->addDays(7)->toDateString(), \Illuminate\Support\Carbon::parse($user->expiration_date)->toDateString());
+        $this->assertEquals(now()->addDays(7)->toDateString(), $user->expiration_date->toDateString());
     }
 
     public function test_callback_sets_expiration_date_based_on_biweekly_plan_id(): void
@@ -298,7 +298,7 @@ class SafaricomCallbackTest extends TestCase
             'msisdn'        => $msisdn,
             'transactionId' => 'TXN-PLAN-BIWEEKLY',
             'userStatus'    => '1',
-            'planId'        => '2341022000051561',
+            'productId'     => '2341022000051561',
         ]));
 
         $response->assertStatus(JsonResponse::HTTP_OK);
@@ -306,7 +306,7 @@ class SafaricomCallbackTest extends TestCase
         $user = User::where('phone', $msisdn)->first();
         $this->assertNotNull($user);
         $this->assertEquals('2341022000051561', $user->plan_id);
-        $this->assertEquals(now()->addDays(14)->toDateString(), \Illuminate\Support\Carbon::parse($user->expiration_date)->toDateString());
+        $this->assertEquals(now()->addDays(14)->toDateString(), $user->expiration_date->toDateString());
     }
 
     public function test_callback_sets_expiration_date_based_on_monthly_plan_id(): void
@@ -317,7 +317,7 @@ class SafaricomCallbackTest extends TestCase
             'msisdn'        => $msisdn,
             'transactionId' => 'TXN-PLAN-MONTHLY',
             'userStatus'    => '1',
-            'planId'        => '2341022000051562',
+            'productId'     => '2341022000051562',
         ]));
 
         $response->assertStatus(JsonResponse::HTTP_OK);
@@ -325,6 +325,6 @@ class SafaricomCallbackTest extends TestCase
         $user = User::where('phone', $msisdn)->first();
         $this->assertNotNull($user);
         $this->assertEquals('2341022000051562', $user->plan_id);
-        $this->assertEquals(now()->addDays(30)->toDateString(), \Illuminate\Support\Carbon::parse($user->expiration_date)->toDateString());
+        $this->assertEquals(now()->addDays(30)->toDateString(), $user->expiration_date->toDateString());
     }
 }
