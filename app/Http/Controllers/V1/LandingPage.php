@@ -7,6 +7,7 @@ use App\Http\Requests\V1\SafaricomRequest;
 use App\Models\User;
 use App\Enums\SubscriptionAction;
 use App\Enums\SubscriptionPlan;
+use App\Services\V1\LoginService;
 use App\Services\V1\SubscriptionHandling;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\RedirectResponse;
@@ -18,8 +19,10 @@ use Illuminate\Support\Carbon;
  */
 class LandingPage extends Controller
 {
-    public function __construct(private SubscriptionHandling $subscriptionHandling)
-    {
+    public function __construct(
+        private SubscriptionHandling $subscriptionHandling,
+        private LoginService $loginService
+    ) {
     }
 
     /**
@@ -127,7 +130,7 @@ class LandingPage extends Controller
     /**
      * Header Enrichment (HE) entry point.
      * Checks X-MSISDN header to determine user status and redirects accordingly:
-     * - Subscribed / renewal -> https://kids-station.com.ng/subscribe
+     * - Subscribed / renewal -> https://kids-station.com.ng/welcome?token={access_token}
      * - Unsubscribed -> https://kids-station.com.ng/new-subscription
      * - Phone not found / missing header -> https://kids-station.com.ng/guest
      */
@@ -146,7 +149,10 @@ class LandingPage extends Controller
         }
 
         if ($this->subscriptionHandling->canAccessContent($user)) {
-            return redirect('https://kids-station.com.ng/subscribe');
+            $tokens = $this->loginService->Authenticate(['phone' => $user->phone]);
+            $accessToken = $tokens['access_token'];
+
+            return redirect('https://kids-station.com.ng/welcome?token=' . urlencode($accessToken));
         }
 
         return redirect('https://kids-station.com.ng/new-subscription');

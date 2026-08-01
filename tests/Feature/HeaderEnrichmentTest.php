@@ -34,7 +34,7 @@ class HeaderEnrichmentTest extends TestCase
         $response->assertRedirect('https://kids-station.com.ng/guest');
     }
 
-    public function test_redirects_to_subscribe_when_user_is_subscribed(): void
+    public function test_redirects_to_welcome_with_token_when_user_is_subscribed(): void
     {
         User::create([
             'phone' => '2348011112222',
@@ -47,10 +47,10 @@ class HeaderEnrichmentTest extends TestCase
             'X-MSISDN' => '2348011112222',
         ])->get('http://backend.kids-station.com.ng/api/v1/mtn/he/entry');
 
-        $response->assertRedirect('https://kids-station.com.ng/subscribe');
+        $response->assertRedirectContains('https://kids-station.com.ng/welcome?token=');
     }
 
-    public function test_redirects_to_subscribe_when_user_is_renewal(): void
+    public function test_redirects_to_welcome_with_token_when_user_is_renewal(): void
     {
         User::create([
             'phone' => '2348033334444',
@@ -63,7 +63,7 @@ class HeaderEnrichmentTest extends TestCase
             'X-MSISDN' => '2348033334444',
         ])->get('http://backend.kids-station.com.ng/api/v1/mtn/he/entry');
 
-        $response->assertRedirect('https://kids-station.com.ng/subscribe');
+        $response->assertRedirectContains('https://kids-station.com.ng/welcome?token=');
     }
 
     public function test_redirects_to_new_subscription_when_user_is_unsubscribed(): void
@@ -111,6 +111,6 @@ class HeaderEnrichmentTest extends TestCase
             'X-MSISDN' => '2348099990000',
         ])->post('http://backend.kids-station.com.ng/api/v1/mtn/he/entry');
 
-        $response->assertRedirect('https://kids-station.com.ng/subscribe');
+        $response->assertRedirectContains('https://kids-station.com.ng/welcome?token=');
     }
 }

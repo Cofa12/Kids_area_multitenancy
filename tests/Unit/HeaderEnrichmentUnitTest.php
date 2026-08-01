@@ -3,7 +3,7 @@
 namespace Tests\Unit;
 
 use App\Http\Controllers\V1\LandingPage;
-use App\Models\User;
+use App\Services\V1\LoginService;
 use App\Services\V1\SubscriptionHandling;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
@@ -13,6 +13,7 @@ use Tests\TestCase;
 class HeaderEnrichmentUnitTest extends TestCase
 {
     private SubscriptionHandling $subscriptionHandlingMock;
+    private LoginService $loginServiceMock;
     private LandingPage $controller;
 
     protected function setUp(): void
@@ -20,7 +21,8 @@ class HeaderEnrichmentUnitTest extends TestCase
         parent::setUp();
 
         $this->subscriptionHandlingMock = Mockery::mock(SubscriptionHandling::class);
-        $this->controller = new LandingPage($this->subscriptionHandlingMock);
+        $this->loginServiceMock = Mockery::mock(LoginService::class);
+        $this->controller = new LandingPage($this->subscriptionHandlingMock, $this->loginServiceMock);
     }
 
     public function test_he_entry_redirects_to_guest_when_x_msisdn_header_is_missing(): void

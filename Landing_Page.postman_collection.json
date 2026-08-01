@@ -1,0 +1,315 @@
+{
+	"info": {
+		"_postman_id": "cc329d12-cc10-4228-9cea-3c1918425d5d",
+		"name": "Landing Page",
+		"schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json",
+		"_exporter_id": "47039325"
+	},
+	"item": [
+		{
+			"name": "Test api",
+			"item": [
+				{
+					"name": "webhook endpoint",
+					"request": {
+						"auth": {
+							"type": "bearer",
+							"bearer": [
+								{
+									"key": "token",
+									"value": "{{auth_token}}",
+									"type": "string"
+								}
+							]
+						},
+						"method": "POST",
+						"header": [
+							{
+								"key": "Accept",
+								"value": "application/json",
+								"type": "text"
+							},
+							{
+								"key": "Accept-Language",
+								"value": "en",
+								"type": "text",
+								"disabled": true
+							},
+							{
+								"key": "X-Tenant",
+								"value": "naijria",
+								"type": "text"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\r\n  \"requestId\": 17,\r\n  \"channel\": \"APIGW\",\r\n  \"operation\": \"ACTIVATE\",\r\n  \"requestParam\": {\r\n    \"data\": [\r\n      {\r\n        \"name\": \"OfferCode\",\r\n        \"value\": \"350032100559\"\r\n      },\r\n      {\r\n        \"name\": \"Msisdn\",\r\n        \"value\": \"799977627\"\r\n      },\r\n      {\r\n        \"name\": \"Language\",\r\n        \"value\": \"1\"\r\n      },\r\n      {\r\n        \"name\": \"Cpld\",\r\n        \"value\": \"321\"\r\n      }\r\n    ]\r\n  }\r\n}\r\n",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{URL}}v1/safaricom/callback?vendorName=hello&circle=hello&msisdn=94721847130&amount=5&transactionId=66463227898&action=Subscription&userStatus=1&operator=Hxxxx&channel=WEB&packName=1003&startDate=1775551549537&endDate=1775551549537&language=English",
+							"host": [
+								"{{URL}}v1"
+							],
+							"path": [
+								"safaricom",
+								"callback"
+							],
+							"query": [
+								{
+									"key": "vendorName",
+									"value": "hello"
+								},
+								{
+									"key": "circle",
+									"value": "hello"
+								},
+								{
+									"key": "msisdn",
+									"value": "94721847130"
+								},
+								{
+									"key": "amount",
+									"value": "5"
+								},
+								{
+									"key": "transactionId",
+									"value": "66463227898"
+								},
+								{
+									"key": "action",
+									"value": "Subscription"
+								},
+								{
+									"key": "userStatus",
+									"value": "1"
+								},
+								{
+									"key": "operator",
+									"value": "Hxxxx"
+								},
+								{
+									"key": "channel",
+									"value": "WEB"
+								},
+								{
+									"key": "packName",
+									"value": "1003"
+								},
+								{
+									"key": "startDate",
+									"value": "1775551549537"
+								},
+								{
+									"key": "endDate",
+									"value": "1775551549537"
+								},
+								{
+									"key": "language",
+									"value": "English"
+								}
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "MTN HE Entry Point",
+					"request": {
+						"method": "GET",
+						"header": [
+							{
+								"key": "X-MSISDN",
+								"value": "2348012345678",
+								"type": "text",
+								"description": "Subscriber phone number injected by carrier HTTP gateway"
+							}
+						],
+						"url": {
+							"raw": "http://backend.kids-station.com.ng/api/v1/mtn/he/entry",
+							"protocol": "http",
+							"host": [
+								"backend",
+								"kids-station",
+								"com",
+								"ng"
+							],
+							"path": [
+								"api",
+								"v1",
+								"mtn",
+								"he",
+								"entry"
+							]
+						},
+						"description": "MTN Header Enrichment (HE) entry point. Evaluates X-MSISDN header and redirects to the appropriate frontend landing page."
+					},
+					"response": [
+						{
+							"name": "Subscribed / Renewal User -> /welcome?token={access_token}",
+							"originalRequest": {
+								"method": "GET",
+								"header": [
+									{
+										"key": "X-MSISDN",
+										"value": "2348012345678",
+										"type": "text"
+									}
+								],
+								"url": {
+									"raw": "http://backend.kids-station.com.ng/api/v1/mtn/he/entry",
+									"protocol": "http",
+									"host": [
+										"backend",
+										"kids-station",
+										"com",
+										"ng"
+									],
+									"path": [
+										"api",
+										"v1",
+										"mtn",
+										"he",
+										"entry"
+									]
+								}
+							},
+							"status": "Found",
+							"code": 302,
+							"_postman_previewlanguage": "html",
+							"header": [
+								{
+									"key": "Location",
+									"value": "https://kids-station.com.ng/welcome?token=eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9..."
+								}
+							],
+							"cookie": [],
+							"body": ""
+						},
+						{
+							"name": "Unsubscribed / Expired User -> /new-subscription",
+							"originalRequest": {
+								"method": "GET",
+								"header": [
+									{
+										"key": "X-MSISDN",
+										"value": "2348098765432",
+										"type": "text"
+									}
+								],
+								"url": {
+									"raw": "http://backend.kids-station.com.ng/api/v1/mtn/he/entry",
+									"protocol": "http",
+									"host": [
+										"backend",
+										"kids-station",
+										"com",
+										"ng"
+									],
+									"path": [
+										"api",
+										"v1",
+										"mtn",
+										"he",
+										"entry"
+									]
+								}
+							},
+							"status": "Found",
+							"code": 302,
+							"_postman_previewlanguage": "html",
+							"header": [
+								{
+									"key": "Location",
+									"value": "https://kids-station.com.ng/new-subscription"
+								}
+							],
+							"cookie": [],
+							"body": ""
+						},
+						{
+							"name": "Phone Not Found -> /guest",
+							"originalRequest": {
+								"method": "GET",
+								"header": [
+									{
+										"key": "X-MSISDN",
+										"value": "2348000000000",
+										"type": "text"
+									}
+								],
+								"url": {
+									"raw": "http://backend.kids-station.com.ng/api/v1/mtn/he/entry",
+									"protocol": "http",
+									"host": [
+										"backend",
+										"kids-station",
+										"com",
+										"ng"
+									],
+									"path": [
+										"api",
+										"v1",
+										"mtn",
+										"he",
+										"entry"
+									]
+								}
+							},
+							"status": "Found",
+							"code": 302,
+							"_postman_previewlanguage": "html",
+							"header": [
+								{
+									"key": "Location",
+									"value": "https://kids-station.com.ng/guest"
+								}
+							],
+							"cookie": [],
+							"body": ""
+						},
+						{
+							"name": "Missing X-MSISDN Header -> /guest",
+							"originalRequest": {
+								"method": "GET",
+								"header": [],
+								"url": {
+									"raw": "http://backend.kids-station.com.ng/api/v1/mtn/he/entry",
+									"protocol": "http",
+									"host": [
+										"backend",
+										"kids-station",
+										"com",
+										"ng"
+									],
+									"path": [
+										"api",
+										"v1",
+										"mtn",
+										"he",
+										"entry"
+									]
+								}
+							},
+							"status": "Found",
+							"code": 302,
+							"_postman_previewlanguage": "html",
+							"header": [
+								{
+									"key": "Location",
+									"value": "https://kids-station.com.ng/guest"
+								}
+							],
+							"cookie": [],
+							"body": ""
+						}
+					]
+				}
+			]
+		}
+	]
+}
