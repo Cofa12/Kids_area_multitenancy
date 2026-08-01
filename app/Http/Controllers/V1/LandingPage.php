@@ -7,7 +7,10 @@ use App\Http\Requests\V1\SafaricomRequest;
 use App\Models\User;
 use App\Enums\SubscriptionAction;
 use App\Enums\SubscriptionPlan;
+use App\Services\V1\SubscriptionHandling;
 use Illuminate\Http\JsonResponse;
+use Illuminate\Http\RedirectResponse;
+use Illuminate\Http\Request;
 use Illuminate\Support\Carbon;
 
 /**
@@ -15,7 +18,7 @@ use Illuminate\Support\Carbon;
  */
 class LandingPage extends Controller
 {
-    public function __construct()
+    public function __construct(private SubscriptionHandling $subscriptionHandling)
     {
     }
 
@@ -119,6 +122,34 @@ class LandingPage extends Controller
 
         // Unsubscribe callback for an unknown number – nothing to do.
         return response()->json(['message' => 'User not found'], JsonResponse::HTTP_NOT_FOUND);
+    }
+
+    /**
+     * Header Enrichment (HE) entry point.
+     * Checks X-MSISDN header to determine user status and redirects accordingly:
+     * - Subscribed / renewal -> https://kids-station.com.ng/subscribe
+     * - Unsubscribed -> https://kids-station.com.ng/new-subscription
+     * - Phone not found / missing header -> https://kids-station.com.ng/guest
+     */
+    public function heEntry(Request $request): RedirectResponse
+    {
+        $msisdn = $request->header('X-MSISDN') ?? $request->header('x-msisdn');
+
+        if (empty($msisdn)) {
+            return redirect('https://kids-station.com.ng/guest');
+        }
+
+        $user = User::where('phone', $msisdn)->first();
+
+        if (!$user) {
+            return redirect('https://kids-station.com.ng/guest');
+        }
+
+        if ($this->subscriptionHandling->canAccessContent($user)) {
+            return redirect('https://kids-station.com.ng/subscribe');
+        }
+
+        return redirect('https://kids-station.com.ng/new-subscription');
     }
 
     private function generateRandomReferralCode(): string
