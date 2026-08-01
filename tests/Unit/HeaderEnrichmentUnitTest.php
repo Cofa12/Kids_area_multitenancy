@@ -32,6 +32,7 @@ class HeaderEnrichmentUnitTest extends TestCase
         $response = $this->controller->heEntry($request);
 
         $this->assertInstanceOf(RedirectResponse::class, $response);
+        $this->assertEquals(302, $response->getStatusCode());
         $this->assertEquals('https://kids-station.com.ng/guest', $response->getTargetUrl());
     }
 
@@ -43,6 +44,7 @@ class HeaderEnrichmentUnitTest extends TestCase
         $response = $this->controller->heEntry($request);
 
         $this->assertInstanceOf(RedirectResponse::class, $response);
+        $this->assertEquals(302, $response->getStatusCode());
         $this->assertEquals('https://kids-station.com.ng/guest', $response->getTargetUrl());
     }
 
@@ -54,6 +56,7 @@ class HeaderEnrichmentUnitTest extends TestCase
         $response = $this->controller->heEntry($request);
 
         $this->assertInstanceOf(RedirectResponse::class, $response);
+        $this->assertEquals(302, $response->getStatusCode());
         $this->assertEquals('https://kids-station.com.ng/guest', $response->getTargetUrl());
     }
 

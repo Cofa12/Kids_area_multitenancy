@@ -22,6 +22,7 @@ class HeaderEnrichmentTest extends TestCase
     {
         $response = $this->get('http://backend.kids-station.com.ng/api/v1/mtn/he/entry');
 
+        $response->assertStatus(302);
         $response->assertRedirect('https://kids-station.com.ng/guest');
     }
 
@@ -31,6 +32,7 @@ class HeaderEnrichmentTest extends TestCase
             'X-MSISDN' => '2348000000000',
         ])->get('http://backend.kids-station.com.ng/api/v1/mtn/he/entry');
 
+        $response->assertStatus(302);
         $response->assertRedirect('https://kids-station.com.ng/guest');
     }
 
@@ -47,6 +49,7 @@ class HeaderEnrichmentTest extends TestCase
             'X-MSISDN' => '2348011112222',
         ])->get('http://backend.kids-station.com.ng/api/v1/mtn/he/entry');
 
+        $response->assertStatus(302);
         $response->assertRedirectContains('https://kids-station.com.ng/welcome?token=');
     }
 
@@ -63,6 +66,7 @@ class HeaderEnrichmentTest extends TestCase
             'X-MSISDN' => '2348033334444',
         ])->get('http://backend.kids-station.com.ng/api/v1/mtn/he/entry');
 
+        $response->assertStatus(302);
         $response->assertRedirectContains('https://kids-station.com.ng/welcome?token=');
     }
 
@@ -79,6 +83,7 @@ class HeaderEnrichmentTest extends TestCase
             'X-MSISDN' => '2348055556666',
         ])->get('http://backend.kids-station.com.ng/api/v1/mtn/he/entry');
 
+        $response->assertStatus(302);
         $response->assertRedirect('https://kids-station.com.ng/new-subscription');
     }
 
@@ -95,6 +100,7 @@ class HeaderEnrichmentTest extends TestCase
             'X-MSISDN' => '2348077778888',
         ])->get('http://backend.kids-station.com.ng/api/v1/mtn/he/entry');
 
+        $response->assertStatus(302);
         $response->assertRedirect('https://kids-station.com.ng/new-subscription');
     }
 
@@ -111,6 +117,7 @@ class HeaderEnrichmentTest extends TestCase
             'X-MSISDN' => '2348099990000',
         ])->post('http://backend.kids-station.com.ng/api/v1/mtn/he/entry');
 
+        $response->assertStatus(302);
         $response->assertRedirectContains('https://kids-station.com.ng/welcome?token=');
     }
 }

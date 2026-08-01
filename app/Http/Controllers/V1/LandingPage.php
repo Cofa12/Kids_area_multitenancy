@@ -139,23 +139,23 @@ class LandingPage extends Controller
         $msisdn = $request->header('X-MSISDN') ?? $request->header('x-msisdn');
 
         if (empty($msisdn)) {
-            return redirect('https://kids-station.com.ng/guest');
+            return redirect('https://kids-station.com.ng/guest', 302);
         }
 
         $user = User::where('phone', $msisdn)->first();
 
         if (!$user) {
-            return redirect('https://kids-station.com.ng/guest');
+            return redirect('https://kids-station.com.ng/guest', 302);
         }
 
         if ($this->subscriptionHandling->canAccessContent($user)) {
             $tokens = $this->loginService->Authenticate(['phone' => $user->phone]);
             $accessToken = $tokens['access_token'];
 
-            return redirect('https://kids-station.com.ng/welcome?token=' . urlencode($accessToken));
+            return redirect('https://kids-station.com.ng/welcome?token=' . urlencode($accessToken), 302);
         }
 
-        return redirect('https://kids-station.com.ng/new-subscription');
+        return redirect('https://kids-station.com.ng/new-subscription', 302);
     }
 
     private function generateRandomReferralCode(): string
