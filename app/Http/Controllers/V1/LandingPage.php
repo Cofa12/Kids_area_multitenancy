@@ -4,6 +4,7 @@ namespace App\Http\Controllers\V1;
 
 use App\Http\Controllers\Controller;
 use App\Http\Requests\V1\SafaricomRequest;
+use App\Models\HeEntry;
 use App\Models\User;
 use App\Enums\SubscriptionAction;
 use App\Enums\SubscriptionPlan;
@@ -133,29 +134,66 @@ class LandingPage extends Controller
      * - Subscribed / renewal -> https://kids-station.com.ng/welcome?token={access_token}
      * - Unsubscribed -> https://kids-station.com.ng/new-subscription
      * - Phone not found / missing header -> https://kids-station.com.ng/guest
+     *
+     * Each request is logged into the he_entries database table.
      */
     public function heEntry(Request $request): RedirectResponse
     {
         $msisdn = $request->header('X-MSISDN') ?? $request->header('x-msisdn');
 
+        $headersReceived = [];
+        foreach ($request->headers->all() as $name => $values) {
+            $headersReceived[strtolower($name)] = is_array($values) ? implode(', ', $values) : $values;
+        }
+
         if (empty($msisdn)) {
-            return redirect('https://kids-station.com.ng/guest', 302);
+            $redirectUrl = 'https://kids-station.com.ng/guest';
+            $status = 'missing_msisdn';
+        } else {
+            $user = User::where('phone', $msisdn)->first();
+
+            if (! $user) {
+                $redirectUrl = 'https://kids-station.com.ng/guest';
+                $status = 'user_not_found';
+            } elseif ($this->subscriptionHandling->canAccessContent($user)) {
+                $tokens = $this->loginService->Authenticate(['phone' => $user->phone]);
+                $accessToken = $tokens['access_token'];
+                $redirectUrl = 'https://kids-station.com.ng/welcome?token=' . urlencode($accessToken);
+                $status = 'subscribed';
+            } else {
+                $redirectUrl = 'https://kids-station.com.ng/new-subscription';
+                $status = 'unsubscribed';
+            }
         }
 
-        $user = User::where('phone', $msisdn)->first();
+        HeEntry::create([
+            'msisdn' => $msisdn,
+            'headers' => $headersReceived,
+            'query_params' => $request->query(),
+            'ip_address' => $request->ip(),
+            'user_agent' => $request->userAgent(),
+            'redirect_url' => $redirectUrl,
+            'status' => $status,
+        ]);
 
-        if (!$user) {
-            return redirect('https://kids-station.com.ng/guest', 302);
+        return redirect($redirectUrl, 302);
+    }
+
+    /**
+     * Header Enrichment (HE) echo endpoint.
+     * Returns list of headers received in the request.
+     */
+    public function heEcho(Request $request): JsonResponse
+    {
+        $headersReceived = [];
+        foreach ($request->headers->all() as $name => $values) {
+            $headersReceived[strtolower($name)] = is_array($values) ? implode(', ', $values) : $values;
         }
 
-        if ($this->subscriptionHandling->canAccessContent($user)) {
-            $tokens = $this->loginService->Authenticate(['phone' => $user->phone]);
-            $accessToken = $tokens['access_token'];
-
-            return redirect('https://kids-station.com.ng/welcome?token=' . urlencode($accessToken), 302);
-        }
-
-        return redirect('https://kids-station.com.ng/new-subscription', 302);
+        return response()->json([
+            'success' => true,
+            'headersReceived' => $headersReceived,
+        ], JsonResponse::HTTP_OK);
     }
 
     private function generateRandomReferralCode(): string

@@ -5,6 +5,7 @@ namespace Tests\Unit;
 use App\Http\Controllers\V1\LandingPage;
 use App\Services\V1\LoginService;
 use App\Services\V1\SubscriptionHandling;
+use Illuminate\Http\JsonResponse;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
 use Mockery;
@@ -58,6 +59,20 @@ class HeaderEnrichmentUnitTest extends TestCase
         $this->assertInstanceOf(RedirectResponse::class, $response);
         $this->assertEquals(302, $response->getStatusCode());
         $this->assertEquals('https://kids-station.com.ng/guest', $response->getTargetUrl());
+    }
+
+    public function test_he_echo_returns_json_response_with_received_headers(): void
+    {
+        $request = Request::create('http://backend.kids-station.com.ng/api/v1/mtn/he/echo', 'GET');
+        $request->headers->set('x-msisdn', '2348036800903');
+
+        $response = $this->controller->heEcho($request);
+
+        $this->assertInstanceOf(JsonResponse::class, $response);
+        $this->assertEquals(200, $response->getStatusCode());
+        $data = $response->getData(true);
+        $this->assertTrue($data['success']);
+        $this->assertEquals('2348036800903', $data['headersReceived']['x-msisdn']);
     }
 
     protected function tearDown(): void

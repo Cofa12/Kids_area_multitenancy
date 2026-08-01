@@ -74,13 +74,11 @@ abstract class TestCase extends BaseTestCase
         $tenant->makeCurrent();
 
         // 6. Migrate Tenant
-        if (!\Illuminate\Support\Facades\Schema::connection('tenant')->hasTable('users')) {
-            $this->artisan('migrate', [
-                '--database' => 'tenant',
-                '--path' => 'database/migrations/tenant',
-                '--force' => true,
-            ]);
-        }
+        $this->artisan('migrate', [
+            '--database' => 'tenant',
+            '--path' => 'database/migrations/tenant',
+            '--force' => true,
+        ]);
 
         // Ensure standard migrations are also available if needed (e.g. for common tables)
         // But for multitenancy, they should be in the tenant path.

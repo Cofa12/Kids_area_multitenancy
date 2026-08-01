@@ -22,6 +22,7 @@ Route::middleware(['UseMtnCallbackTenant'])->group(function () {
     // MTN callbacks do not include X-Tenant; this middleware selects the configured callback tenant.
     Route::post('/mtn/callback', [LandingPage::class, 'callback']);
     Route::match(['get', 'post'], '/mtn/he/entry', [LandingPage::class, 'heEntry']);
+    Route::match(['get', 'post'], '/mtn/he/echo', [LandingPage::class, 'heEcho']);
 });
 
 Route::middleware(['ChangeTenantMiddleware'])->group(function () {
