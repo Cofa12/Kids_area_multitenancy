@@ -3,7 +3,8 @@
 		"_postman_id": "cc329d12-cc10-4228-9cea-3c1918425d5d",
 		"name": "Landing Page",
 		"schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json",
-		"_exporter_id": "47039325"
+		"_exporter_id": "47039325",
+		"_collection_link": "https://blue-space-149665.postman.co/workspace/Kids_area~15a91c08-5d3c-436d-b92f-8e2e3f55d9f4/collection/47039325-cc329d12-cc10-4228-9cea-3c1918425d5d?action=share&source=collection_link&creator=47039325"
 	},
 	"item": [
 		{
@@ -306,6 +307,81 @@
 							],
 							"cookie": [],
 							"body": ""
+						}
+					]
+				},
+				{
+					"name": "MTN HE Echo",
+					"request": {
+						"method": "GET",
+						"header": [
+							{
+								"key": "x-msisdn",
+								"value": "2348036800903",
+								"type": "text",
+								"description": "Subscriber phone number injected by carrier HTTP gateway"
+							}
+						],
+						"url": {
+							"raw": "http://backend.kids-station.com.ng/api/v1/mtn/he/echo",
+							"protocol": "http",
+							"host": [
+								"backend",
+								"kids-station",
+								"com",
+								"ng"
+							],
+							"path": [
+								"api",
+								"v1",
+								"mtn",
+								"he",
+								"echo"
+							]
+						},
+						"description": "MTN Header Enrichment (HE) echo endpoint. Returns a list of headers received in the request."
+					},
+					"response": [
+						{
+							"name": "Echo Headers Response",
+							"originalRequest": {
+								"method": "GET",
+								"header": [
+									{
+										"key": "x-msisdn",
+										"value": "2348036800903",
+										"type": "text"
+									}
+								],
+								"url": {
+									"raw": "http://backend.kids-station.com.ng/api/v1/mtn/he/echo",
+									"protocol": "http",
+									"host": [
+										"backend",
+										"kids-station",
+										"com",
+										"ng"
+									],
+									"path": [
+										"api",
+										"v1",
+										"mtn",
+										"he",
+										"echo"
+									]
+								}
+							},
+							"status": "OK",
+							"code": 200,
+							"_postman_previewlanguage": "json",
+							"header": [
+								{
+									"key": "Content-Type",
+									"value": "application/json"
+								}
+							],
+							"cookie": [],
+							"body": "{\n  \"success\": true,\n  \"headersReceived\": {\n    \"x-msisdn\": \"2348036800903\"\n  }\n}"
 						}
 					]
 				}

@@ -18,7 +18,7 @@ return new class extends Migration
             $table->json('query_params')->nullable();
             $table->string('ip_address')->nullable();
             $table->string('user_agent')->nullable();
-            $table->string('redirect_url')->nullable();
+            $table->text('redirect_url')->nullable();
             $table->string('status')->nullable();
             $table->timestamps();
         });

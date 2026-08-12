@@ -25,6 +25,12 @@ Route::middleware(['UseMtnCallbackTenant'])->group(function () {
     Route::match(['get', 'post'], '/mtn/he/echo', [LandingPage::class, 'heEcho']);
 });
 
+// SDP (Service Delivery Platform) endpoints & callbacks — public, no token or tenant header required
+Route::match(['get', 'post'], '/sdp/redirect', [LandingPage::class, 'sdpRedirect']);
+Route::match(['get', 'post'], '/sdp/entry', [LandingPage::class, 'sdpRedirect']);
+Route::match(['get', 'post'], '/sdp/success', [LandingPage::class, 'sdpSuccess']);
+Route::match(['get', 'post'], '/sdp/failure', [LandingPage::class, 'sdpFailure']);
+
 Route::middleware(['ChangeTenantMiddleware'])->group(function () {
     Route::get('/get-date', [WebsiteController::class, 'getDate']);
     Route::post('/website/login', [WebsiteController::class, 'login']);
@@ -95,6 +101,4 @@ Route::middleware('UnifiedVideoAuth')->group(function () {
     Route::get('/category/{id}/videos', [CategoryController::class, 'show']);
 });
 
-// SDP (Service Delivery Platform) callbacks — public, no token or tenant header required
-Route::match(['get', 'post'], '/sdp/success', [LandingPage::class, 'sdpSuccess']);
-Route::match(['get', 'post'], '/sdp/failure', [LandingPage::class, 'sdpFailure']);
+

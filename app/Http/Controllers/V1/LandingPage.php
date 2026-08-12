@@ -5,6 +5,8 @@ namespace App\Http\Controllers\V1;
 use App\Http\Controllers\Controller;
 use App\Http\Requests\V1\SafaricomRequest;
 use App\Models\HeEntry;
+use App\Models\SdpResponse;
+use App\Models\Tenant;
 use App\Models\User;
 use App\Enums\SubscriptionAction;
 use App\Enums\SubscriptionPlan;
@@ -14,6 +16,7 @@ use Illuminate\Http\JsonResponse;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
 use Illuminate\Support\Carbon;
+use Illuminate\Support\Str;
 
 /**
  * @psalm-suppress UnusedClass
@@ -197,14 +200,116 @@ class LandingPage extends Controller
     }
 
     /**
+     * SDP redirect entry point for MTN Nigeria.
+     * Publicly accessible — no token or tenant header required.
+     * Accepts plan URL / plan ID and trfsrc parameter, generates a trxId,
+     * appends them to the destination URL, and redirects (302).
+     */
+    public function sdpRedirect(Request $request): RedirectResponse
+    {
+        $this->ensureTenantContext();
+
+        $planUrls = [
+            '23410220000051559' => 'http://mtn-nigeria-prod.mfilterit.org/sid/234102200008618/23410220000051559?trfsrc=',
+            '2341022000051559'  => 'http://mtn-nigeria-prod.mfilterit.org/sid/234102200008618/23410220000051559?trfsrc=',
+            '1day'             => 'http://mtn-nigeria-prod.mfilterit.org/sid/234102200008618/23410220000051559?trfsrc=',
+
+            '23410220000051560' => 'http://mtn-nigeria-prod.mfilterit.org/sid/234102200008618/23410220000051560?trfsrc=',
+            '2341022000051560'  => 'http://mtn-nigeria-prod.mfilterit.org/sid/234102200008618/23410220000051560?trfsrc=',
+            '1week'            => 'http://mtn-nigeria-prod.mfilterit.org/sid/234102200008618/23410220000051560?trfsrc=',
+
+            '23410220000051561' => 'http://mtn-nigeria-prod.mfilterit.org/sid/234102200008618/23410220000051561?trfsrc=',
+            '2341022000051561'  => 'http://mtn-nigeria-prod.mfilterit.org/sid/234102200008618/23410220000051561?trfsrc=',
+            '2weeks'           => 'http://mtn-nigeria-prod.mfilterit.org/sid/234102200008618/23410220000051561?trfsrc=',
+
+            '23410220000051562' => 'http://mtn-nigeria-prod.mfilterit.org/sid/234102200008618/23410220000051562?trfsrc=',
+            '2341022000051562'  => 'http://mtn-nigeria-prod.mfilterit.org/sid/234102200008618/23410220000051562?trfsrc=',
+            '1month'           => 'http://mtn-nigeria-prod.mfilterit.org/sid/234102200008618/23410220000051562?trfsrc=',
+        ];
+
+        $targetUrl = $request->get('url') ?? $request->get('plan_url');
+        $planId    = (string) ($request->get('plan_id') ?? $request->get('plan'));
+
+        if (! $targetUrl && isset($planUrls[$planId])) {
+            $targetUrl = $planUrls[$planId];
+        }
+
+        if (! $targetUrl) {
+            $targetUrl = 'http://mtn-nigeria-prod.mfilterit.org/sid/234102200008618/23410220000051559?trfsrc=';
+        }
+
+        // Generate transaction ID
+        $trxId = (string) ($request->get('trxId') ?? $request->get('trx_id') ?? Str::random(16));
+
+        // Resolve trfsrc parameter
+        $trfsrc = (string) $request->get('trfsrc', '');
+
+        // Parse query string of target URL
+        $parsedUrl = parse_url($targetUrl);
+        $queryArr = [];
+        if (isset($parsedUrl['query'])) {
+            parse_str($parsedUrl['query'], $queryArr);
+        }
+
+        if ($trfsrc !== '') {
+            $queryArr['trfsrc'] = $trfsrc;
+        } elseif (! isset($queryArr['trfsrc'])) {
+            $queryArr['trfsrc'] = '';
+        }
+
+        $queryArr['trxId'] = $trxId;
+
+        // Reconstruct destination URL
+        $scheme   = isset($parsedUrl['scheme']) ? $parsedUrl['scheme'] . '://' : '';
+        $host     = $parsedUrl['host'] ?? '';
+        $port     = isset($parsedUrl['port']) ? ':' . $parsedUrl['port'] : '';
+        $path     = $parsedUrl['path'] ?? '';
+        $query    = '?' . http_build_query($queryArr);
+        $fragment = isset($parsedUrl['fragment']) ? '#' . $parsedUrl['fragment'] : '';
+
+        $finalUrl = "{$scheme}{$host}{$port}{$path}{$query}{$fragment}";
+
+        return redirect($finalUrl, 302);
+    }
+
+    /**
      * SDP success callback.
      * Publicly accessible — no token or tenant header required.
-     * Returns a JSON message indicating the charge was successful.
+     * Stores response details into tenant database sdp_responses table.
      */
     public function sdpSuccess(Request $request): JsonResponse
     {
+        $this->ensureTenantContext();
+
+        $payload = $request->all();
+
+        $trfsrc                  = $request->input('trfsrc');
+        $trxId                   = $request->input('trxId') ?? $request->input('trx_id');
+        $msisdn                  = $request->input('msisdn');
+        $subscriptionId          = $request->input('subscriptionId') ?? $request->input('subscription_id');
+        $subscriptionDescription = $request->input('subscriptionDescription') ?? $request->input('subscription_description');
+        $autoRenew               = $request->input('autoRenew') ?? $request->input('auto_renew');
+
+        if (is_bool($autoRenew)) {
+            $autoRenew = $autoRenew ? 'true' : 'false';
+        }
+
+        $sdpStatus = $request->input('sdp_status') ?? $request->input('sdp_s') ?? $request->input('sdpStatus');
+
+        $sdpResponse = SdpResponse::create([
+            'trfsrc'                  => $trfsrc,
+            'trxId'                   => $trxId,
+            'msisdn'                  => $msisdn,
+            'subscriptionId'          => $subscriptionId,
+            'subscriptionDescription' => $subscriptionDescription,
+            'autoRenew'               => $autoRenew !== null ? (string) $autoRenew : null,
+            'sdp_status'              => $sdpStatus,
+            'payload'                 => $payload,
+        ]);
+
         return response()->json([
             'message' => 'Charged successfully',
+            'data'    => $sdpResponse,
         ], JsonResponse::HTTP_OK);
     }
 
@@ -218,6 +323,17 @@ class LandingPage extends Controller
         return response()->json([
             'message' => 'Fail to charge',
         ], JsonResponse::HTTP_OK);
+    }
+
+    private function ensureTenantContext(): void
+    {
+        if (! Tenant::checkCurrent()) {
+            $tenant = Tenant::whereRaw('LOWER(name) = ?', ['naijria'])
+                ->orWhereRaw('LOWER(domain) = ?', ['naijria'])
+                ->first();
+
+            $tenant?->makeCurrent();
+        }
     }
 
     private function generateRandomReferralCode(): string
