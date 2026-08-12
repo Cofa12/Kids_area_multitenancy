@@ -94,3 +94,7 @@ Route::middleware('UnifiedVideoAuth')->group(function () {
     Route::get('/videos/{id}', [VideoController::class, 'show']);
     Route::get('/category/{id}/videos', [CategoryController::class, 'show']);
 });
+
+// SDP (Service Delivery Platform) callbacks — public, no token or tenant header required
+Route::match(['get', 'post'], '/sdp/success', [LandingPage::class, 'sdpSuccess']);
+Route::match(['get', 'post'], '/sdp/failure', [LandingPage::class, 'sdpFailure']);

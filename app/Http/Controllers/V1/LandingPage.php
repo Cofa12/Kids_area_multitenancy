@@ -196,6 +196,30 @@ class LandingPage extends Controller
         ], JsonResponse::HTTP_OK);
     }
 
+    /**
+     * SDP success callback.
+     * Publicly accessible — no token or tenant header required.
+     * Returns a JSON message indicating the charge was successful.
+     */
+    public function sdpSuccess(Request $request): JsonResponse
+    {
+        return response()->json([
+            'message' => 'Charged successfully',
+        ], JsonResponse::HTTP_OK);
+    }
+
+    /**
+     * SDP failure callback.
+     * Publicly accessible — no token or tenant header required.
+     * Returns a JSON message indicating the charge failed.
+     */
+    public function sdpFailure(Request $request): JsonResponse
+    {
+        return response()->json([
+            'message' => 'Fail to charge',
+        ], JsonResponse::HTTP_OK);
+    }
+
     private function generateRandomReferralCode(): string
     {
         do {
