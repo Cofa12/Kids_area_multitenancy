@@ -5,6 +5,7 @@ use App\Http\Controllers\V1\Auth\AuthController;
 use App\Http\Controllers\V1\CampaignController;
 use App\Http\Controllers\V1\CategoryController;
 use App\Http\Controllers\V1\DashboardController;
+use App\Http\Controllers\V1\FinancialMetricsController;
 use App\Http\Controllers\V1\LandingPage;
 use App\Http\Controllers\V1\VideoController;
 use App\Http\Controllers\V1\WebsiteController;
@@ -39,6 +40,11 @@ Route::middleware(['ChangeTenantMiddleware'])->group(function () {
 
     Route::get('/get-unaccepted-child-photos', [DashboardController::class, 'getUnAcceptedChildPhotos']);
     Route::get('/get-accepted-child-photos', [DashboardController::class, 'getAcceptedChildPhotos']);
+
+    Route::get('dashboard/financial-metrics', [FinancialMetricsController::class, 'index']);
+    Route::get('dashboard/financial-metrics/export', [FinancialMetricsController::class, 'export']);
+    Route::get('performance/daily-financials', [FinancialMetricsController::class, 'index']);
+    Route::get('performance/daily-financials/export', [FinancialMetricsController::class, 'export']);
 
 
 
@@ -77,6 +83,11 @@ Route::middleware('landlord')->group(function () {
             Route::get('dashboard/campaigns/monthly/analytics', [CampaignController::class, 'getMonthlyAnalytics']);
             Route::get('dashboard/campaigns/{id}/daily/analytics', [CampaignController::class, 'getCampaignDailyAnalytics']);
             Route::get('dashboard/campaigns/{id}/monthly/analytics', [CampaignController::class, 'getCampaignMonthlyAnalytics']);
+
+            Route::get('dashboard/financial-metrics', [FinancialMetricsController::class, 'index']);
+            Route::get('dashboard/financial-metrics/export', [FinancialMetricsController::class, 'export']);
+            Route::get('performance/daily-financials', [FinancialMetricsController::class, 'index']);
+            Route::get('performance/daily-financials/export', [FinancialMetricsController::class, 'export']);
 
             Route::put('dashboard/campaigns', [CampaignController::class, 'updateData']);
             Route::post('dashboard/campaign/init', [CampaignController::class, 'initCampaign']);

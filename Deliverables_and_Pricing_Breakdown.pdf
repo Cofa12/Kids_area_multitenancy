@@ -1,0 +1,664 @@
+%PDF-1.4
+%‚„œ”
+1 0 obj
+<< /Type /Catalog /Pages 2 0 R >>
+endobj
+2 0 obj
+<< /Type /Pages /Kids [8 0 R] /Count 1 >>
+endobj
+3 0 obj
+<< /Type /Font /Subtype /Type1 /BaseFont /Helvetica /Encoding /WinAnsiEncoding >>
+endobj
+4 0 obj
+<< /Type /Font /Subtype /Type1 /BaseFont /Helvetica-Bold /Encoding /WinAnsiEncoding >>
+endobj
+5 0 obj
+<< /Type /Font /Subtype /Type1 /BaseFont /Helvetica-Oblique /Encoding /WinAnsiEncoding >>
+endobj
+6 0 obj
+<< /Type /Font /Subtype /Type1 /BaseFont /Courier /Encoding /WinAnsiEncoding >>
+endobj
+7 0 obj
+<< /Type /Font /Subtype /Type1 /BaseFont /Courier-Bold /Encoding /WinAnsiEncoding >>
+endobj
+8 0 obj
+<< /Type /Page /Parent 2 0 R /MediaBox [0 0 595.28 841.89] /Resources << /Font << /F1 3 0 R /F2 4 0 R /F3 5 0 R /F4 6 0 R /F5 7 0 R >> >> /Contents 9 0 R >>
+endobj
+9 0 obj
+<< /Length 12650 >>
+stream
+BT
+/F2 15.00 Tf
+0.060 0.090 0.160 rg
+34.00 811.89 Td
+(DELIVERABLES & PRICING BREAKDOWN) Tj
+ET
+BT
+/F1 9.00 Tf
+0.390 0.450 0.550 rg
+34.00 798.89 Td
+(Project: Kids Area Multitenancy \(Kids Station SDP & Auth Flow\)) Tj
+ET
+BT
+/F1 8.50 Tf
+0.390 0.450 0.550 rg
+474.07 798.89 Td
+(Date: August 22, 2026) Tj
+ET
+0.930 0.960 1.000 rg
+0.860 0.920 0.990 RG
+0.80 w
+477.08 808.89 m
+558.28 808.89 l
+559.94 808.89 561.28 810.23 561.28 811.89 c
+561.28 818.89 l
+561.28 820.55 559.94 821.89 558.28 821.89 c
+477.08 821.89 l
+475.42 821.89 474.08 820.55 474.08 818.89 c
+474.08 811.89 l
+474.08 810.23 475.42 808.89 477.08 808.89 c
+B
+BT
+/F2 8.00 Tf
+0.150 0.390 0.920 rg
+480.08 812.39 Td
+(COMPLETED WORK) Tj
+ET
+0.880 0.910 0.940 RG
+0.80 w
+34.00 790.89 m 561.28 790.89 l S
+0.060 0.090 0.160 rg
+39.00 749.89 m
+556.28 749.89 l
+559.04 749.89 561.28 752.13 561.28 754.89 c
+561.28 776.89 l
+561.28 779.65 559.04 781.89 556.28 781.89 c
+39.00 781.89 l
+36.24 781.89 34.00 779.65 34.00 776.89 c
+34.00 754.89 l
+34.00 752.13 36.24 749.89 39.00 749.89 c
+f
+BT
+/F2 9.50 Tf
+0.850 0.890 0.950 rg
+46.00 768.89 Td
+(Total Amount for Completed Deliverables) Tj
+ET
+BT
+/F1 7.50 Tf
+0.580 0.640 0.720 rg
+46.00 757.89 Td
+(5 Itemized Tasks Included ï Backend & Telco Architecture) Tj
+ET
+BT
+/F2 15.00 Tf
+0.220 0.740 0.970 rg
+457.48 760.89 Td
+($119.00 USD) Tj
+ET
+1.000 1.000 1.000 rg
+0.880 0.910 0.940 RG
+0.80 w
+38.00 615.89 m
+557.28 615.89 l
+559.49 615.89 561.28 617.68 561.28 619.89 c
+561.28 735.89 l
+561.28 738.10 559.49 739.89 557.28 739.89 c
+38.00 739.89 l
+35.79 739.89 34.00 738.10 34.00 735.89 c
+34.00 619.89 l
+34.00 617.68 35.79 615.89 38.00 615.89 c
+B
+0.970 0.980 0.990 rg
+38.00 711.89 m
+557.28 711.89 l
+559.49 711.89 561.28 713.68 561.28 715.89 c
+561.28 735.89 l
+561.28 738.10 559.49 739.89 557.28 739.89 c
+38.00 739.89 l
+35.79 739.89 34.00 738.10 34.00 735.89 c
+34.00 715.89 l
+34.00 713.68 35.79 711.89 38.00 711.89 c
+f
+34.00 711.89 527.28 4.00 re
+f
+0.880 0.910 0.940 RG
+34.00 711.89 m 561.28 711.89 l S
+BT
+/F2 8.50 Tf
+0.060 0.090 0.160 rg
+42.00 729.89 Td
+(1. Implemented Header Enrichment and the new authentication flow, including the HE endpoint,) Tj
+ET
+BT
+/F2 8.50 Tf
+0.060 0.090 0.160 rg
+42.00 719.89 Td
+(Echo endpoint, and frontend redirection.) Tj
+ET
+0.920 0.990 0.960 rg
+0.650 0.950 0.820 RG
+0.80 w
+517.12 718.39 m
+552.28 718.39 l
+553.94 718.39 555.28 719.73 555.28 721.39 c
+555.28 730.39 l
+555.28 732.05 553.94 733.39 552.28 733.39 c
+517.12 733.39 l
+515.46 733.39 514.12 732.05 514.12 730.39 c
+514.12 721.39 l
+514.12 719.73 515.46 718.39 517.12 718.39 c
+B
+BT
+/F2 9.50 Tf
+0.020 0.590 0.410 rg
+520.12 722.39 Td
+($80.00) Tj
+ET
+BT
+/F2 6.80 Tf
+0.390 0.450 0.550 rg
+42.00 703.89 Td
+(WHAT WAS IMPLEMENTED FROM CODE:) Tj
+ET
+BT
+/F2 8.00 Tf
+0.150 0.390 0.920 rg
+43.00 694.89 Td
+(-) Tj
+ET
+BT
+/F1 7.80 Tf
+0.200 0.250 0.330 rg
+50.00 694.89 Td
+(HE Entry Endpoint: Implemented heEntry\(\) in LandingPage.php checking carrier X-MSISDN header, validating subscription via) Tj
+ET
+BT
+/F1 7.80 Tf
+0.200 0.250 0.330 rg
+50.00 685.39 Td
+(SubscriptionHandling, generating tokens via LoginService, and redirecting \(302\) to /welcome?token=..., /new-subscription, or /guest.) Tj
+ET
+BT
+/F2 8.00 Tf
+0.150 0.390 0.920 rg
+43.00 674.39 Td
+(-) Tj
+ET
+BT
+/F1 7.80 Tf
+0.200 0.250 0.330 rg
+50.00 674.39 Td
+(Echo Diagnostic Endpoint: Built heEcho\(\) returning all incoming carrier headers in JSON for operator testing.) Tj
+ET
+BT
+/F2 8.00 Tf
+0.150 0.390 0.920 rg
+43.00 663.39 Td
+(-) Tj
+ET
+BT
+/F1 7.80 Tf
+0.200 0.250 0.330 rg
+50.00 663.39 Td
+(Database Tracking & Model: Added migration 2026_08_01_000001_create_he_entries_table.php and HeEntry Eloquent model to log) Tj
+ET
+BT
+/F1 7.80 Tf
+0.200 0.250 0.330 rg
+50.00 653.89 Td
+(MSISDN, headers array, query params, IP, user-agent, redirect URL, and status.) Tj
+ET
+BT
+/F2 8.00 Tf
+0.150 0.390 0.920 rg
+43.00 642.89 Td
+(-) Tj
+ET
+BT
+/F1 7.80 Tf
+0.200 0.250 0.330 rg
+50.00 642.89 Td
+(Route Configuration: Protected /mtn/he/entry and /mtn/he/echo routes under UseMtnCallbackTenant middleware in routes/api_v1.php.) Tj
+ET
+BT
+/F2 8.00 Tf
+0.150 0.390 0.920 rg
+43.00 631.89 Td
+(-) Tj
+ET
+BT
+/F1 7.80 Tf
+0.200 0.250 0.330 rg
+50.00 631.89 Td
+(Automated Tests & Postman: Created test suites in HeaderEnrichmentTest.php & HeaderEnrichmentUnitTest.php, and updated) Tj
+ET
+BT
+/F1 7.80 Tf
+0.200 0.250 0.330 rg
+50.00 622.39 Td
+(Landing_Page.postman_collection.json.) Tj
+ET
+1.000 1.000 1.000 rg
+0.880 0.910 0.940 RG
+0.80 w
+38.00 518.39 m
+557.28 518.39 l
+559.49 518.39 561.28 520.18 561.28 522.39 c
+561.28 605.89 l
+561.28 608.10 559.49 609.89 557.28 609.89 c
+38.00 609.89 l
+35.79 609.89 34.00 608.10 34.00 605.89 c
+34.00 522.39 l
+34.00 520.18 35.79 518.39 38.00 518.39 c
+B
+0.970 0.980 0.990 rg
+38.00 581.89 m
+557.28 581.89 l
+559.49 581.89 561.28 583.68 561.28 585.89 c
+561.28 605.89 l
+561.28 608.10 559.49 609.89 557.28 609.89 c
+38.00 609.89 l
+35.79 609.89 34.00 608.10 34.00 605.89 c
+34.00 585.89 l
+34.00 583.68 35.79 581.89 38.00 581.89 c
+f
+34.00 581.89 527.28 4.00 re
+f
+0.880 0.910 0.940 RG
+34.00 581.89 m 561.28 581.89 l S
+BT
+/F2 8.50 Tf
+0.060 0.090 0.160 rg
+42.00 599.89 Td
+(2. Configured promotional links and plan-specific redirections, including success and failure) Tj
+ET
+BT
+/F2 8.50 Tf
+0.060 0.090 0.160 rg
+42.00 589.89 Td
+(endpoints.) Tj
+ET
+0.920 0.990 0.960 rg
+0.650 0.950 0.820 RG
+0.80 w
+517.12 588.39 m
+552.28 588.39 l
+553.94 588.39 555.28 589.73 555.28 591.39 c
+555.28 600.39 l
+555.28 602.05 553.94 603.39 552.28 603.39 c
+517.12 603.39 l
+515.46 603.39 514.12 602.05 514.12 600.39 c
+514.12 591.39 l
+514.12 589.73 515.46 588.39 517.12 588.39 c
+B
+BT
+/F2 9.50 Tf
+0.020 0.590 0.410 rg
+520.12 592.39 Td
+($30.00) Tj
+ET
+BT
+/F2 6.80 Tf
+0.390 0.450 0.550 rg
+42.00 573.89 Td
+(WHAT WAS IMPLEMENTED FROM CODE:) Tj
+ET
+BT
+/F2 8.00 Tf
+0.150 0.390 0.920 rg
+43.00 564.89 Td
+(-) Tj
+ET
+BT
+/F1 7.80 Tf
+0.200 0.250 0.330 rg
+50.00 564.89 Td
+(SDP Dynamic Redirect: Implemented sdpRedirect\(\) in LandingPage.php mapping plan durations \(1day, 1week, 2weeks, 1month / Telco) Tj
+ET
+BT
+/F1 7.80 Tf
+0.200 0.250 0.330 rg
+50.00 555.39 Td
+(product IDs\) to operator landing pages while preserving trfsrc and generating trxId.) Tj
+ET
+BT
+/F2 8.00 Tf
+0.150 0.390 0.920 rg
+43.00 544.39 Td
+(-) Tj
+ET
+BT
+/F1 7.80 Tf
+0.200 0.250 0.330 rg
+50.00 544.39 Td
+(Public SDP Callbacks: Created sdpSuccess\(\) to log charging payloads into sdp_responses table, and sdpFailure\(\) to handle charge) Tj
+ET
+BT
+/F1 7.80 Tf
+0.200 0.250 0.330 rg
+50.00 534.89 Td
+(failure callbacks.) Tj
+ET
+BT
+/F2 8.00 Tf
+0.150 0.390 0.920 rg
+43.00 523.89 Td
+(-) Tj
+ET
+BT
+/F1 7.80 Tf
+0.200 0.250 0.330 rg
+50.00 523.89 Td
+(Public API Routes: Registered /sdp/redirect, /sdp/entry, /sdp/success, and /sdp/failure in routes/api_v1.php \(no token required\).) Tj
+ET
+1.000 1.000 1.000 rg
+0.880 0.910 0.940 RG
+0.80 w
+38.00 438.39 m
+557.28 438.39 l
+559.49 438.39 561.28 440.18 561.28 442.39 c
+561.28 508.39 l
+561.28 510.60 559.49 512.39 557.28 512.39 c
+38.00 512.39 l
+35.79 512.39 34.00 510.60 34.00 508.39 c
+34.00 442.39 l
+34.00 440.18 35.79 438.39 38.00 438.39 c
+B
+0.970 0.980 0.990 rg
+38.00 492.39 m
+557.28 492.39 l
+559.49 492.39 561.28 494.18 561.28 496.39 c
+561.28 508.39 l
+561.28 510.60 559.49 512.39 557.28 512.39 c
+38.00 512.39 l
+35.79 512.39 34.00 510.60 34.00 508.39 c
+34.00 496.39 l
+34.00 494.18 35.79 492.39 38.00 492.39 c
+f
+34.00 492.39 527.28 4.00 re
+f
+0.880 0.910 0.940 RG
+34.00 492.39 m 561.28 492.39 l S
+BT
+/F2 8.50 Tf
+0.060 0.090 0.160 rg
+42.00 502.39 Td
+(3. Made the name and password optional on the login and start pages.) Tj
+ET
+0.920 0.990 0.960 rg
+0.650 0.950 0.820 RG
+0.80 w
+522.34 494.89 m
+552.28 494.89 l
+553.94 494.89 555.28 496.23 555.28 497.89 c
+555.28 506.89 l
+555.28 508.55 553.94 509.89 552.28 509.89 c
+522.34 509.89 l
+520.68 509.89 519.34 508.55 519.34 506.89 c
+519.34 497.89 l
+519.34 496.23 520.68 494.89 522.34 494.89 c
+B
+BT
+/F2 9.50 Tf
+0.020 0.590 0.410 rg
+525.34 498.89 Td
+($5.00) Tj
+ET
+BT
+/F2 6.80 Tf
+0.390 0.450 0.550 rg
+42.00 484.39 Td
+(WHAT WAS IMPLEMENTED FROM CODE:) Tj
+ET
+BT
+/F2 8.00 Tf
+0.150 0.390 0.920 rg
+43.00 475.39 Td
+(-) Tj
+ET
+BT
+/F1 7.80 Tf
+0.200 0.250 0.330 rg
+50.00 475.39 Td
+(Optional Profile Name: Modified UpdateProfileRequest.php validation rules making name optional \(nullable|string\) during onboarding.) Tj
+ET
+BT
+/F2 8.00 Tf
+0.150 0.390 0.920 rg
+43.00 464.39 Td
+(-) Tj
+ET
+BT
+/F1 7.80 Tf
+0.200 0.250 0.330 rg
+50.00 464.39 Td
+(Login Refactor: Updated SafaricomLoginRequest.php and WebsiteController.php allowing users to authenticate via phone without) Tj
+ET
+BT
+/F1 7.80 Tf
+0.200 0.250 0.330 rg
+50.00 454.89 Td
+(password.) Tj
+ET
+BT
+/F2 8.00 Tf
+0.150 0.390 0.920 rg
+43.00 443.89 Td
+(-) Tj
+ET
+BT
+/F1 7.80 Tf
+0.200 0.250 0.330 rg
+50.00 443.89 Td
+(Updated Test Suites: Adjusted WebsiteRegistrationFlowTest.php and WebsiteAuthTest.php to cover optional credential flows.) Tj
+ET
+1.000 1.000 1.000 rg
+0.880 0.910 0.940 RG
+0.80 w
+38.00 367.89 m
+557.28 367.89 l
+559.49 367.89 561.28 369.68 561.28 371.89 c
+561.28 428.39 l
+561.28 430.60 559.49 432.39 557.28 432.39 c
+38.00 432.39 l
+35.79 432.39 34.00 430.60 34.00 428.39 c
+34.00 371.89 l
+34.00 369.68 35.79 367.89 38.00 367.89 c
+B
+0.970 0.980 0.990 rg
+38.00 412.39 m
+557.28 412.39 l
+559.49 412.39 561.28 414.18 561.28 416.39 c
+561.28 428.39 l
+561.28 430.60 559.49 432.39 557.28 432.39 c
+38.00 432.39 l
+35.79 432.39 34.00 430.60 34.00 428.39 c
+34.00 416.39 l
+34.00 414.18 35.79 412.39 38.00 412.39 c
+f
+34.00 412.39 527.28 4.00 re
+f
+0.880 0.910 0.940 RG
+34.00 412.39 m 561.28 412.39 l S
+BT
+/F2 8.50 Tf
+0.060 0.090 0.160 rg
+42.00 422.39 Td
+(4. Updated the user update endpoint to return the access token.) Tj
+ET
+0.920 0.990 0.960 rg
+0.650 0.950 0.820 RG
+0.80 w
+522.34 414.89 m
+552.28 414.89 l
+553.94 414.89 555.28 416.23 555.28 417.89 c
+555.28 426.89 l
+555.28 428.55 553.94 429.89 552.28 429.89 c
+522.34 429.89 l
+520.68 429.89 519.34 428.55 519.34 426.89 c
+519.34 417.89 l
+519.34 416.23 520.68 414.89 522.34 414.89 c
+B
+BT
+/F2 9.50 Tf
+0.020 0.590 0.410 rg
+525.34 418.89 Td
+($3.00) Tj
+ET
+BT
+/F2 6.80 Tf
+0.390 0.450 0.550 rg
+42.00 404.39 Td
+(WHAT WAS IMPLEMENTED FROM CODE:) Tj
+ET
+BT
+/F2 8.00 Tf
+0.150 0.390 0.920 rg
+43.00 395.39 Td
+(-) Tj
+ET
+BT
+/F1 7.80 Tf
+0.200 0.250 0.330 rg
+50.00 395.39 Td
+(Token Generation: Modified updateProfile\(\) in WebsiteController.php to return access_token and refresh_token upon profile update.) Tj
+ET
+BT
+/F2 8.00 Tf
+0.150 0.390 0.920 rg
+43.00 384.39 Td
+(-) Tj
+ET
+BT
+/F1 7.80 Tf
+0.200 0.250 0.330 rg
+50.00 384.39 Td
+(Phone-Based Lookup: Enabled updating user profiles directly by phone without requiring an existing Bearer token.) Tj
+ET
+BT
+/F2 8.00 Tf
+0.150 0.390 0.920 rg
+43.00 373.39 Td
+(-) Tj
+ET
+BT
+/F1 7.80 Tf
+0.200 0.250 0.330 rg
+50.00 373.39 Td
+(Guard Handlers: Added checks returning 404 \(user not found\) and 409 Conflict \('This user is already existed'\) if already updated.) Tj
+ET
+1.000 1.000 1.000 rg
+0.880 0.910 0.940 RG
+0.80 w
+38.00 299.39 m
+557.28 299.39 l
+559.49 299.39 561.28 301.18 561.28 303.39 c
+561.28 357.89 l
+561.28 360.10 559.49 361.89 557.28 361.89 c
+38.00 361.89 l
+35.79 361.89 34.00 360.10 34.00 357.89 c
+34.00 303.39 l
+34.00 301.18 35.79 299.39 38.00 299.39 c
+B
+0.970 0.980 0.990 rg
+38.00 341.89 m
+557.28 341.89 l
+559.49 341.89 561.28 343.68 561.28 345.89 c
+561.28 357.89 l
+561.28 360.10 559.49 361.89 557.28 361.89 c
+38.00 361.89 l
+35.79 361.89 34.00 360.10 34.00 357.89 c
+34.00 345.89 l
+34.00 343.68 35.79 341.89 38.00 341.89 c
+f
+34.00 341.89 527.28 4.00 re
+f
+0.880 0.910 0.940 RG
+34.00 341.89 m 561.28 341.89 l S
+BT
+/F2 8.50 Tf
+0.060 0.090 0.160 rg
+42.00 351.89 Td
+(5. Removed all password validation requirements.) Tj
+ET
+0.920 0.990 0.960 rg
+0.650 0.950 0.820 RG
+0.80 w
+522.34 344.39 m
+552.28 344.39 l
+553.94 344.39 555.28 345.73 555.28 347.39 c
+555.28 356.39 l
+555.28 358.05 553.94 359.39 552.28 359.39 c
+522.34 359.39 l
+520.68 359.39 519.34 358.05 519.34 356.39 c
+519.34 347.39 l
+519.34 345.73 520.68 344.39 522.34 344.39 c
+B
+BT
+/F2 9.50 Tf
+0.020 0.590 0.410 rg
+525.34 348.39 Td
+($1.00) Tj
+ET
+BT
+/F2 6.80 Tf
+0.390 0.450 0.550 rg
+42.00 333.89 Td
+(WHAT WAS IMPLEMENTED FROM CODE:) Tj
+ET
+BT
+/F2 8.00 Tf
+0.150 0.390 0.920 rg
+43.00 324.89 Td
+(-) Tj
+ET
+BT
+/F1 7.80 Tf
+0.200 0.250 0.330 rg
+50.00 324.89 Td
+(Validation Cleanup: Removed strict regex constraints and password complexity rules in LoginRequest.php and) Tj
+ET
+BT
+/F1 7.80 Tf
+0.200 0.250 0.330 rg
+50.00 315.39 Td
+(SafaricomLoginRequest.php.) Tj
+ET
+BT
+/F2 8.00 Tf
+0.150 0.390 0.920 rg
+43.00 304.39 Td
+(-) Tj
+ET
+BT
+/F1 7.80 Tf
+0.200 0.250 0.330 rg
+50.00 304.39 Td
+(Passwordless Flow: Bypassed legacy password checks in WebsiteController.php to support passwordless phone-based onboarding.) Tj
+ET
+BT
+/F1 8 Tf
+0.58 0.64 0.72 rg
+106.68 14.00 Td
+(Kids Area Multitenancy  |  Invoice & Deliverables Breakdown  |  Total: $119.00 USD  |  Page 1 of 1) Tj
+ET
+endstream
+endobj
+xref
+0 10
+0000000000 65535 f 
+0000000015 00000 n 
+0000000064 00000 n 
+0000000121 00000 n 
+0000000218 00000 n 
+0000000320 00000 n 
+0000000425 00000 n 
+0000000520 00000 n 
+0000000620 00000 n 
+0000000792 00000 n 
+trailer
+<< /Size 10 /Root 1 0 R >>
+startxref
+13495
+%%EOF

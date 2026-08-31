@@ -39,4 +39,61 @@ enum SubscriptionPlan: string
             default                => 1,
         };
     }
+
+    /**
+     * Normalize incoming plan identifier to a standard key ('daily', 'weekly', 'bi_weekly', 'monthly').
+     */
+    public static function normalizePlanKey(?string $plan): string
+    {
+        if (!$plan) {
+            return 'daily';
+        }
+
+        $clean = strtolower(trim($plan, '"\'  '));
+
+        return match ($clean) {
+            self::DAILY->value, '23410220000051559', 'daily', 'day', '1day', '1_day' => 'daily',
+            self::WEEKLY->value, '23410220000051560', 'weekly', 'week', '1week', '1_week', '7days', '7_days' => 'weekly',
+            self::BI_WEEKLY->value, '23410220000051561', 'bi-weekly', 'bi_weekly', 'biweekly', '2weeks', '2_weeks', '14days', '14_days' => 'bi_weekly',
+            self::MONTHLY->value, '23410220000051562', 'monthly', 'month', '1month', '1_month', '30days', '30_days' => 'monthly',
+            default => 'daily',
+        };
+    }
+
+    /**
+     * Get the price of a plan according to the tenant (e.g. Nigeria or Kenya).
+     *
+     * Nigeria (NGN):
+     * - daily: 100
+     * - weekly: 200
+     * - bi_weekly: 300
+     * - monthly: 500
+     *
+     * Kenya (KES):
+     * - daily: 100
+     * - weekly: 100
+     * - bi_weekly: 100
+     * - monthly: 100
+     */
+    public static function getPriceForTenant(?string $plan, ?string $tenant = null): float
+    {
+        $planKey = self::normalizePlanKey($plan);
+        $tenantLower = strtolower($tenant ?? '');
+
+        if (str_contains($tenantLower, 'kenya') || str_contains($tenantLower, 'safaricom')) {
+            return match ($planKey) {
+                'daily', 'weekly', 'bi_weekly', 'monthly' => 100.0,
+                default => 100.0,
+            };
+        }
+
+        // Default to Nigeria / MTN pricing
+        return match ($planKey) {
+            'daily'     => 100.0,
+            'weekly'    => 200.0,
+            'bi_weekly' => 300.0,
+            'monthly'   => 500.0,
+            default     => 100.0,
+        };
+    }
 }
