@@ -1,410 +1,465 @@
 {
-	"info": {
-		"_postman_id": "f8a7e129-4b15-4df3-a1c2-9e909a89d712",
-		"name": "Daily Financial Breakdown & Performance Dashboard",
-		"description": "Postman collection with complete examples for MTN Nigeria and Kenya Daily Financial Metrics Breakdown endpoints, pagination, formula computations, and CSV export streaming.",
-		"schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
-	},
-	"item": [
-		{
-			"name": "Daily Financial Breakdown",
-			"description": "Endpoints for retrieving daily financial analytics and exporting reports according to MTN Nigeria Breakdown Dashboard formulas.",
-			"item": [
-				{
-					"name": "1. Admin Login (Get Token)",
-					"request": {
-						"method": "POST",
-						"header": [
-							{
-								"key": "Accept",
-								"value": "application/json",
-								"type": "text"
-							},
-							{
-								"key": "Content-Type",
-								"value": "application/json",
-								"type": "text"
-							}
-						],
-						"body": {
-							"mode": "raw",
-							"raw": "{\n  \"phone\": \"+201012345672\",\n  \"password\": \"CDCD12345##\"\n}"
-						},
-						"url": {
-							"raw": "{{baseUrl}}/api/v1/admin/login",
-							"host": [
-								"{{baseUrl}}"
-							],
-							"path": [
-								"api",
-								"v1",
-								"admin",
-								"login"
-							]
-						},
-						"description": "Authenticate as admin to get JWT Bearer token used for landlord dashboard requests."
-					},
-					"response": [
-						{
-							"name": "Successful Login",
-							"originalRequest": {
-								"method": "POST",
-								"header": [
-									{
-										"key": "Accept",
-										"value": "application/json",
-										"type": "text"
-									},
-									{
-										"key": "Content-Type",
-										"value": "application/json",
-										"type": "text"
-									}
-								],
-								"body": {
-									"mode": "raw",
-									"raw": "{\n  \"phone\": \"+201012345672\",\n  \"password\": \"CDCD12345##\"\n}"
-								},
-								"url": {
-									"raw": "{{baseUrl}}/api/v1/admin/login",
-									"host": [
-										"{{baseUrl}}"
-									],
-									"path": [
-										"api",
-										"v1",
-										"admin",
-										"login"
-									]
-								}
-							},
-							"status": "OK",
-							"code": 200,
-							"_postman_previewlanguage": "json",
-							"header": [
-								{
-									"key": "Content-Type",
-									"value": "application/json"
-								}
-							],
-							"cookie": [],
-							"body": "{\n  \"token\": \"eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9...\",\n  \"token_type\": \"bearer\",\n  \"expires_in\": 3600\n}"
-						}
-					]
-				},
-				{
-					"name": "2. Get Daily Financial Metrics (Paginated - Nigeria)",
-					"request": {
-						"auth": {
-							"type": "bearer",
-							"bearer": [
-								{
-									"key": "token",
-									"value": "{{admin_token}}",
-									"type": "string"
-								}
-							]
-						},
-						"method": "GET",
-						"header": [
-							{
-								"key": "Accept",
-								"value": "application/json",
-								"type": "text"
-							},
-							{
-								"key": "X-Tenant",
-								"value": "naijria",
-								"type": "text"
-							}
-						],
-						"url": {
-							"raw": "{{baseUrl}}/api/v1/dashboard/financial-metrics?from=2026-08-01&to=2026-08-31&page=1&per_page=15&exchange_rate=1500",
-							"host": [
-								"{{baseUrl}}"
-							],
-							"path": [
-								"api",
-								"v1",
-								"dashboard",
-								"financial-metrics"
-							],
-							"query": [
-								{
-									"key": "from",
-									"value": "2026-08-01",
-									"description": "Start date (YYYY-MM-DD)"
-								},
-								{
-									"key": "to",
-									"value": "2026-08-31",
-									"description": "End date (YYYY-MM-DD)"
-								},
-								{
-									"key": "page",
-									"value": "1",
-									"description": "Page number for pagination"
-								},
-								{
-									"key": "per_page",
-									"value": "15",
-									"description": "Items per page (max 100)"
-								},
-								{
-									"key": "exchange_rate",
-									"value": "1500",
-									"description": "Optional custom NGN/USD exchange rate"
-								}
-							]
-						},
-						"description": "Returns paginated daily breakdown data for Nigeria tenant with all 19 metrics and TOTAL row."
-					},
-					"response": [
-						{
-							"name": "Paginated Daily Metrics Response (Nigeria)",
-							"originalRequest": {
-								"method": "GET",
-								"header": [
-									{
-										"key": "Accept",
-										"value": "application/json",
-										"type": "text"
-									},
-									{
-										"key": "X-Tenant",
-										"value": "naijria",
-										"type": "text"
-									}
-								],
-								"url": {
-									"raw": "{{baseUrl}}/api/v1/dashboard/financial-metrics?page=1&per_page=15&start_date=2026-08-01&end_date=2026-08-31&exchange_rate=1500",
-									"host": [
-										"{{baseUrl}}"
-									],
-									"path": [
-										"api",
-										"v1",
-										"dashboard",
-										"financial-metrics"
-									]
-								}
-							},
-							"status": "OK",
-							"code": 200,
-							"_postman_previewlanguage": "json",
-							"header": [
-								{
-									"key": "Content-Type",
-									"value": "application/json"
-								}
-							],
-							"cookie": [],
-							"body": "{\n  \"success\": true,\n  \"tenant\": \"naijria\",\n  \"currency\": \"NGN\",\n  \"exchange_rate\": 1500,\n  \"start_date\": \"2026-08-01\",\n  \"end_date\": \"2026-08-31\",\n  \"pagination\": {\n    \"current_page\": 1,\n    \"data\": [\n      {\n        \"date\": \"2026-08-01\",\n        \"subscribers_count\": 120,\n        \"renewals_count\": 45,\n        \"subscribers_by_plan\": {\n          \"daily\": 80,\n          \"weekly\": 30,\n          \"monthly\": 10\n        },\n        \"renewals_by_plan\": {\n          \"daily\": 25,\n          \"weekly\": 15,\n          \"monthly\": 5\n        },\n        \"daily_revenue\": 27000,\n        \"net_revenue_after_vat\": 24975,\n        \"mtn_share\": 12487.5,\n        \"aggregator_share\": 2497.5,\n        \"wht\": 999,\n        \"balance_before_ncc\": 8991,\n        \"ncc_levy\": 249.75,\n        \"net_balance\": 8741.25,\n        \"yns_net_revenue_local\": 6993,\n        \"vas_sunych_share_local\": 1748.25,\n        \"currency\": \"NGN\",\n        \"exchange_rate\": 1500,\n        \"yns_net_revenue_usd\": 4.66,\n        \"ads_cost_usd\": 2.5,\n        \"pnl_usd\": 2.16,\n        \"daily_roi\": 86.48,\n        \"daily_roi_display\": \"86.48%\",\n        \"daily_revenue_variation\": null,\n        \"daily_revenue_variation_display\": \"—\",\n        \"watch_alert\": false\n      }\n    ],\n    \"first_page_url\": \"/api/v1/dashboard/financial-metrics?page=1\",\n    \"from\": 1,\n    \"last_page\": 3,\n    \"last_page_url\": \"/api/v1/dashboard/financial-metrics?page=3\",\n    \"next_page_url\": \"/api/v1/dashboard/financial-metrics?page=2\",\n    \"path\": \"/api/v1/dashboard/financial-metrics\",\n    \"per_page\": 15,\n    \"prev_page_url\": null,\n    \"to\": 15,\n    \"total\": 31\n  },\n  \"totals\": {\n    \"date\": \"TOTAL\",\n    \"subscribers_count\": 3720,\n    \"renewals_count\": 1395,\n    \"daily_revenue\": 837000,\n    \"net_revenue_after_vat\": 774225,\n    \"mtn_share\": 387112.5,\n    \"aggregator_share\": 77422.5,\n    \"wht\": 30969,\n    \"balance_before_ncc\": 278721,\n    \"ncc_levy\": 7742.25,\n    \"net_balance\": 270978.75,\n    \"yns_net_revenue_local\": 216783,\n    \"vas_sunych_share_local\": 54195.75,\n    \"currency\": \"NGN\",\n    \"exchange_rate\": 1500,\n    \"yns_net_revenue_usd\": 144.52,\n    \"ads_cost_usd\": 77.5,\n    \"pnl_usd\": 67.02,\n    \"daily_roi\": 86.48,\n    \"daily_roi_display\": \"86.48%\",\n    \"daily_revenue_variation\": null,\n    \"daily_revenue_variation_display\": \"—\",\n    \"watch_alert\": false\n  }\n}"
-						}
-					]
-				},
-				{
-					"name": "3. Get Daily Financials (Kenya - Alias Route)",
-					"request": {
-						"auth": {
-							"type": "bearer",
-							"bearer": [
-								{
-									"key": "token",
-									"value": "{{admin_token}}",
-									"type": "string"
-								}
-							]
-						},
-						"method": "GET",
-						"header": [
-							{
-								"key": "Accept",
-								"value": "application/json",
-								"type": "text"
-							},
-							{
-								"key": "X-Tenant",
-								"value": "kenya",
-								"type": "text"
-							}
-						],
-						"url": {
-							"raw": "{{baseUrl}}/api/v1/performance/daily-financials?start_date=2026-08-01&end_date=2026-08-31&exchange_rate=130",
-							"host": [
-								"{{baseUrl}}"
-							],
-							"path": [
-								"api",
-								"v1",
-								"performance",
-								"daily-financials"
-							],
-							"query": [
-								{
-									"key": "start_date",
-									"value": "2026-08-01"
-								},
-								{
-									"key": "end_date",
-									"value": "2026-08-31"
-								},
-								{
-									"key": "exchange_rate",
-									"value": "130",
-									"description": "KES per USD exchange rate"
-								}
-							]
-						},
-						"description": "Access via the frontend alias route `performance/daily-financials` for Kenya tenant (static 100 KES pricing across all plans)."
-					},
-					"response": [
-						{
-							"name": "Kenya Daily Financials Response",
-							"originalRequest": {
-								"method": "GET",
-								"header": [
-									{
-										"key": "Accept",
-										"value": "application/json",
-										"type": "text"
-									},
-									{
-										"key": "X-Tenant",
-										"value": "kenya",
-										"type": "text"
-									}
-								],
-								"url": {
-									"raw": "{{baseUrl}}/api/v1/performance/daily-financials?start_date=2026-08-01&end_date=2026-08-31&exchange_rate=130",
-									"host": [
-										"{{baseUrl}}"
-									],
-									"path": [
-										"api",
-										"v1",
-										"performance",
-										"daily-financials"
-									]
-								}
-							},
-							"status": "OK",
-							"code": 200,
-							"_postman_previewlanguage": "json",
-							"header": [
-								{
-									"key": "Content-Type",
-									"value": "application/json"
-								}
-							],
-							"cookie": [],
-							"body": "{\n  \"success\": true,\n  \"tenant\": \"kenya\",\n  \"currency\": \"KES\",\n  \"exchange_rate\": 130,\n  \"start_date\": \"2026-08-01\",\n  \"end_date\": \"2026-08-31\",\n  \"pagination\": {\n    \"current_page\": 1,\n    \"data\": [\n      {\n        \"date\": \"2026-08-01\",\n        \"subscribers_count\": 50,\n        \"renewals_count\": 20,\n        \"subscribers_by_plan\": {\n          \"daily\": 50\n        },\n        \"renewals_by_plan\": {\n          \"daily\": 20\n        },\n        \"daily_revenue\": 7000,\n        \"net_revenue_after_vat\": 6475,\n        \"mtn_share\": 3237.5,\n        \"aggregator_share\": 647.5,\n        \"wht\": 259,\n        \"balance_before_ncc\": 2331,\n        \"ncc_levy\": 64.75,\n        \"net_balance\": 2266.25,\n        \"yns_net_revenue_local\": 1813,\n        \"vas_sunych_share_local\": 453.25,\n        \"currency\": \"KES\",\n        \"exchange_rate\": 130,\n        \"yns_net_revenue_usd\": 13.95,\n        \"ads_cost_usd\": 5,\n        \"pnl_usd\": 8.95,\n        \"daily_roi\": 178.92,\n        \"daily_roi_display\": \"178.92%\",\n        \"daily_revenue_variation\": null,\n        \"daily_revenue_variation_display\": \"—\",\n        \"watch_alert\": false\n      }\n    ],\n    \"total\": 31,\n    \"per_page\": 15\n  },\n  \"totals\": {\n    \"date\": \"TOTAL\",\n    \"subscribers_count\": 1550,\n    \"renewals_count\": 620,\n    \"daily_revenue\": 217000,\n    \"net_revenue_after_vat\": 200725,\n    \"currency\": \"KES\",\n    \"exchange_rate\": 130,\n    \"yns_net_revenue_usd\": 432.34,\n    \"ads_cost_usd\": 155,\n    \"pnl_usd\": 277.34,\n    \"daily_roi\": 178.92,\n    \"daily_roi_display\": \"178.92%\"\n  }\n}"
-						}
-					]
-				},
-				{
-					"name": "4. Export Daily Financial Breakdown (CSV Download)",
-					"request": {
-						"auth": {
-							"type": "bearer",
-							"bearer": [
-								{
-									"key": "token",
-									"value": "{{admin_token}}",
-									"type": "string"
-								}
-							]
-						},
-						"method": "GET",
-						"header": [
-							{
-								"key": "X-Tenant",
-								"value": "naijria",
-								"type": "text"
-							}
-						],
-						"url": {
-							"raw": "{{baseUrl}}/api/v1/dashboard/financial-metrics/export?start_date=2026-08-01&end_date=2026-08-31",
-							"host": [
-								"{{baseUrl}}"
-							],
-							"path": [
-								"api",
-								"v1",
-								"dashboard",
-								"financial-metrics",
-								"export"
-							],
-							"query": [
-								{
-									"key": "start_date",
-									"value": "2026-08-01"
-								},
-								{
-									"key": "end_date",
-									"value": "2026-08-31"
-								}
-							]
-						},
-						"description": "Streams an optimized CSV file ready for download/Excel containing all 19 columns and the TOTAL summary row."
-					},
-					"response": [
-						{
-							"name": "CSV Stream Example",
-							"originalRequest": {
-								"method": "GET",
-								"header": [
-									{
-										"key": "X-Tenant",
-										"value": "naijria",
-										"type": "text"
-									}
-								],
-								"url": {
-									"raw": "{{baseUrl}}/api/v1/dashboard/financial-metrics/export?start_date=2026-08-01&end_date=2026-08-31",
-									"host": [
-										"{{baseUrl}}"
-									],
-									"path": [
-										"api",
-										"v1",
-										"dashboard",
-										"financial-metrics",
-										"export"
-									]
-								}
-							},
-							"status": "OK",
-							"code": 200,
-							"_postman_previewlanguage": "text",
-							"header": [
-								{
-									"key": "Content-Type",
-									"value": "text/csv; charset=UTF-8"
-								},
-								{
-									"key": "Content-Disposition",
-									"value": "attachment; filename=\"financial_breakdown_naijria_2026-08-01_to_2026-08-31.csv\""
-								}
-							],
-							"cookie": [],
-							"body": "﻿Date,Subscribers,Renewals,\"Daily Revenue (NGN)\",\"Net Revenue After 7.5% VAT\",\"MTN Share 50%\",\"Aggregator Share 10%\",\"WHT 4%\",\"Balance Before NCC\",\"NCC Levy 1%\",\"Net Balance\",\"YNS Net Revenue (NGN) - 80%\",\"VAS SUNYCH Share (NGN) - 20%\",\"YNS Net Revenue (USD)\",\"Ads Cost (USD)\",\"P&L (USD)\",\"Daily ROI %\",\"Daily Revenue Variation %\",\"Watch Alert (⚠)\"\n2026-08-01,120,45,27000,24975,12487.5,2497.5,999,8991,249.75,8741.25,6993,1748.25,4.66,2.5,2.16,86.48%,—,OK\nTOTAL,3720,1395,837000,774225,387112.5,77422.5,30969,278721,7742.25,270978.75,216783,54195.75,144.52,77.5,67.02,86.48%,—,"
-						}
-					]
-				}
-			]
-		}
-	],
-	"variable": [
-		{
-			"key": "baseUrl",
-			"value": "http://127.0.0.1:8000",
-			"type": "string"
-		},
-		{
-			"key": "admin_token",
-			"value": "YOUR_ADMIN_JWT_TOKEN",
-			"type": "string"
-		}
-	]
+  "info": {
+    "_postman_id": "f8a7e129-4b15-4df3-a1c2-9e909a89d712",
+    "name": "Daily Financial Breakdown & Performance Dashboard",
+    "description": "# \ud83d\udcca Daily Financial Metrics & Performance Dashboard API\n\nThis collection provides full documentation, request definitions, parameters, and live response schemas for the **Financial Metrics Breakdown & Export System** in the **Kids Area Multitenancy** platform.\n\n---\n\n## \ud83c\udfe2 Multi-Tenancy Architecture\n* Requests can target specific tenants by passing the `X-Tenant` header (e.g., `naijria` or `kenya`) or using the `tenant` query parameter.\n* **Nigeria (`naijria`):** Operates on Nigerian Naira (`NGN`), with multi-tier plan pricing (`Daily: 100`, `Weekly: 200`, `Bi-Weekly: 300`, `Monthly: 500 NGN`) and full telco deduction waterfall.\n* **Kenya (`kenya`):** Operates on Kenyan Shilling (`KES`), flat rate pricing (`100 KES`), and default exchange rate of `130 KES/USD`.\n\n---\n\n## \ud83e\uddee Mathematical Waterfall Model\n1. **Gross Daily Revenue:** $\\sum (\\text{Subscribers} \\times \\text{Plan Price}) + \\sum (\\text{Renewals} \\times \\text{Plan Price})$\n2. **Net Revenue After VAT:** $\\text{Daily Revenue} \\times (1 - 0.075) = \\text{Daily Revenue} \\times 0.925$\n3. **MTN Operator Share (50%):** $\\text{Net After VAT} \\times 0.50$\n4. **Aggregator Share (10%):** $\\text{Net After VAT} \\times 0.10$\n5. **Withholding Tax / WHT (4%):** $\\text{Net After VAT} \\times 0.04$\n6. **Balance Before NCC:** $\\text{Net After VAT} - (\\text{MTN} + \\text{Aggregator} + \\text{WHT})$\n7. **NCC Levy (1%):** $\\text{Net After VAT} \\times 0.01$\n8. **Net Balance:** $\\text{Balance Before NCC} - \\text{NCC Levy}$\n9. **YNS Net Revenue Local (80%):** $\\text{Net Balance} \\times 0.80$\n10. **VAS SUNYCH Share Local (20%):** $\\text{Net Balance} \\times 0.20$\n11. **YNS Net Revenue (USD):** $\\text{YNS Net Revenue Local} / \\text{Exchange Rate}$\n12. **P&L (USD):** $\\text{YNS Net Revenue (USD)} - \\text{Ads Cost (USD)}$\n13. **Daily ROI %:** $(\\text{P\\&L (USD)} / \\text{Ads Cost (USD)}) \\times 100$\n14. **Daily Variation %:** $((\\text{Today Revenue} - \\text{Yesterday Revenue}) / \\text{Yesterday Revenue}) \\times 100$\n15. **Watch Alert:** Triggers boolean `true` (and `ALERT` status) if revenue dropped significantly.",
+    "schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
+  },
+  "item": [
+    {
+      "name": "Daily Financial Breakdown",
+      "description": "Endpoints for retrieving daily financial analytics and exporting reports according to MTN Nigeria Breakdown Dashboard formulas.",
+      "item": [
+        {
+          "name": "1. Admin Login (Get Token)",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Accept",
+                "value": "application/json",
+                "type": "text"
+              },
+              {
+                "key": "Content-Type",
+                "value": "application/json",
+                "type": "text"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"phone\": \"+201012345672\",\n  \"password\": \"CDCD12345##\"\n}"
+            },
+            "url": {
+              "raw": "{{baseUrl}}/api/v1/admin/login",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "api",
+                "v1",
+                "admin",
+                "login"
+              ]
+            },
+            "description": "### \ud83d\udd10 Admin Authentication\n\nAuthenticates an administrative user to retrieve a JWT Bearer token required for accessing dashboard and performance endpoints.\n\n---\n\n### \ud83d\udce5 Request Body\n| Field | Type | Required | Description |\n|---|---|:---:|---|\n| `phone` | `string` | **Yes** | Admin phone number (e.g. `+201012345672`) |\n| `password` | `string` | **Yes** | Admin account password |\n\n---\n\n### \ud83d\udce4 Response Structure (`200 OK`)\n```json\n{\n  \"token\": \"eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9...\",\n  \"token_type\": \"bearer\",\n  \"expires_in\": 3600\n}\n```\n\n> \ud83d\udca1 **Tip:** Set the returned `token` into your Postman environment variable `{{admin_token}}` to automatically authenticate subsequent requests."
+          },
+          "response": [
+            {
+              "name": "Successful Login",
+              "originalRequest": {
+                "method": "POST",
+                "header": [
+                  {
+                    "key": "Accept",
+                    "value": "application/json",
+                    "type": "text"
+                  },
+                  {
+                    "key": "Content-Type",
+                    "value": "application/json",
+                    "type": "text"
+                  }
+                ],
+                "body": {
+                  "mode": "raw",
+                  "raw": "{\n  \"phone\": \"+201012345672\",\n  \"password\": \"CDCD12345##\"\n}"
+                },
+                "url": {
+                  "raw": "{{baseUrl}}/api/v1/admin/login",
+                  "host": [
+                    "{{baseUrl}}"
+                  ],
+                  "path": [
+                    "api",
+                    "v1",
+                    "admin",
+                    "login"
+                  ]
+                }
+              },
+              "status": "OK",
+              "code": 200,
+              "_postman_previewlanguage": "json",
+              "header": [
+                {
+                  "key": "Content-Type",
+                  "value": "application/json"
+                }
+              ],
+              "cookie": [],
+              "body": "{\n  \"token\": \"eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9...\",\n  \"token_type\": \"bearer\",\n  \"expires_in\": 3600\n}"
+            }
+          ]
+        },
+        {
+          "name": "2. Get Daily Financial Metrics (Paginated - Nigeria)",
+          "request": {
+            "auth": {
+              "type": "bearer",
+              "bearer": [
+                {
+                  "key": "token",
+                  "value": "{{admin_token}}",
+                  "type": "string"
+                }
+              ]
+            },
+            "method": "GET",
+            "header": [
+              {
+                "key": "Accept",
+                "value": "application/json",
+                "type": "text"
+              },
+              {
+                "key": "X-Tenant",
+                "value": "naijria",
+                "type": "text"
+              }
+            ],
+            "url": {
+              "raw": "{{baseUrl}}/api/v1/dashboard/financial-metrics?from=2026-08-01&to=2026-08-31&page=1&per_page=15&exchange_rate=1500",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "api",
+                "v1",
+                "dashboard",
+                "financial-metrics"
+              ],
+              "query": [
+                {
+                  "key": "from",
+                  "value": "2026-08-01",
+                  "description": "Start date for financial range (YYYY-MM-DD)"
+                },
+                {
+                  "key": "to",
+                  "value": "2026-08-31",
+                  "description": "End date for financial range (YYYY-MM-DD)"
+                },
+                {
+                  "key": "page",
+                  "value": "1",
+                  "description": "Current page number for pagination (default: 1)"
+                },
+                {
+                  "key": "per_page",
+                  "value": "15",
+                  "description": "Number of daily rows per page (1-100, default: 15)"
+                },
+                {
+                  "key": "exchange_rate",
+                  "value": "1500",
+                  "description": "Optional custom NGN to USD exchange rate (defaults to 1500 for Nigeria)"
+                }
+              ]
+            },
+            "description": "### \ud83d\udcc8 Daily Financial Breakdown (Paginated)\n\nRetrieves paginated daily financial analytics, full breakdown columns, and total aggregates for the selected date range.\n\n---\n\n### \ud83c\udf10 Route Paths & Aliases\n* Primary Route: `GET /api/v1/dashboard/financial-metrics`\n* Performance Alias: `GET /api/v1/performance/daily-financials`\n\n---\n\n### \ud83d\udd11 Headers\n| Header | Type | Required | Description |\n|---|---|:---:|---|\n| `Authorization` | `string` | **Yes** | `Bearer <token>` |\n| `Accept` | `string` | **Yes** | `application/json` |\n| `X-Tenant` | `string` | Optional | Tenant identifier (`naijria` or `kenya`) |\n\n---\n\n### \ud83d\udd0d Query Parameters\n| Parameter | Type | Default | Description |\n|---|---|:---:|---|\n| `from` / `start_date` | `string` | 30 days ago | Filter start date (`YYYY-MM-DD`) |\n| `to` / `end_date` | `string` | Today | Filter end date (`YYYY-MM-DD`) |\n| `page` | `integer` | `1` | Page number for pagination |\n| `per_page` | `integer` | `15` | Items per page (min 1, max 100) |\n| `exchange_rate` | `number` | `1500` *(NGN)* | Custom currency to USD conversion rate |\n\n---\n\n### \ud83d\udce6 Response Field Reference\n* **`tenant`**: Active tenant identifier (e.g. `naijria`).\n* **`currency`**: Currency code (`NGN` or `KES`).\n* **`exchange_rate`**: Applied exchange rate for USD conversions.\n* **`pagination.data[]`**: Array of daily financial records containing:\n  * `date`: `YYYY-MM-DD`\n  * `subscribers_count`: Total new subscribers on this day\n  * `renewals_count`: Total renewals on this day\n  * `subscribers_by_plan`: Breakdown of subscriptions per plan key (`daily`, `weekly`, `bi_weekly`, `monthly`)\n  * `renewals_by_plan`: Breakdown of renewals per plan key\n  * `daily_revenue`: Gross revenue before deductions\n  * `net_revenue_after_vat`: Revenue after 7.5% VAT\n  * `mtn_share`: 50% operator share\n  * `aggregator_share`: 10% aggregator share\n  * `wht`: 4% withholding tax\n  * `balance_before_ncc`: Balance before telecom commission\n  * `ncc_levy`: 1% NCC levy\n  * `net_balance`: Net distributable balance\n  * `yns_net_revenue_local`: 80% partner revenue in local currency\n  * `vas_sunych_share_local`: 20% partner revenue in local currency\n  * `yns_net_revenue_usd`: YNS Net revenue converted to USD\n  * `ads_cost_usd`: Marketing ad spend in USD for this date\n  * `pnl_usd`: Net Profit/Loss ($ = \\text{YNS Net USD} - \\text{Ads Cost USD}$)\n  * `daily_roi`: Raw ROI percentage\n  * `daily_roi_display`: Formatted ROI percentage string (e.g. `\"86.48%\"`)\n  * `daily_revenue_variation`: Day-over-day revenue percentage difference\n  * `daily_revenue_variation_display`: Formatted variation string (e.g. `\"+12.40%\"` or `\"\u2014\"`)\n  * `watch_alert`: `true` if daily variation dropped significantly (`\u26a0 ALERT`), otherwise `false` (`OK`)\n* **`totals`**: Period summary object containing sums and weighted averages for the entire requested date range."
+          },
+          "response": [
+            {
+              "name": "Paginated Daily Metrics Response (Nigeria)",
+              "originalRequest": {
+                "method": "GET",
+                "header": [
+                  {
+                    "key": "Accept",
+                    "value": "application/json",
+                    "type": "text"
+                  },
+                  {
+                    "key": "X-Tenant",
+                    "value": "naijria",
+                    "type": "text"
+                  }
+                ],
+                "url": {
+                  "raw": "{{baseUrl}}/api/v1/dashboard/financial-metrics?from=2026-08-01&to=2026-08-31&page=1&per_page=15&exchange_rate=1500",
+                  "host": [
+                    "{{baseUrl}}"
+                  ],
+                  "path": [
+                    "api",
+                    "v1",
+                    "dashboard",
+                    "financial-metrics"
+                  ],
+                  "query": [
+                    {
+                      "key": "from",
+                      "value": "2026-08-01"
+                    },
+                    {
+                      "key": "to",
+                      "value": "2026-08-31"
+                    },
+                    {
+                      "key": "page",
+                      "value": "1"
+                    },
+                    {
+                      "key": "per_page",
+                      "value": "15"
+                    },
+                    {
+                      "key": "exchange_rate",
+                      "value": "1500"
+                    }
+                  ]
+                }
+              },
+              "status": "OK",
+              "code": 200,
+              "_postman_previewlanguage": "json",
+              "header": [
+                {
+                  "key": "Content-Type",
+                  "value": "application/json"
+                }
+              ],
+              "cookie": [],
+              "body": "{\n  \"success\": true,\n  \"tenant\": \"naijria\",\n  \"currency\": \"NGN\",\n  \"exchange_rate\": 1500,\n  \"from\": \"2026-08-01\",\n  \"to\": \"2026-08-31\",\n  \"start_date\": \"2026-08-01\",\n  \"end_date\": \"2026-08-31\",\n  \"pagination\": {\n    \"current_page\": 1,\n    \"data\": [\n      {\n        \"date\": \"2026-08-01\",\n        \"subscribers_count\": 120,\n        \"renewals_count\": 45,\n        \"subscribers_by_plan\": {\n          \"daily\": 80,\n          \"weekly\": 30,\n          \"monthly\": 10\n        },\n        \"renewals_by_plan\": {\n          \"daily\": 25,\n          \"weekly\": 15,\n          \"monthly\": 5\n        },\n        \"daily_revenue\": 27000,\n        \"net_revenue_after_vat\": 24975,\n        \"mtn_share\": 12487.5,\n        \"aggregator_share\": 2497.5,\n        \"wht\": 999,\n        \"balance_before_ncc\": 8991,\n        \"ncc_levy\": 249.75,\n        \"net_balance\": 8741.25,\n        \"yns_net_revenue_local\": 6993,\n        \"vas_sunych_share_local\": 1748.25,\n        \"currency\": \"NGN\",\n        \"exchange_rate\": 1500,\n        \"yns_net_revenue_usd\": 4.66,\n        \"ads_cost_usd\": 2.5,\n        \"pnl_usd\": 2.16,\n        \"daily_roi\": 86.48,\n        \"daily_roi_display\": \"86.48%\",\n        \"daily_revenue_variation\": null,\n        \"daily_revenue_variation_display\": \"\u2014\",\n        \"watch_alert\": false\n      }\n    ],\n    \"first_page_url\": \"/api/v1/dashboard/financial-metrics?page=1\",\n    \"from\": 1,\n    \"last_page\": 3,\n    \"last_page_url\": \"/api/v1/dashboard/financial-metrics?page=3\",\n    \"next_page_url\": \"/api/v1/dashboard/financial-metrics?page=2\",\n    \"path\": \"/api/v1/dashboard/financial-metrics\",\n    \"per_page\": 15,\n    \"prev_page_url\": null,\n    \"to\": 15,\n    \"total\": 31\n  },\n  \"totals\": {\n    \"date\": \"TOTAL\",\n    \"subscribers_count\": 3720,\n    \"renewals_count\": 1395,\n    \"daily_revenue\": 837000,\n    \"net_revenue_after_vat\": 774225,\n    \"mtn_share\": 387112.5,\n    \"aggregator_share\": 77422.5,\n    \"wht\": 30969,\n    \"balance_before_ncc\": 278721,\n    \"ncc_levy\": 7742.25,\n    \"net_balance\": 270978.75,\n    \"yns_net_revenue_local\": 216783,\n    \"vas_sunych_share_local\": 54195.75,\n    \"currency\": \"NGN\",\n    \"exchange_rate\": 1500,\n    \"yns_net_revenue_usd\": 144.52,\n    \"ads_cost_usd\": 77.5,\n    \"pnl_usd\": 67.02,\n    \"daily_roi\": 86.48,\n    \"daily_roi_display\": \"86.48%\",\n    \"daily_revenue_variation\": null,\n    \"daily_revenue_variation_display\": \"\u2014\",\n    \"watch_alert\": false\n  }\n}"
+            }
+          ]
+        },
+        {
+          "name": "3. Get Daily Financials (Kenya - Alias Route)",
+          "request": {
+            "auth": {
+              "type": "bearer",
+              "bearer": [
+                {
+                  "key": "token",
+                  "value": "{{admin_token}}",
+                  "type": "string"
+                }
+              ]
+            },
+            "method": "GET",
+            "header": [
+              {
+                "key": "Accept",
+                "value": "application/json",
+                "type": "text"
+              },
+              {
+                "key": "X-Tenant",
+                "value": "kenya",
+                "type": "text"
+              }
+            ],
+            "url": {
+              "raw": "{{baseUrl}}/api/v1/performance/daily-financials?from=2026-08-01&to=2026-08-31&exchange_rate=130",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "api",
+                "v1",
+                "performance",
+                "daily-financials"
+              ],
+              "query": [
+                {
+                  "key": "from",
+                  "value": "2026-08-01",
+                  "description": "Start date (YYYY-MM-DD)"
+                },
+                {
+                  "key": "to",
+                  "value": "2026-08-31",
+                  "description": "End date (YYYY-MM-DD)"
+                },
+                {
+                  "key": "exchange_rate",
+                  "value": "130",
+                  "description": "KES per USD exchange rate (defaults to 130 for Kenya)"
+                }
+              ]
+            },
+            "description": "### \ud83c\uddf0\ud83c\uddea Kenya Performance Breakdown\n\nCalls the `/api/v1/performance/daily-financials` route targeted at the Kenya tenant.\n* **Currency:** `KES`\n* **Pricing:** Flat rate `100.0 KES` across all subscription plan durations.\n* **Default Exchange Rate:** `130.0 KES / USD`."
+          },
+          "response": [
+            {
+              "name": "Kenya Daily Financials Response",
+              "originalRequest": {
+                "method": "GET",
+                "header": [
+                  {
+                    "key": "Accept",
+                    "value": "application/json",
+                    "type": "text"
+                  },
+                  {
+                    "key": "X-Tenant",
+                    "value": "kenya",
+                    "type": "text"
+                  }
+                ],
+                "url": {
+                  "raw": "{{baseUrl}}/api/v1/performance/daily-financials?from=2026-08-01&to=2026-08-31&exchange_rate=130",
+                  "host": [
+                    "{{baseUrl}}"
+                  ],
+                  "path": [
+                    "api",
+                    "v1",
+                    "performance",
+                    "daily-financials"
+                  ],
+                  "query": [
+                    {
+                      "key": "from",
+                      "value": "2026-08-01"
+                    },
+                    {
+                      "key": "to",
+                      "value": "2026-08-31"
+                    },
+                    {
+                      "key": "exchange_rate",
+                      "value": "130"
+                    }
+                  ]
+                }
+              },
+              "status": "OK",
+              "code": 200,
+              "_postman_previewlanguage": "json",
+              "header": [
+                {
+                  "key": "Content-Type",
+                  "value": "application/json"
+                }
+              ],
+              "cookie": [],
+              "body": "{\n  \"success\": true,\n  \"tenant\": \"kenya\",\n  \"currency\": \"KES\",\n  \"exchange_rate\": 130,\n  \"from\": \"2026-08-01\",\n  \"to\": \"2026-08-31\",\n  \"start_date\": \"2026-08-01\",\n  \"end_date\": \"2026-08-31\",\n  \"pagination\": {\n    \"current_page\": 1,\n    \"data\": [\n      {\n        \"date\": \"2026-08-01\",\n        \"subscribers_count\": 50,\n        \"renewals_count\": 20,\n        \"subscribers_by_plan\": {\n          \"daily\": 50\n        },\n        \"renewals_by_plan\": {\n          \"daily\": 20\n        },\n        \"daily_revenue\": 7000,\n        \"net_revenue_after_vat\": 6475,\n        \"mtn_share\": 3237.5,\n        \"aggregator_share\": 647.5,\n        \"wht\": 259,\n        \"balance_before_ncc\": 2331,\n        \"ncc_levy\": 64.75,\n        \"net_balance\": 2266.25,\n        \"yns_net_revenue_local\": 1813,\n        \"vas_sunych_share_local\": 453.25,\n        \"currency\": \"KES\",\n        \"exchange_rate\": 130,\n        \"yns_net_revenue_usd\": 13.95,\n        \"ads_cost_usd\": 5,\n        \"pnl_usd\": 8.95,\n        \"daily_roi\": 178.92,\n        \"daily_roi_display\": \"178.92%\",\n        \"daily_revenue_variation\": null,\n        \"daily_revenue_variation_display\": \"\u2014\",\n        \"watch_alert\": false\n      }\n    ],\n    \"total\": 31,\n    \"per_page\": 15\n  },\n  \"totals\": {\n    \"date\": \"TOTAL\",\n    \"subscribers_count\": 1550,\n    \"renewals_count\": 620,\n    \"daily_revenue\": 217000,\n    \"net_revenue_after_vat\": 200725,\n    \"currency\": \"KES\",\n    \"exchange_rate\": 130,\n    \"yns_net_revenue_usd\": 432.34,\n    \"ads_cost_usd\": 155,\n    \"pnl_usd\": 277.34,\n    \"daily_roi\": 178.92,\n    \"daily_roi_display\": \"178.92%\"\n  }\n}"
+            }
+          ]
+        },
+        {
+          "name": "4. Export Daily Financial Breakdown (CSV Download)",
+          "request": {
+            "auth": {
+              "type": "bearer",
+              "bearer": [
+                {
+                  "key": "token",
+                  "value": "{{admin_token}}",
+                  "type": "string"
+                }
+              ]
+            },
+            "method": "GET",
+            "header": [
+              {
+                "key": "X-Tenant",
+                "value": "naijria",
+                "type": "text"
+              }
+            ],
+            "url": {
+              "raw": "{{baseUrl}}/api/v1/dashboard/financial-metrics/export?from=2026-08-01&to=2026-08-31&exchange_rate=1500",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "api",
+                "v1",
+                "dashboard",
+                "financial-metrics",
+                "export"
+              ],
+              "query": [
+                {
+                  "key": "from",
+                  "value": "2026-08-01",
+                  "description": "Start date for export (YYYY-MM-DD)"
+                },
+                {
+                  "key": "to",
+                  "value": "2026-08-31",
+                  "description": "End date for export (YYYY-MM-DD)"
+                },
+                {
+                  "key": "exchange_rate",
+                  "value": "1500",
+                  "description": "Optional custom exchange rate"
+                }
+              ]
+            },
+            "description": "### \ud83d\udce5 Downloadable Financial Report (CSV / Excel Ready)\n\nStreams a high-performance, chunked CSV file formatted with Microsoft Excel UTF-8 BOM compatibility.\n\n---\n\n### \ud83c\udf10 Route Paths & Aliases\n* Primary Export: `GET /api/v1/dashboard/financial-metrics/export`\n* Performance Export: `GET /api/v1/performance/daily-financials/export`\n\n---\n\n### \ud83d\udd11 Headers\n| Header | Type | Required | Description |\n|---|---|:---:|---|\n| `Authorization` | `string` | **Yes** | `Bearer <token>` |\n| `X-Tenant` | `string` | Optional | Tenant identifier (`naijria` or `kenya`) |\n\n---\n\n### \ud83d\udd0d Query Parameters\n| Parameter | Type | Default | Description |\n|---|---|:---:|---|\n| `from` / `start_date` | `string` | 30 days ago | Filter start date (`YYYY-MM-DD`) |\n| `to` / `end_date` | `string` | Today | Filter end date (`YYYY-MM-DD`) |\n| `exchange_rate` | `number` | `1500` / `130` | Custom exchange rate for USD conversion |\n\n---\n\n### \ud83d\udcbb Frontend Javascript / React Download Snippet\n```javascript\nimport axios from 'axios';\n\nasync function downloadReport(from, to) {\n  const response = await axios.get('/api/v1/dashboard/financial-metrics/export', {\n    params: { from, to },\n    headers: {\n      Authorization: `Bearer ${localStorage.getItem('token')}`,\n      'X-Tenant': 'naijria'\n    },\n    responseType: 'blob' // Essential for binary/CSV stream\n  });\n\n  const blob = new Blob([response.data], { type: 'text/csv;charset=utf-8;' });\n  const url = window.URL.createObjectURL(blob);\n  const link = document.createElement('a');\n  link.href = url;\n  link.setAttribute('download', `financial_report_${from}_to_${to}.csv`);\n  document.body.appendChild(link);\n  link.click();\n  link.remove();\n  window.URL.revokeObjectURL(url);\n}\n```\n\n---\n\n### \ud83d\udcca Exported CSV Columns\n1. `Date`\n2. `Subscribers`\n3. `Renewals`\n4. `Daily Revenue (NGN / KES)`\n5. `Net Revenue After 7.5% VAT`\n6. `MTN Share 50%`\n7. `Aggregator Share 10%`\n8. `WHT 4%`\n9. `Balance Before NCC`\n10. `NCC Levy 1%`\n11. `Net Balance`\n12. `YNS Net Revenue (NGN / KES) - 80%`\n13. `VAS SUNYCH Share (NGN / KES) - 20%`\n14. `YNS Net Revenue (USD)`\n15. `Ads Cost (USD)`\n16. `P&L (USD)`\n17. `Daily ROI %`\n18. `Daily Revenue Variation %`\n19. `Watch Alert (\u26a0)` *(Shows `ALERT` or `OK`)*\n\n> \ud83d\udccc **Note:** A `TOTAL` row summarizing all columns is automatically appended at the bottom of the CSV."
+          },
+          "response": [
+            {
+              "name": "CSV Stream Example",
+              "originalRequest": {
+                "method": "GET",
+                "header": [
+                  {
+                    "key": "X-Tenant",
+                    "value": "naijria",
+                    "type": "text"
+                  }
+                ],
+                "url": {
+                  "raw": "{{baseUrl}}/api/v1/dashboard/financial-metrics/export?from=2026-08-01&to=2026-08-31",
+                  "host": [
+                    "{{baseUrl}}"
+                  ],
+                  "path": [
+                    "api",
+                    "v1",
+                    "dashboard",
+                    "financial-metrics",
+                    "export"
+                  ],
+                  "query": [
+                    {
+                      "key": "from",
+                      "value": "2026-08-01"
+                    },
+                    {
+                      "key": "to",
+                      "value": "2026-08-31"
+                    }
+                  ]
+                }
+              },
+              "status": "OK",
+              "code": 200,
+              "_postman_previewlanguage": "text",
+              "header": [
+                {
+                  "key": "Content-Type",
+                  "value": "text/csv; charset=UTF-8"
+                },
+                {
+                  "key": "Content-Disposition",
+                  "value": "attachment; filename=\"financial_breakdown_naijria_2026-08-01_to_2026-08-31.csv\""
+                }
+              ],
+              "cookie": [],
+              "body": "\ufeffDate,Subscribers,Renewals,\"Daily Revenue (NGN)\",\"Net Revenue After 7.5% VAT\",\"MTN Share 50%\",\"Aggregator Share 10%\",\"WHT 4%\",\"Balance Before NCC\",\"NCC Levy 1%\",\"Net Balance\",\"YNS Net Revenue (NGN) - 80%\",\"VAS SUNYCH Share (NGN) - 20%\",\"YNS Net Revenue (USD)\",\"Ads Cost (USD)\",\"P&L (USD)\",\"Daily ROI %\",\"Daily Revenue Variation %\",\"Watch Alert (\u26a0)\"\n2026-08-01,120,45,27000,24975,12487.5,2497.5,999,8991,249.75,8741.25,6993,1748.25,4.66,2.5,2.16,86.48%,\u2014,OK\nTOTAL,3720,1395,837000,774225,387112.5,77422.5,30969,278721,7742.25,270978.75,216783,54195.75,144.52,77.5,67.02,86.48%,\u2014,"
+            }
+          ]
+        }
+      ]
+    }
+  ],
+  "variable": [
+    {
+      "key": "baseUrl",
+      "value": "http://127.0.0.1:8000",
+      "type": "string"
+    },
+    {
+      "key": "admin_token",
+      "value": "YOUR_ADMIN_JWT_TOKEN",
+      "type": "string"
+    }
+  ]
 }
