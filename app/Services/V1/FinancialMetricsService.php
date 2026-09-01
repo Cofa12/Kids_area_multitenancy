@@ -320,6 +320,14 @@ class FinancialMetricsService
             }
         }
 
+        // ROI Trend Indicator: Positive / Negative / Watch
+        $roiTrend = null;
+        if ($watchAlert) {
+            $roiTrend = 'Watch';
+        } elseif ($dailyRoi !== null && $yesterdayRoi !== null) {
+            $roiTrend = $dailyRoi > $yesterdayRoi ? 'Positive' : 'Negative';
+        }
+
         return [
             'date' => $dateStr,
             'subscribers_count' => $totalSubscribers,
@@ -345,6 +353,7 @@ class FinancialMetricsService
             'daily_roi_display' => $dailyRoiDisplay,
             'daily_revenue_variation' => $dailyRevenueVariation,
             'daily_revenue_variation_display' => ($dailyRevenueVariation !== null) ? ($dailyRevenueVariation . '%') : '—',
+            'roi_trend' => $roiTrend,
             'watch_alert' => $watchAlert,
         ];
     }
@@ -419,6 +428,7 @@ class FinancialMetricsService
             'daily_roi_display' => $totalRoiDisplay,
             'daily_revenue_variation' => null,
             'daily_revenue_variation_display' => '—',
+            'roi_trend' => null,
             'watch_alert' => false,
         ];
     }

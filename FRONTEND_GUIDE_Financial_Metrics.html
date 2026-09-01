@@ -1,0 +1,917 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Frontend Integration Guide: Financial Metrics Endpoints</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            line-height: 1.6;
+            color: #333;
+            background: white;
+            padding: 20px;
+        }
+
+        .container {
+            max-width: 1000px;
+            margin: 0 auto;
+            background: white;
+        }
+
+        h1 {
+            color: #0066cc;
+            border-bottom: 3px solid #0066cc;
+            padding-bottom: 10px;
+            margin-bottom: 20px;
+            font-size: 2.5em;
+        }
+
+        h2 {
+            color: #0066cc;
+            margin-top: 30px;
+            margin-bottom: 15px;
+            font-size: 1.8em;
+            border-left: 4px solid #0066cc;
+            padding-left: 10px;
+        }
+
+        h3 {
+            color: #333;
+            margin-top: 20px;
+            margin-bottom: 10px;
+            font-size: 1.3em;
+        }
+
+        p {
+            margin-bottom: 12px;
+            line-height: 1.8;
+        }
+
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            margin: 15px 0;
+            box-shadow: 0 1px 3px rgba(0,0,0,0.1);
+        }
+
+        th {
+            background: #0066cc;
+            color: white;
+            padding: 12px;
+            text-align: left;
+            font-weight: bold;
+        }
+
+        td {
+            padding: 10px 12px;
+            border-bottom: 1px solid #ddd;
+        }
+
+        tr:nth-child(even) {
+            background: #f9f9f9;
+        }
+
+        tr:hover {
+            background: #f0f5ff;
+        }
+
+        code {
+            background: #f4f4f4;
+            padding: 2px 6px;
+            border-radius: 3px;
+            font-family: 'Courier New', monospace;
+            color: #d63384;
+        }
+
+        pre {
+            background: #1e1e1e;
+            color: #d4d4d4;
+            padding: 20px;
+            border-radius: 8px;
+            overflow-x: auto;
+            margin: 15px 0;
+            line-height: 1.5;
+            border-left: 4px solid #0066cc;
+        }
+
+        pre code {
+            background: none;
+            color: inherit;
+            padding: 0;
+        }
+
+        .code-label {
+            display: inline-block;
+            background: #0066cc;
+            color: white;
+            padding: 4px 12px;
+            border-radius: 4px;
+            font-size: 0.85em;
+            margin-bottom: 10px;
+            font-weight: bold;
+        }
+
+        .alert {
+            background: #fff3cd;
+            border-left: 4px solid #ff9800;
+            padding: 15px;
+            margin: 15px 0;
+            border-radius: 4px;
+            color: #856404;
+        }
+
+        .alert.critical {
+            background: #f8d7da;
+            border-left-color: #dc3545;
+            color: #721c24;
+        }
+
+        .alert.success {
+            background: #d4edda;
+            border-left-color: #28a745;
+            color: #155724;
+        }
+
+        ul, ol {
+            margin-left: 20px;
+            margin-bottom: 15px;
+        }
+
+        li {
+            margin-bottom: 8px;
+            line-height: 1.8;
+        }
+
+        .feature-box {
+            background: #f0f5ff;
+            border: 1px solid #0066cc;
+            padding: 15px;
+            border-radius: 8px;
+            margin: 15px 0;
+        }
+
+        .endpoint {
+            background: #e8f4f8;
+            padding: 15px;
+            border-radius: 8px;
+            margin: 15px 0;
+            border-left: 4px solid #17a2b8;
+            font-family: 'Courier New', monospace;
+        }
+
+        .response-structure {
+            background: #f9f9f9;
+            padding: 15px;
+            border-radius: 8px;
+            margin: 15px 0;
+            border-left: 4px solid #6c757d;
+        }
+
+        .section-divider {
+            border-top: 2px solid #0066cc;
+            margin: 40px 0;
+            padding-top: 20px;
+        }
+
+        .footer {
+            margin-top: 50px;
+            padding-top: 20px;
+            border-top: 1px solid #ddd;
+            text-align: center;
+            color: #666;
+            font-size: 0.9em;
+        }
+
+        .emoji {
+            margin-right: 5px;
+        }
+
+        .badge {
+            display: inline-block;
+            padding: 4px 10px;
+            border-radius: 20px;
+            font-size: 0.85em;
+            font-weight: bold;
+            margin-right: 5px;
+        }
+
+        .badge-get {
+            background: #28a745;
+            color: white;
+        }
+
+        .badge-csv {
+            background: #17a2b8;
+            color: white;
+        }
+
+        .badge-json {
+            background: #6c757d;
+            color: white;
+        }
+
+        @media print {
+            body {
+                padding: 0;
+            }
+            .container {
+                box-shadow: none;
+            }
+            h2 {
+                page-break-after: avoid;
+            }
+            pre {
+                page-break-inside: avoid;
+            }
+            table {
+                page-break-inside: avoid;
+            }
+        }
+
+        .toc {
+            background: #f5f5f5;
+            padding: 20px;
+            border-radius: 8px;
+            margin: 20px 0;
+        }
+
+        .toc a {
+            color: #0066cc;
+            text-decoration: none;
+            display: block;
+            padding: 5px 0;
+        }
+
+        .toc a:hover {
+            text-decoration: underline;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <!-- Header -->
+        <h1><span class="emoji">📊</span>Frontend Integration Guide: Financial Metrics Endpoints</h1>
+        
+        <p style="font-size: 1.1em; color: #666; margin-bottom: 30px;">
+            A comprehensive guide for integrating the Daily Financial Breakdown &amp; Export endpoints into your frontend application.
+        </p>
+
+        <!-- Table of Contents -->
+        <div class="toc">
+            <h3>Table of Contents</h3>
+            <a href="#overview">Overview</a>
+            <a href="#endpoints">Endpoints Summary</a>
+            <a href="#authentication">Authentication &amp; Headers</a>
+            <a href="#dashboard">Dashboard Endpoint</a>
+            <a href="#export">Export Endpoint</a>
+            <a href="#roi-guide">ROI Trend Guide</a>
+            <a href="#advanced">Advanced Use Cases</a>
+            <a href="#errors">Error Handling</a>
+        </div>
+
+        <div class="section-divider"></div>
+
+        <!-- Overview Section -->
+        <h2 id="overview"><span class="emoji">🔗</span>Overview</h2>
+        <p>
+            This guide explains how to integrate the <strong>Daily Financial Breakdown &amp; Export</strong> endpoints into your frontend application. These endpoints provide paginated dashboard data and streamed CSV exports for performance analytics.
+        </p>
+
+        <!-- Endpoints Summary -->
+        <h2 id="endpoints"><span class="emoji">📋</span>Endpoints Summary</h2>
+        
+        <table>
+            <thead>
+                <tr>
+                    <th>Endpoint</th>
+                    <th>Method</th>
+                    <th>Response</th>
+                    <th>Use Case</th>
+                </tr>
+            </thead>
+            <tbody>
+                <tr>
+                    <td><code>/api/v1/dashboard/financial-metrics</code></td>
+                    <td><span class="badge badge-get">GET</span></td>
+                    <td><span class="badge badge-json">JSON</span> (Paginated)</td>
+                    <td>Display analytics dashboard with pagination</td>
+                </tr>
+                <tr>
+                    <td><code>/api/v1/performance/daily-financials</code></td>
+                    <td><span class="badge badge-get">GET</span></td>
+                    <td><span class="badge badge-json">JSON</span> (Paginated)</td>
+                    <td>Alias for dashboard endpoint</td>
+                </tr>
+                <tr>
+                    <td><code>/api/v1/dashboard/financial-metrics/export</code></td>
+                    <td><span class="badge badge-get">GET</span></td>
+                    <td><span class="badge badge-csv">CSV</span> (Streamed)</td>
+                    <td>Download financial report as CSV file</td>
+                </tr>
+                <tr>
+                    <td><code>/api/v1/performance/daily-financials/export</code></td>
+                    <td><span class="badge badge-get">GET</span></td>
+                    <td><span class="badge badge-csv">CSV</span> (Streamed)</td>
+                    <td>Alias for export endpoint</td>
+                </tr>
+            </tbody>
+        </table>
+
+        <div class="section-divider"></div>
+
+        <!-- Authentication Section -->
+        <h2 id="authentication"><span class="emoji">🔐</span>Authentication &amp; Headers</h2>
+        
+        <p>All endpoints require Bearer token authentication and optional tenant header:</p>
+
+        <div class="code-label">JavaScript</div>
+        <pre><code>const headers = {
+  'Authorization': `Bearer ${localStorage.getItem('admin_token')}`,
+  'Accept': 'application/json',
+  'X-Tenant': 'naijria'  // or 'kenya' — optional, defaults to current tenant
+};</code></pre>
+
+        <div class="section-divider"></div>
+
+        <!-- Dashboard Endpoint Section -->
+        <h2 id="dashboard"><span class="emoji">📋</span>Dashboard Endpoint: Paginated JSON Response</h2>
+
+        <h3>Purpose</h3>
+        <p>Fetch paginated daily financial metrics with ROI trends, watch alerts, and performance indicators.</p>
+
+        <h3>Request Parameters</h3>
+        <div class="code-label">JavaScript</div>
+        <pre><code>const params = {
+  from: '2026-08-01',              // Start date (YYYY-MM-DD) — optional, defaults to 30 days ago
+  to: '2026-08-31',                // End date (YYYY-MM-DD) — optional, defaults to today
+  exchange_rate: 1500,             // Custom USD conversion rate — optional
+  page: 1,                         // Page number — optional, default 1
+  per_page: 15                     // Items per page (1-100) — optional, default 15
+};</code></pre>
+
+        <h3>Key Response Fields</h3>
+        <table>
+            <thead>
+                <tr>
+                    <th>Field</th>
+                    <th>Type</th>
+                    <th>Description</th>
+                </tr>
+            </thead>
+            <tbody>
+                <tr>
+                    <td><code>daily_roi</code></td>
+                    <td>float</td>
+                    <td>Raw ROI percentage value</td>
+                </tr>
+                <tr>
+                    <td><code>daily_roi_display</code></td>
+                    <td>string</td>
+                    <td>Formatted ROI (e.g., "86.48%")</td>
+                </tr>
+                <tr>
+                    <td><code>roi_trend</code></td>
+                    <td>string|null</td>
+                    <td><strong>"Positive"</strong> = ROI higher than yesterday<br/>
+                        <strong>"Negative"</strong> = ROI lower than yesterday<br/>
+                        <strong>"Watch"</strong> = Alert condition triggered<br/>
+                        <strong>null</strong> = No previous day to compare</td>
+                </tr>
+                <tr>
+                    <td><code>watch_alert</code></td>
+                    <td>boolean</td>
+                    <td><strong>true</strong> if: ROI dropped 20+ pp OR 3 consecutive negative days<br/>
+                        <strong>false</strong> otherwise</td>
+                </tr>
+                <tr>
+                    <td><code>daily_revenue_variation</code></td>
+                    <td>float|null</td>
+                    <td>Day-over-day revenue change percentage</td>
+                </tr>
+                <tr>
+                    <td><code>pnl_usd</code></td>
+                    <td>float</td>
+                    <td>Profit/Loss in USD (YNS Revenue - Ads Cost)</td>
+                </tr>
+            </tbody>
+        </table>
+
+        <h3>Frontend Implementation: React with Axios</h3>
+        
+        <div class="code-label">React Component</div>
+        <pre><code>import axios from 'axios';
+import { useState, useEffect } from 'react';
+
+function FinancialDashboard() {
+  const [data, setData] = useState(null);
+  const [page, setPage] = useState(1);
+  const [loading, setLoading] = useState(false);
+  const [error, setError] = useState(null);
+
+  useEffect(() => {
+    fetchMetrics(page);
+  }, [page]);
+
+  const fetchMetrics = async (pageNum) => {
+    setLoading(true);
+    try {
+      const response = await axios.get('/api/v1/dashboard/financial-metrics', {
+        params: {
+          from: '2026-08-01',
+          to: '2026-08-31',
+          exchange_rate: 1500,
+          page: pageNum,
+          per_page: 15
+        },
+        headers: {
+          'Authorization': `Bearer ${localStorage.getItem('admin_token')}`,
+          'X-Tenant': 'naijria'
+        }
+      });
+      setData(response.data);
+      setError(null);
+    } catch (err) {
+      setError(err.message);
+      console.error('Failed to fetch metrics:', err);
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  if (loading) return &lt;div&gt;Loading...&lt;/div&gt;;
+  if (error) return &lt;div&gt;Error: {error}&lt;/div&gt;;
+  if (!data) return &lt;div&gt;No data&lt;/div&gt;;
+
+  return (
+    &lt;div&gt;
+      &lt;h2&gt;Financial Metrics Dashboard&lt;/h2&gt;
+      &lt;p&gt;Tenant: {data.tenant} | Currency: {data.currency}&lt;/p&gt;
+      
+      {/* Totals Summary */}
+      &lt;div className="summary-box"&gt;
+        &lt;h3&gt;Total Summary ({data.totals.date})&lt;/h3&gt;
+        &lt;table&gt;
+          &lt;tbody&gt;
+            &lt;tr&gt;
+              &lt;td&gt;Total Revenue:&lt;/td&gt;
+              &lt;td&gt;{data.totals.daily_revenue.toLocaleString()} {data.currency}&lt;/td&gt;
+            &lt;/tr&gt;
+            &lt;tr&gt;
+              &lt;td&gt;YNS Net Revenue (USD):&lt;/td&gt;
+              &lt;td&gt;${data.totals.yns_net_revenue_usd.toLocaleString()}&lt;/td&gt;
+            &lt;/tr&gt;
+            &lt;tr&gt;
+              &lt;td&gt;Ads Cost (USD):&lt;/td&gt;
+              &lt;td&gt;${data.totals.ads_cost_usd.toLocaleString()}&lt;/td&gt;
+            &lt;/tr&gt;
+            &lt;tr&gt;
+              &lt;td&gt;P&amp;L (USD):&lt;/td&gt;
+              &lt;td className={data.totals.pnl_usd &gt;= 0 ? 'profit' : 'loss'}&gt;
+                ${data.totals.pnl_usd.toLocaleString()}
+              &lt;/td&gt;
+            &lt;/tr&gt;
+            &lt;tr&gt;
+              &lt;td&gt;Overall ROI:&lt;/td&gt;
+              &lt;td&gt;{data.totals.daily_roi_display}&lt;/td&gt;
+            &lt;/tr&gt;
+          &lt;/tbody&gt;
+        &lt;/table&gt;
+      &lt;/div&gt;
+
+      {/* Daily Records Table */}
+      &lt;table className="metrics-table"&gt;
+        &lt;thead&gt;
+          &lt;tr&gt;
+            &lt;th&gt;Date&lt;/th&gt;
+            &lt;th&gt;Subscribers&lt;/th&gt;
+            &lt;th&gt;Revenue ({data.currency})&lt;/th&gt;
+            &lt;th&gt;Net USD&lt;/th&gt;
+            &lt;th&gt;Ads Cost&lt;/th&gt;
+            &lt;th&gt;ROI&lt;/th&gt;
+            &lt;th&gt;Trend&lt;/th&gt;
+            &lt;th&gt;Status&lt;/th&gt;
+          &lt;/tr&gt;
+        &lt;/thead&gt;
+        &lt;tbody&gt;
+          {data.pagination.data.map((record) =&gt; (
+            &lt;tr key={record.date}&gt;
+              &lt;td&gt;{record.date}&lt;/td&gt;
+              &lt;td&gt;{record.subscribers_count}&lt;/td&gt;
+              &lt;td&gt;{record.daily_revenue.toLocaleString()}&lt;/td&gt;
+              &lt;td&gt;${record.yns_net_revenue_usd.toFixed(2)}&lt;/td&gt;
+              &lt;td&gt;${record.ads_cost_usd.toFixed(2)}&lt;/td&gt;
+              &lt;td className={record.daily_roi &gt;= 0 ? 'positive' : 'negative'}&gt;
+                {record.daily_roi_display}
+              &lt;/td&gt;
+              &lt;td&gt;
+                &lt;span className={`trend trend-${record.roi_trend?.toLowerCase()}`}&gt;
+                  {record.roi_trend || '—'}
+                &lt;/span&gt;
+              &lt;/td&gt;
+              &lt;td&gt;
+                {record.watch_alert ? (
+                  &lt;span className="alert"&gt;⚠️ WATCH&lt;/span&gt;
+                ) : (
+                  &lt;span className="ok"&gt;✓ OK&lt;/span&gt;
+                )}
+              &lt;/td&gt;
+            &lt;/tr&gt;
+          ))}
+        &lt;/tbody&gt;
+      &lt;/table&gt;
+
+      {/* Pagination Controls */}
+      &lt;div className="pagination"&gt;
+        &lt;button 
+          disabled={!data.pagination.prev_page_url}
+          onClick={() =&gt; setPage(page - 1)}
+        &gt;
+          ← Previous
+        &lt;/button&gt;
+        &lt;span&gt;Page {page} of {data.pagination.last_page}&lt;/span&gt;
+        &lt;button 
+          disabled={!data.pagination.next_page_url}
+          onClick={() =&gt; setPage(page + 1)}
+        &gt;
+          Next →
+        &lt;/button&gt;
+      &lt;/div&gt;
+    &lt;/div&gt;
+  );
+}
+
+export default FinancialDashboard;</code></pre>
+
+        <div class="section-divider"></div>
+
+        <!-- Export Endpoint Section -->
+        <h2 id="export"><span class="emoji">📥</span>Export Endpoint: Streamed CSV Download</h2>
+
+        <h3>Purpose</h3>
+        <p>Download complete financial breakdown as a CSV file optimized for Excel, with all data streamed in 200-row chunks for memory efficiency.</p>
+
+        <h3>Request Parameters</h3>
+        <div class="code-label">JavaScript</div>
+        <pre><code>const params = {
+  from: '2026-08-01',           // Start date (YYYY-MM-DD) — optional
+  to: '2026-08-31',             // End date (YYYY-MM-DD) — optional
+  exchange_rate: 1500           // Custom exchange rate — optional
+};</code></pre>
+
+        <h3>Response Characteristics</h3>
+        <ul>
+            <li><strong>Content-Type</strong>: <code>text/csv; charset=UTF-8</code></li>
+            <li><strong>Content-Disposition</strong>: <code>attachment; filename="financial_breakdown_naijria_2026-08-01_to_2026-08-31.csv"</code></li>
+            <li><strong>Streaming</strong>: Chunked (200 rows per chunk for memory efficiency)</li>
+            <li><strong>UTF-8 BOM</strong>: Included for Microsoft Excel compatibility</li>
+        </ul>
+
+        <div class="alert critical">
+            <strong>⚠️ CRITICAL: Use responseType: 'blob'</strong><br/>
+            The <code>responseType: 'blob'</code> is <strong>REQUIRED</strong> for CSV streaming. Without it, the response will not be treated as binary data and the file will not download correctly.
+        </div>
+
+        <h3>Frontend Implementation: React with Axios</h3>
+        
+        <div class="code-label">React Component</div>
+        <pre><code>import axios from 'axios';
+
+async function downloadFinancialReport(from, to, exchangeRate = null) {
+  try {
+    const params = {};
+    
+    if (from) params.from = from;
+    if (to) params.to = to;
+    if (exchangeRate) params.exchange_rate = exchangeRate;
+
+    // ⚠️ CRITICAL: responseType must be 'blob' for file download
+    const response = await axios.get(
+      '/api/v1/dashboard/financial-metrics/export',
+      {
+        params,
+        headers: {
+          'Authorization': `Bearer ${localStorage.getItem('admin_token')}`,
+          'X-Tenant': 'naijria'
+        },
+        responseType: 'blob'  // ← DO NOT OMIT THIS
+      }
+    );
+
+    // Create blob and download
+    const blob = new Blob([response.data], { type: 'text/csv;charset=utf-8;' });
+    const url = window.URL.createObjectURL(blob);
+    const link = document.createElement('a');
+    link.href = url;
+    link.setAttribute('download', `financial_report_${from}_to_${to}.csv`);
+    document.body.appendChild(link);
+    link.click();
+    link.remove();
+    window.URL.revokeObjectURL(url);
+  } catch (error) {
+    console.error('Download failed:', error);
+    alert('Failed to download report. Please try again.');
+  }
+}
+
+function ExportButton() {
+  const [loading, setLoading] = useState(false);
+
+  const handleExport = async () => {
+    setLoading(true);
+    try {
+      await downloadFinancialReport('2026-08-01', '2026-08-31', 1500);
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  return (
+    &lt;button onClick={handleExport} disabled={loading}&gt;
+      {loading ? 'Downloading...' : '📥 Download CSV Report'}
+    &lt;/button&gt;
+  );
+}
+
+export default ExportButton;</code></pre>
+
+        <h3>Alternative: Using Fetch API</h3>
+        
+        <div class="code-label">JavaScript (Fetch API)</div>
+        <pre><code>async function downloadReportFetch(from, to, exchangeRate = null) {
+  try {
+    const url = new URL('/api/v1/dashboard/financial-metrics/export', window.location.origin);
+    
+    if (from) url.searchParams.append('from', from);
+    if (to) url.searchParams.append('to', to);
+    if (exchangeRate) url.searchParams.append('exchange_rate', exchangeRate);
+
+    const response = await fetch(url, {
+      method: 'GET',
+      headers: {
+        'Authorization': `Bearer ${localStorage.getItem('admin_token')}`,
+        'X-Tenant': 'naijria'
+      }
+    });
+
+    if (!response.ok) {
+      throw new Error(`HTTP error! status: ${response.status}`);
+    }
+
+    const blob = await response.blob();
+    const downloadUrl = window.URL.createObjectURL(blob);
+    const link = document.createElement('a');
+    link.href = downloadUrl;
+    link.setAttribute('download', `financial_report_${from}_to_${to}.csv`);
+    document.body.appendChild(link);
+    link.click();
+    link.remove();
+    window.URL.revokeObjectURL(downloadUrl);
+  } catch (error) {
+    console.error('Download failed:', error);
+  }
+}</code></pre>
+
+        <div class="section-divider"></div>
+
+        <!-- ROI Trend Guide -->
+        <h2 id="roi-guide"><span class="emoji">📊</span>ROI Trend Indicator Guide</h2>
+
+        <p>The <code>roi_trend</code> field provides a quick visual indicator of performance momentum:</p>
+
+        <h3>Values Explanation</h3>
+        <table>
+            <thead>
+                <tr>
+                    <th>Value</th>
+                    <th>Meaning</th>
+                    <th>Visual</th>
+                    <th>Action</th>
+                </tr>
+            </thead>
+            <tbody>
+                <tr>
+                    <td><strong>Positive</strong></td>
+                    <td>Current ROI &gt; Yesterday's ROI</td>
+                    <td>📈 Green</td>
+                    <td>Momentum is good, continue current strategy</td>
+                </tr>
+                <tr>
+                    <td><strong>Negative</strong></td>
+                    <td>Current ROI &lt; Yesterday's ROI</td>
+                    <td>📉 Red</td>
+                    <td>Momentum declining, monitor closely</td>
+                </tr>
+                <tr>
+                    <td><strong>Watch</strong></td>
+                    <td>Alert condition triggered</td>
+                    <td>⚠️ Yellow</td>
+                    <td>Immediate attention needed</td>
+                </tr>
+                <tr>
+                    <td><strong>null</strong></td>
+                    <td>First day or no data</td>
+                    <td>—</td>
+                    <td>No comparison available</td>
+                </tr>
+            </tbody>
+        </table>
+
+        <h3>Alert Conditions (Watch)</h3>
+        <p>A <code>watch_alert: true</code> with <code>roi_trend: "Watch"</code> triggers when:</p>
+        <ol>
+            <li><strong>ROI Drop &gt; 20 percentage points</strong> from yesterday
+                <ul>
+                    <li>Example: Yesterday 80%, Today 55% → Alert</li>
+                </ul>
+            </li>
+            <li><strong>3 Consecutive Negative ROI Days</strong>
+                <ul>
+                    <li>Day 1: -5% ❌</li>
+                    <li>Day 2: -3% ❌</li>
+                    <li>Day 3: -8% ❌ → Alert triggered</li>
+                </ul>
+            </li>
+        </ol>
+
+        <div class="section-divider"></div>
+
+        <!-- Advanced Use Cases -->
+        <h2 id="advanced"><span class="emoji">🛠️</span>Advanced Use Cases</h2>
+
+        <h3>Case 1: Real-Time Dashboard with Auto-Refresh</h3>
+        <div class="code-label">React Component</div>
+        <pre><code>function RealtimeDashboard() {
+  const [data, setData] = useState(null);
+
+  useEffect(() => {
+    // Initial fetch
+    fetchMetrics();
+
+    // Auto-refresh every 5 minutes
+    const interval = setInterval(fetchMetrics, 5 * 60 * 1000);
+    return () =&gt; clearInterval(interval);
+  }, []);
+
+  const fetchMetrics = async () => {
+    try {
+      const response = await axios.get('/api/v1/dashboard/financial-metrics', {
+        params: {
+          from: new Date(Date.now() - 30 * 24 * 60 * 60 * 1000)
+            .toISOString()
+            .split('T')[0],
+          to: new Date().toISOString().split('T')[0],
+          page: 1,
+          per_page: 15
+        },
+        headers: {
+          'Authorization': `Bearer ${localStorage.getItem('admin_token')}`,
+          'X-Tenant': 'naijria'
+        }
+      });
+      setData(response.data);
+    } catch (error) {
+      console.error('Auto-refresh failed:', error);
+    }
+  };
+
+  return &lt;div&gt;{/* render data */}&lt;/div&gt;;
+}</code></pre>
+
+        <h3>Case 2: Multi-Tenant Comparison</h3>
+        <div class="code-label">JavaScript</div>
+        <pre><code>async function compareTenants(from, to) {
+  const tenants = ['naijria', 'kenya'];
+  const results = {};
+
+  for (const tenant of tenants) {
+    const response = await axios.get('/api/v1/dashboard/financial-metrics', {
+      params: { from, to, page: 1, per_page: 100 },
+      headers: {
+        'Authorization': `Bearer ${localStorage.getItem('admin_token')}`,
+        'X-Tenant': tenant
+      }
+    });
+    
+    results[tenant] = {
+      totalRevenue: response.data.totals.daily_revenue,
+      totalROI: response.data.totals.daily_roi,
+      currency: response.data.currency,
+      recordCount: response.data.pagination.total
+    };
+  }
+
+  return results;
+}</code></pre>
+
+        <div class="section-divider"></div>
+
+        <!-- Error Handling -->
+        <h2 id="errors"><span class="emoji">⚠️</span>Error Handling</h2>
+
+        <div class="code-label">JavaScript</div>
+        <pre><code>async function safeApiCall(endpoint, params) {
+  try {
+    const response = await axios.get(endpoint, {
+      params,
+      headers: {
+        'Authorization': `Bearer ${localStorage.getItem('admin_token')}`,
+        'X-Tenant': 'naijria'
+      },
+      timeout: 30000 // 30 second timeout
+    });
+    return { success: true, data: response.data };
+  } catch (error) {
+    if (error.response) {
+      // Server responded with error status
+      return {
+        success: false,
+        error: error.response.data?.message || 'Server error',
+        status: error.response.status
+      };
+    } else if (error.request) {
+      // Request sent but no response
+      return {
+        success: false,
+        error: 'No response from server. Check your connection.'
+      };
+    } else {
+      return {
+        success: false,
+        error: error.message || 'Unknown error'
+      };
+    }
+  }
+}</code></pre>
+
+        <div class="section-divider"></div>
+
+        <!-- Summary -->
+        <h2><span class="emoji">🚀</span>Summary</h2>
+        
+        <table>
+            <thead>
+                <tr>
+                    <th>Feature</th>
+                    <th>Dashboard</th>
+                    <th>Export</th>
+                </tr>
+            </thead>
+            <tbody>
+                <tr>
+                    <td><strong>Response</strong></td>
+                    <td>JSON</td>
+                    <td>CSV Stream</td>
+                </tr>
+                <tr>
+                    <td><strong>Use Case</strong></td>
+                    <td>UI Display</td>
+                    <td>File Download</td>
+                </tr>
+                <tr>
+                    <td><strong>Pagination</strong></td>
+                    <td>Yes</td>
+                    <td>No (full range)</td>
+                </tr>
+                <tr>
+                    <td><strong>Memory Efficient</strong></td>
+                    <td>Yes (paginated)</td>
+                    <td>Yes (200-row chunks)</td>
+                </tr>
+                <tr>
+                    <td><strong>exchange_rate</strong></td>
+                    <td>✅ Supported</td>
+                    <td>✅ Supported</td>
+                </tr>
+                <tr>
+                    <td><strong>roi_trend</strong></td>
+                    <td>✅ Included</td>
+                    <td>Not in JSON</td>
+                </tr>
+                <tr>
+                    <td><strong>Browser Download</strong></td>
+                    <td>No</td>
+                    <td>Yes (blob)</td>
+                </tr>
+            </tbody>
+        </table>
+
+        <div class="section-divider"></div>
+
+        <!-- Footer -->
+        <div class="footer">
+            <p><strong>Postman Collection</strong>: Financial_Metrics_Dashboard.postman_collection.json</p>
+            <p><strong>Last Updated</strong>: 2026-09-01 | <strong>API Version</strong>: v1 | <strong>Status</strong>: Production Ready</p>
+            <p>For more information, see the backend implementation at:</p>
+            <p><code>app/Http/Controllers/V1/FinancialMetricsController.php</code><br/>
+            <code>app/Services/V1/FinancialMetricsService.php</code></p>
+        </div>
+    </div>
+</body>
+</html>
