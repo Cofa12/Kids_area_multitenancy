@@ -154,6 +154,7 @@ class CampaignController extends Controller
                 $dates[] = [
                     'date' => $currentDate->format('Y-m-d'),
                     'num_subscribers' => $campaign->subscribers->count(),
+                    'num_non_billable_clicks' => $campaign->nonBillableClicks()->whereDate('created_at', $currentDate)->count(),
                     'cpa' => $this->CpaCalculation->calculateCpa($campaign, $currentDate),
                 ];
                 $currentDate->addDay();
@@ -216,6 +217,9 @@ class CampaignController extends Controller
                 $months[] = [
                     'month' => $date->format('Y-m'),
                     'num_subscribers' => $campaign->subscribers->count(),
+                    'num_non_billable_clicks' => $campaign->nonBillableClicks()
+                        ->whereBetween('created_at', [$date->copy()->startOfMonth(), $date->copy()->endOfMonth()])
+                        ->count(),
                     'total_campaign_cost' => $campaign->subscribers->sum('amount') * $this->CpaCalculation->calculateCpa($campaign, $date),
                     'cpa' => $this->CpaCalculation->calculateCpa($campaign, $date),
                 ];
@@ -265,6 +269,7 @@ class CampaignController extends Controller
             $dates[] = [
                 'date' => $currentDate->format('Y-m-d'),
                 'num_subscribers' => $campaign->subscribers->count(),
+                'num_non_billable_clicks' => $campaign->nonBillableClicks()->whereDate('created_at', $currentDate)->count(),
                 'cpa' => $this->CpaCalculation->calculateCpa($campaign, $currentDate),
             ];
             $currentDate->addDay();
@@ -318,6 +323,9 @@ class CampaignController extends Controller
             $months[] = [
                 'month' => $date->format('Y-m'),
                 'num_subscribers' => $campaign->subscribers->count(),
+                'num_non_billable_clicks' => $campaign->nonBillableClicks()
+                    ->whereBetween('created_at', [$date->copy()->startOfMonth(), $date->copy()->endOfMonth()])
+                    ->count(),
                 'total_campaign_cost' => $campaign->subscribers->sum('amount') * $this->CpaCalculation->calculateCpa($campaign, $date),
                 'cpa' => $this->CpaCalculation->calculateCpa($campaign, $date),
             ];
