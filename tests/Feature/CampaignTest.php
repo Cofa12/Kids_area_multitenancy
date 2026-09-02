@@ -176,6 +176,44 @@ class CampaignTest extends TestCase
             'status' => 'active'
         ], 'tenant');
     }
+    public function test_store_non_billable_click_accepts_pubid_and_stores_it(): void
+    {
+        $user = User::create([
+            'name' => 'cofa',
+            'phone' => '+2010123456789',
+            'password' => 'mK5lj2jlk##'
+        ]);
+
+        $campaign = Campaign::create([
+            'country' => 'egypt',
+            'operator' => 'mtn',
+            'service' => 'kidsArea',
+            'start_date' => date(now()->format('Y-m-d')),
+            'end_date' => '2025-11-20',
+            'status' => 'active',
+            'user_id' => $user->id,
+        ]);
+
+        $payload = [
+            'campaign_id' => $campaign->id,
+            'click_id' => 'click-001',
+            'pubid' => 'pub-001',
+        ];
+
+        $sut = $this->postJson('/api/v1/dashboard/campaigns/non-billable-clicks', $payload, [
+            'Accept' => 'application/json',
+            'Accept-language' => 'en',
+            'X-Tenant' => 'Test Tenant',
+        ]);
+
+        $sut->assertStatus(JsonResponse::HTTP_CREATED);
+        $this->assertDatabaseHas('non_billable_campaign_clicks', [
+            'campaign_id' => $campaign->id,
+            'click_id' => 'click-001',
+            'pubid' => 'pub-001',
+        ], 'tenant');
+    }
+
     public function test_update_campaign_cpa_success(): void
     {
         $language = 'en';

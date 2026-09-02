@@ -15,5 +15,6 @@ class NonBillableCampaignClick extends Model
     protected $fillable = [
         'campaign_id',
         'click_id',
+        'pubid',
     ];
 }

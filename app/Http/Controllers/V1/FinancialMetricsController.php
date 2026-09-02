@@ -119,7 +119,8 @@ class FinancialMetricsController extends Controller
                 'P&L (USD)',
                 'Daily ROI %',
                 'Daily Revenue Variation %',
-                'Watch Alert (⚠)',
+                'roi_trend',
+                'watch_alert',
             ]);
 
             // Chunk and stream data rows
@@ -147,7 +148,8 @@ class FinancialMetricsController extends Controller
                         $row['pnl_usd'],
                         $row['daily_roi_display'],
                         $row['daily_revenue_variation_display'],
-                        $row['watch_alert'] ? 'ALERT' : 'OK',
+                        $row['roi_trend'] ?? '—',
+                        $row['watch_alert'] ? 'true' : 'false',
                     ]);
                 }
                 if (ob_get_level() > 0) {
@@ -176,7 +178,8 @@ class FinancialMetricsController extends Controller
                 $totals['pnl_usd'],
                 $totals['daily_roi_display'],
                 $totals['daily_revenue_variation_display'],
-                '',
+                $totals['roi_trend'] ?? '—',
+                $totals['watch_alert'] ? 'true' : 'false',
             ]);
 
             fclose($handle);

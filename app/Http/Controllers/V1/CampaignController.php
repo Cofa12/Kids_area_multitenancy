@@ -350,6 +350,7 @@ class CampaignController extends Controller
         $validated = $request->validate([
             'campaign_id' => ['required', 'uuid', 'exists:tenant.campaigns,id'],
             'click_id' => ['required', 'string', 'max:255', 'unique:tenant.non_billable_campaign_clicks,click_id'],
+            'pubid' => ['nullable', 'string', 'max:255'],
         ]);
 
         Campaign::query()->findOrFail($validated['campaign_id']);
@@ -357,6 +358,7 @@ class CampaignController extends Controller
         NonBillableCampaignClick::create([
             'campaign_id' => $validated['campaign_id'],
             'click_id' => $validated['click_id'],
+            'pubid' => $validated['pubid'] ?? null,
         ]);
 
         return response()->json([

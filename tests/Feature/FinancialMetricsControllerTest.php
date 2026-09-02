@@ -150,6 +150,8 @@ class FinancialMetricsControllerTest extends TestCase
         $this->assertStringContainsString('Date,Subscribers,Renewals', $content);
         $this->assertStringContainsString('"Daily Revenue (NGN)"', $content);
         $this->assertStringContainsString('"Net Revenue After 7.5% VAT"', $content);
+        $this->assertStringContainsString('roi_trend', $content);
+        $this->assertStringContainsString('watch_alert', $content);
         $this->assertStringContainsString('TOTAL', $content);
     }
 
