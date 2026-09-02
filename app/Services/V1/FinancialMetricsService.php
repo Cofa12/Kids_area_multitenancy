@@ -321,7 +321,7 @@ class FinancialMetricsService
         }
 
         // ROI Trend Indicator: Positive / Negative / Watch
-        $roiTrend = null;
+        $roiTrend = 'Watch';
         if ($watchAlert) {
             $roiTrend = 'Watch';
         } elseif ($dailyRoi !== null && $yesterdayRoi !== null) {
@@ -428,7 +428,7 @@ class FinancialMetricsService
             'daily_roi_display' => $totalRoiDisplay,
             'daily_revenue_variation' => null,
             'daily_revenue_variation_display' => '—',
-            'roi_trend' => null,
+            'roi_trend' => 'Watch',
             'watch_alert' => false,
         ];
     }

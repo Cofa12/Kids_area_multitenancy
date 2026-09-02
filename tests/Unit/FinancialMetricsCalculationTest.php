@@ -105,6 +105,7 @@ class FinancialMetricsCalculationTest extends TestCase
 
         $this->assertNull($row['daily_roi']);
         $this->assertEquals('—', $row['daily_roi_display']);
+        $this->assertEquals('Watch', $row['roi_trend']);
     }
 
     public function test_daily_revenue_variation(): void

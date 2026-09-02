@@ -148,7 +148,7 @@ class FinancialMetricsController extends Controller
                         $row['pnl_usd'],
                         $row['daily_roi_display'],
                         $row['daily_revenue_variation_display'],
-                        $row['roi_trend'] ?? '—',
+                        $row['roi_trend'] ?? 'Watch',
                         $row['watch_alert'] ? 'true' : 'false',
                     ]);
                 }
@@ -178,7 +178,7 @@ class FinancialMetricsController extends Controller
                 $totals['pnl_usd'],
                 $totals['daily_roi_display'],
                 $totals['daily_revenue_variation_display'],
-                $totals['roi_trend'] ?? '—',
+                $totals['roi_trend'] ?? 'Watch',
                 $totals['watch_alert'] ? 'true' : 'false',
             ]);
 
