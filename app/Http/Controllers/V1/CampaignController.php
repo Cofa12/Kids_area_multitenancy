@@ -153,7 +153,8 @@ class CampaignController extends Controller
                 }
                 $dates[] = [
                     'date' => $currentDate->format('Y-m-d'),
-                    'num_subscribers' => $campaign->subscribers->count(),
+                    'num_subscribers' => $campaign->subscribers()->whereDate('created_at', $currentDate)->count()
+                        + $campaign->nonBillableClicks()->whereDate('created_at', $currentDate)->count(),
                     'num_non_billable_clicks' => $campaign->nonBillableClicks()->whereDate('created_at', $currentDate)->count(),
                     'cpa' => $this->CpaCalculation->calculateCpa($campaign, $currentDate),
                 ];
@@ -216,7 +217,8 @@ class CampaignController extends Controller
             foreach ($targetMonths as $date) {
                 $months[] = [
                     'month' => $date->format('Y-m'),
-                    'num_subscribers' => $campaign->subscribers->count(),
+                    'num_subscribers' => $campaign->subscribers()->whereBetween('created_at', [$date->copy()->startOfMonth(), $date->copy()->endOfMonth()])->count()
+                        + $campaign->nonBillableClicks()->whereBetween('created_at', [$date->copy()->startOfMonth(), $date->copy()->endOfMonth()])->count(),
                     'num_non_billable_clicks' => $campaign->nonBillableClicks()
                         ->whereBetween('created_at', [$date->copy()->startOfMonth(), $date->copy()->endOfMonth()])
                         ->count(),
@@ -265,11 +267,13 @@ class CampaignController extends Controller
             if ($currentDate > $actualEndDate) {
                 break;
             }
+            $date = $currentDate->toDateString();
 
             $dates[] = [
-                'date' => $currentDate->format('Y-m-d'),
-                'num_subscribers' => $campaign->subscribers->count(),
-                'num_non_billable_clicks' => $campaign->nonBillableClicks()->whereDate('created_at', $currentDate)->count(),
+                'date' => $date,
+                'num_subscribers' => $campaign->subscribers()->whereDate('created_at', $date)->count()
+                    + $campaign->nonBillableClicks()->whereDate('created_at', $date)->count(),
+                'num_non_billable_clicks' => $campaign->nonBillableClicks()->whereDate('created_at', $date)->count(),
                 'cpa' => $this->CpaCalculation->calculateCpa($campaign, $currentDate),
             ];
             $currentDate->addDay();
@@ -320,11 +324,14 @@ class CampaignController extends Controller
         $targetMonths = array_slice($allMonths, $offset, $perPage);
 
         foreach ($targetMonths as $date) {
+            $monthStart = $date->copy()->startOfMonth();
+            $monthEnd = $date->copy()->endOfMonth();
             $months[] = [
                 'month' => $date->format('Y-m'),
-                'num_subscribers' => $campaign->subscribers->count(),
+                'num_subscribers' => $campaign->subscribers()->whereBetween('created_at', [$monthStart, $monthEnd])->count()
+                    + $campaign->nonBillableClicks()->whereBetween('created_at', [$monthStart, $monthEnd])->count(),
                 'num_non_billable_clicks' => $campaign->nonBillableClicks()
-                    ->whereBetween('created_at', [$date->copy()->startOfMonth(), $date->copy()->endOfMonth()])
+                    ->whereBetween('created_at', [$monthStart, $monthEnd])
                     ->count(),
                 'total_campaign_cost' => $campaign->subscribers->sum('amount') * $this->CpaCalculation->calculateCpa($campaign, $date),
                 'cpa' => $this->CpaCalculation->calculateCpa($campaign, $date),

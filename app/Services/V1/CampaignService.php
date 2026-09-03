@@ -69,7 +69,7 @@ class CampaignService
                 if ($end->lt($today->copy()->subDay())) {
                     // denominator: total new subscribers during campaign period
                     $totalNewSubs = CampaignSubscriber::where('campaign_id', $campaign->id)
-                        ->whereBetween('subscribed_at', [$start, $end->copy()->endOfDay()])
+                        ->whereBetween('created_at', [$start, $end->copy()->endOfDay()])
                         ->count();
 
                     if ($totalNewSubs > 0 && $campaign->influencer_cost) {
@@ -84,7 +84,7 @@ class CampaignService
             $cursor = $start->copy();
             while ($cursor->lte($end)) {
                 $newSubscribers = CampaignSubscriber::where('campaign_id', $campaign->id)
-                    ->whereDate('subscribed_at', $cursor->toDateString())
+                    ->whereDate('created_at', $cursor->toDateString())
                     ->count();
 
                 $renewals = CampaignRenewal::where('campaign_id', $campaign->id)
