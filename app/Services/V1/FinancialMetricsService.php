@@ -115,9 +115,6 @@ class FinancialMetricsService
         // 1. Highly-optimized SQL aggregates for Subscriptions
         $subsByDateAndPlan = $this->getSubscribersAggregated($queryStart, $end);
 
-        // 1b. Non-billable clicks still count as daily subscribers, but do not generate revenue.
-        $nonBillableByDate = $this->getNonBillableClicksAggregated($queryStart, $end);
-
         // 2. Highly-optimized SQL aggregates for Renewals
         $renewalsByDateAndPlan = $this->getRenewalsAggregated($queryStart, $end);
 
@@ -135,7 +132,6 @@ class FinancialMetricsService
             $dateStr = $date->format('Y-m-d');
 
             $daySubs = $subsByDateAndPlan[$dateStr] ?? [];
-            $dayNonBillable = $nonBillableByDate[$dateStr] ?? 0;
             $dayRenewals = $renewalsByDateAndPlan[$dateStr] ?? [];
             $dayAdsCost = (float) ($adsCostByDate[$dateStr] ?? 0.0);
 
@@ -148,8 +144,7 @@ class FinancialMetricsService
                 $tenantName,
                 $currency,
                 $prevRevenue,
-                $roiHistory,
-                $dayNonBillable
+                $roiHistory
             );
 
             $allDailyCalculations[$dateStr] = $calculatedRow;
@@ -229,7 +224,6 @@ class FinancialMetricsService
      * @param string $currency
      * @param float|null $prevDailyRevenue
      * @param array<int, float|null> $roiHistory
-        * @param int $nonBillableCount
      * @return array<string, mixed>
      */
     public function computeSingleDayMetrics(
@@ -241,10 +235,9 @@ class FinancialMetricsService
         string $tenantName,
         string $currency,
         ?float $prevDailyRevenue = null,
-        array $roiHistory = [],
-        int $nonBillableCount = 0
+        array $roiHistory = []
     ): array {
-        $totalSubscribers = array_sum($subsByPlan) + $nonBillableCount;
+        $totalSubscribers = array_sum($subsByPlan);
         $totalRenewals = array_sum($renewalsByPlan);
 
         // Daily Revenue Calculation: sum((subs + renewals) * plan_price)
@@ -450,11 +443,11 @@ class FinancialMetricsService
         $results = [];
 
         // Check if users table exists in active tenant connection
-        if (Schema::hasTable('users')) {
-            $hasPlanId = Schema::hasColumn('users', 'plan_id');
-            $hasAction = Schema::hasColumn('users', 'action');
+        if (Schema::connection('tenant')->hasTable('users')) {
+            $hasPlanId = Schema::connection('tenant')->hasColumn('users', 'plan_id');
+            $hasAction = Schema::connection('tenant')->hasColumn('users', 'action');
 
-            $query = DB::table('users')
+            $query = DB::connection('tenant')->table('users')
                 ->whereBetween('created_at', [$start, $end]);
 
             if ($hasAction) {
@@ -488,37 +481,6 @@ class FinancialMetricsService
     }
 
     /**
-     * High performance aggregate non-billable click count grouped by date.
-     *
-     * @return array<string, int>
-     */
-    protected function getNonBillableClicksAggregated(Carbon $start, Carbon $end): array
-    {
-        $results = [];
-
-        if (Schema::connection('tenant')->hasTable('non_billable_campaign_clicks')) {
-            $rows = DB::connection('tenant')->table('non_billable_campaign_clicks')
-                ->leftJoin('campaigns', 'campaigns.id', '=', 'non_billable_campaign_clicks.campaign_id')
-                ->whereBetween(
-                    DB::raw('COALESCE(campaigns.start_date, DATE(non_billable_campaign_clicks.created_at))'),
-                    [$start->toDateString(), $end->toDateString()]
-                )
-                ->select(
-                    DB::raw('COALESCE(campaigns.start_date, DATE(non_billable_campaign_clicks.created_at)) as date_val'),
-                    DB::raw('COUNT(*) as total_count')
-                )
-                ->groupBy(DB::raw('COALESCE(campaigns.start_date, DATE(non_billable_campaign_clicks.created_at))'))
-                ->get();
-
-            foreach ($rows as $row) {
-                $results[(string) $row->date_val] = (int) $row->total_count;
-            }
-        }
-
-        return $results;
-    }
-
-    /**
      * High performance aggregate renewal count grouped by (date, plan_id).
      *
      * @return array<string, array<string, int>>
@@ -528,15 +490,15 @@ class FinancialMetricsService
         $results = [];
 
         // 1. Check campaign_renewals table if exists
-        if (Schema::hasTable('campaign_renewals')) {
-            $hasPlanId = Schema::hasColumn('campaign_renewals', 'plan_id');
-            $dateColumn = Schema::hasColumn('campaign_renewals', 'renewed_at')
+        if (Schema::connection('tenant')->hasTable('campaign_renewals')) {
+            $hasPlanId = Schema::connection('tenant')->hasColumn('campaign_renewals', 'plan_id');
+            $dateColumn = Schema::connection('tenant')->hasColumn('campaign_renewals', 'renewed_at')
                 ? "COALESCE(renewed_at, created_at)"
                 : "created_at";
 
             $selectPlan = $hasPlanId ? "COALESCE(plan_id, 'daily')" : "'daily'";
 
-            $rows = DB::table('campaign_renewals')
+            $rows = DB::connection('tenant')->table('campaign_renewals')
                 ->whereBetween(DB::raw($dateColumn), [$start, $end])
                 ->select(
                     DB::raw("DATE({$dateColumn}) as date_val"),
@@ -554,11 +516,11 @@ class FinancialMetricsService
         }
 
         // 2. Check users with action = 'SUBSCRIBED_RENEWAL'
-        if (Schema::hasTable('users') && Schema::hasColumn('users', 'action')) {
-            $hasPlanId = Schema::hasColumn('users', 'plan_id');
+        if (Schema::connection('tenant')->hasTable('users') && Schema::connection('tenant')->hasColumn('users', 'action')) {
+            $hasPlanId = Schema::connection('tenant')->hasColumn('users', 'plan_id');
             $selectPlan = $hasPlanId ? "COALESCE(plan_id, 'daily')" : "'daily'";
 
-            $rows = DB::table('users')
+            $rows = DB::connection('tenant')->table('users')
                 ->where('action', 'SUBSCRIBED_RENEWAL')
                 ->whereBetween('updated_at', [$start, $end])
                 ->select(
@@ -588,15 +550,15 @@ class FinancialMetricsService
     {
         $results = [];
 
-        if (Schema::hasTable('campaigns')) {
-            $hasCost = Schema::hasColumn('campaigns', 'influencer_cost');
-            $hasCpa = Schema::hasColumn('campaigns', 'cpa');
+        if (Schema::connection('tenant')->hasTable('campaigns')) {
+            $hasCost = Schema::connection('tenant')->hasColumn('campaigns', 'influencer_cost');
+            $hasCpa = Schema::connection('tenant')->hasColumn('campaigns', 'cpa');
 
             if ($hasCost || $hasCpa) {
                 // Sum influencer cost grouped by start_date or date
                 $costSelect = $hasCost ? "COALESCE(CAST(influencer_cost AS DECIMAL(12,2)), 0)" : "0";
 
-                $rows = DB::table('campaigns')
+                $rows = DB::connection('tenant')->table('campaigns')
                     ->whereBetween('start_date', [$start->toDateString(), $end->toDateString()])
                     ->select(
                         DB::raw('DATE(start_date) as date_val'),

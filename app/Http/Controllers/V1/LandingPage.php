@@ -49,7 +49,8 @@ class LandingPage extends Controller
         $operator      = $request->get('operator');
         $channel       = $request->get('channel');
         $packName      = $request->get('packName');
-        $productId     = $request->get('productId'); // plan ID — determines subscription duration
+        // Some operators send the plan ID as transactionId rather than productId.
+        $productId     = $request->get('productId') ?: $transactionId ?: $packName;
         $startDate     = $request->get('startDate');
         $endDate       = $request->get('endDate');
         $language      = $request->get('language');

@@ -88,6 +88,7 @@ class SafaricomCallbackTest extends TestCase
             'phone'               => $msisdn,
             'subscription_status' => 1,
             'transaction_id'      => 'TXN-NEW-001',
+            'plan_id'             => 'TXN-NEW-001',
         ], 'tenant');
     }
 
