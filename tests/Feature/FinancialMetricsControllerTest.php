@@ -3,6 +3,7 @@
 namespace Tests\Feature;
 
 use App\Models\LandlordUser;
+use App\Models\NonBillableCampaignClick;
 use App\Models\Tenant;
 use App\Models\User;
 use Illuminate\Http\JsonResponse;
@@ -107,6 +108,35 @@ class FinancialMetricsControllerTest extends TestCase
         ]);
 
         $this->assertNotEmpty($response->json('pagination.data'));
+    }
+
+    public function test_daily_financials_include_non_billable_clicks_in_subscriber_count(): void
+    {
+        $date = now()->toDateString();
+
+        NonBillableCampaignClick::create([
+            'campaign_id' => '00000000-0000-0000-0000-000000000001',
+            'click_id' => 'non-billable-test-click',
+            'created_at' => now(),
+        ]);
+
+        $response = $this->getJson('/api/v1/performance/daily-financials?from=' . $date . '&to=' . $date, [
+            'Authorization' => 'Bearer ' . $this->adminToken,
+            'X-Tenant' => 'test.localhost',
+            'Accept' => 'application/json',
+        ]);
+
+        $response->assertStatus(JsonResponse::HTTP_OK);
+        $this->assertSame(1, $response->json('pagination.data.0.subscribers_count'));
+        $this->assertSame(1, $response->json('totals.subscribers_count'));
+
+        $exportResponse = $this->get('/api/v1/performance/daily-financials/export?from=' . $date . '&to=' . $date, [
+            'Authorization' => 'Bearer ' . $this->adminToken,
+            'X-Tenant' => 'test.localhost',
+        ]);
+
+        $exportResponse->assertStatus(200);
+        $this->assertStringContainsString($date . ',1,0,', $exportResponse->streamedContent());
     }
 
     public function test_get_daily_financials_alias_route(): void

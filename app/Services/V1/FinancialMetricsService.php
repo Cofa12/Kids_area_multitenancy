@@ -115,6 +115,9 @@ class FinancialMetricsService
         // 1. Highly-optimized SQL aggregates for Subscriptions
         $subsByDateAndPlan = $this->getSubscribersAggregated($queryStart, $end);
 
+        // 1b. Non-billable clicks still count as daily subscribers, but do not generate revenue.
+        $nonBillableByDate = $this->getNonBillableClicksAggregated($queryStart, $end);
+
         // 2. Highly-optimized SQL aggregates for Renewals
         $renewalsByDateAndPlan = $this->getRenewalsAggregated($queryStart, $end);
 
@@ -132,6 +135,7 @@ class FinancialMetricsService
             $dateStr = $date->format('Y-m-d');
 
             $daySubs = $subsByDateAndPlan[$dateStr] ?? [];
+            $dayNonBillable = $nonBillableByDate[$dateStr] ?? 0;
             $dayRenewals = $renewalsByDateAndPlan[$dateStr] ?? [];
             $dayAdsCost = (float) ($adsCostByDate[$dateStr] ?? 0.0);
 
@@ -144,7 +148,8 @@ class FinancialMetricsService
                 $tenantName,
                 $currency,
                 $prevRevenue,
-                $roiHistory
+                $roiHistory,
+                $dayNonBillable
             );
 
             $allDailyCalculations[$dateStr] = $calculatedRow;
@@ -224,6 +229,7 @@ class FinancialMetricsService
      * @param string $currency
      * @param float|null $prevDailyRevenue
      * @param array<int, float|null> $roiHistory
+        * @param int $nonBillableCount
      * @return array<string, mixed>
      */
     public function computeSingleDayMetrics(
@@ -235,9 +241,10 @@ class FinancialMetricsService
         string $tenantName,
         string $currency,
         ?float $prevDailyRevenue = null,
-        array $roiHistory = []
+        array $roiHistory = [],
+        int $nonBillableCount = 0
     ): array {
-        $totalSubscribers = array_sum($subsByPlan);
+        $totalSubscribers = array_sum($subsByPlan) + $nonBillableCount;
         $totalRenewals = array_sum($renewalsByPlan);
 
         // Daily Revenue Calculation: sum((subs + renewals) * plan_price)
@@ -474,6 +481,33 @@ class FinancialMetricsService
                 $d = (string) $row->date_val;
                 $p = SubscriptionPlan::normalizePlanKey((string) $row->plan_key);
                 $results[$d][$p] = ($results[$d][$p] ?? 0) + (int) $row->total_count;
+            }
+        }
+
+        return $results;
+    }
+
+    /**
+     * High performance aggregate non-billable click count grouped by date.
+     *
+     * @return array<string, int>
+     */
+    protected function getNonBillableClicksAggregated(Carbon $start, Carbon $end): array
+    {
+        $results = [];
+
+        if (Schema::hasTable('non_billable_campaign_clicks')) {
+            $rows = DB::table('non_billable_campaign_clicks')
+                ->whereBetween('created_at', [$start, $end])
+                ->select(
+                    DB::raw('DATE(created_at) as date_val'),
+                    DB::raw('COUNT(*) as total_count')
+                )
+                ->groupBy(DB::raw('DATE(created_at)'))
+                ->get();
+
+            foreach ($rows as $row) {
+                $results[(string) $row->date_val] = (int) $row->total_count;
             }
         }
 
