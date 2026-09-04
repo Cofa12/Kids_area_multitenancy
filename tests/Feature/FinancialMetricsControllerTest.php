@@ -3,6 +3,7 @@
 namespace Tests\Feature;
 
 use App\Models\LandlordUser;
+use App\Models\Campaign;
 use App\Models\NonBillableCampaignClick;
 use App\Models\Tenant;
 use App\Models\User;
@@ -112,10 +113,17 @@ class FinancialMetricsControllerTest extends TestCase
 
     public function test_daily_financials_include_non_billable_clicks_in_subscriber_count(): void
     {
-        $date = now()->toDateString();
+        $date = now()->subDay()->toDateString();
+        $campaignId = '00000000-0000-0000-0000-000000000001';
+
+        Campaign::create([
+            'id' => $campaignId,
+            'start_date' => $date,
+            'type' => 'non-billable',
+        ]);
 
         NonBillableCampaignClick::create([
-            'campaign_id' => '00000000-0000-0000-0000-000000000001',
+            'campaign_id' => $campaignId,
             'click_id' => 'non-billable-test-click',
             'created_at' => now(),
         ]);

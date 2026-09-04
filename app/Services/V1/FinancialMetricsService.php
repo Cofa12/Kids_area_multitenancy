@@ -496,14 +496,18 @@ class FinancialMetricsService
     {
         $results = [];
 
-        if (Schema::hasTable('non_billable_campaign_clicks')) {
-            $rows = DB::table('non_billable_campaign_clicks')
-                ->whereBetween('created_at', [$start, $end])
+        if (Schema::connection('tenant')->hasTable('non_billable_campaign_clicks')) {
+            $rows = DB::connection('tenant')->table('non_billable_campaign_clicks')
+                ->leftJoin('campaigns', 'campaigns.id', '=', 'non_billable_campaign_clicks.campaign_id')
+                ->whereBetween(
+                    DB::raw('COALESCE(campaigns.start_date, DATE(non_billable_campaign_clicks.created_at))'),
+                    [$start->toDateString(), $end->toDateString()]
+                )
                 ->select(
-                    DB::raw('DATE(created_at) as date_val'),
+                    DB::raw('COALESCE(campaigns.start_date, DATE(non_billable_campaign_clicks.created_at)) as date_val'),
                     DB::raw('COUNT(*) as total_count')
                 )
-                ->groupBy(DB::raw('DATE(created_at)'))
+                ->groupBy(DB::raw('COALESCE(campaigns.start_date, DATE(non_billable_campaign_clicks.created_at))'))
                 ->get();
 
             foreach ($rows as $row) {
