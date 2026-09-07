@@ -400,6 +400,10 @@ class CampaignController extends Controller
             $params['pubid'] = $pubid;
         }
 
+        Log::info('Firing MobPlus tracking pixel', [
+            'params'   => $params,
+        ]);
+
         try {
             $response = Http::timeout(5)->post($trackingUrl, $params);
 
