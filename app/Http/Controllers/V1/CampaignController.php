@@ -400,17 +400,20 @@ class CampaignController extends Controller
             $params['pubid'] = $pubid;
         }
 
+        $fullUrl = $trackingUrl . '?' . http_build_query($params);
+
         Log::info('Firing MobPlus tracking pixel', [
+            'url'      => $fullUrl,
             'params'   => $params,
         ]);
 
         try {
-            $response = Http::timeout(5)->post($trackingUrl, $params);
+            $response = Http::timeout(10)->post($fullUrl);
 
             Log::info('MobPlus tracking pixel response', [
                 'click_id'    => $clickId,
                 'pubid'       => $pubid,
-                'url'         => $trackingUrl,
+                'url'         => $fullUrl,
                 'params'      => $params,
                 'status'      => $response->status(),
                 'body'        => $response->body(),
@@ -420,7 +423,7 @@ class CampaignController extends Controller
             Log::error('MobPlus tracking pixel failed', [
                 'click_id' => $clickId,
                 'pubid'    => $pubid,
-                'url'      => $trackingUrl,
+                'url'      => $fullUrl,
                 'params'   => $params,
                 'error'    => $e->getMessage(),
             ]);
