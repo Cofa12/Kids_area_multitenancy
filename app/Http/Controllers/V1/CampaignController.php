@@ -401,7 +401,7 @@ class CampaignController extends Controller
         }
 
         try {
-            $response = Http::timeout(5)->get($trackingUrl, $params);
+            $response = Http::timeout(5)->post($trackingUrl, $params);
 
             Log::info('MobPlus tracking pixel response', [
                 'click_id'    => $clickId,
