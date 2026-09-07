@@ -12,6 +12,8 @@ use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
 use Illuminate\Http\Resources\Json\AnonymousResourceCollection;
 use Illuminate\Support\Facades\Date;
+use Illuminate\Support\Facades\Http;
+use Illuminate\Support\Facades\Log;
 use App\Models\NonBillableCampaignClick;
 use Illuminate\Pagination\LengthAwarePaginator;
 use Spatie\Multitenancy\Models\Tenant;
@@ -359,25 +361,65 @@ class CampaignController extends Controller
     }
     public function storeNonBillableClick(Request $request): JsonResponse
     {
-
         $lang = $this->getLanguage($request);
 
         $validated = $request->validate([
             'campaign_id' => ['required', 'uuid', 'exists:tenant.campaigns,id'],
-            'click_id' => ['required', 'string', 'max:255', 'unique:tenant.non_billable_campaign_clicks,click_id'],
-            'pubid' => ['nullable', 'string', 'max:255'],
+            'click_id'    => ['required', 'string', 'max:255', 'unique:tenant.non_billable_campaign_clicks,click_id'],
+            'pubid'       => ['nullable', 'string', 'max:255'],
         ]);
 
         Campaign::query()->findOrFail($validated['campaign_id']);
 
         NonBillableCampaignClick::create([
             'campaign_id' => $validated['campaign_id'],
-            'click_id' => $validated['click_id'],
-            'pubid' => $validated['pubid'] ?? null,
+            'click_id'    => $validated['click_id'],
+            'pubid'       => $validated['pubid'] ?? null,
         ]);
+
+        // Fire MobPlus conversion tracking pixel
+        $this->fireMobplusPixel($validated['click_id'], $validated['pubid'] ?? null);
 
         return response()->json([
             'message' => $lang == 'ar' ? 'تم حفظ النقرة بنجاح' : 'Click stored successfully',
         ], JsonResponse::HTTP_CREATED);
+    }
+
+    /**
+     * Fire the MobPlus conversion tracking pixel and log the response.
+     * Uses click_id as txid and pubid as pubid in the query string.
+     * This call is fire-and-forget: failures are logged but never bubble up.
+     */
+    private function fireMobplusPixel(string $clickId, ?string $pubid): void
+    {
+        $trackingUrl = 'http://m.mobplus.net/c/p/a09885837eb54db9b63323b2b61f84eb';
+
+        $params = ['txid' => $clickId];
+
+        if (! empty($pubid)) {
+            $params['pubid'] = $pubid;
+        }
+
+        try {
+            $response = Http::timeout(5)->get($trackingUrl, $params);
+
+            Log::info('MobPlus tracking pixel response', [
+                'click_id'    => $clickId,
+                'pubid'       => $pubid,
+                'url'         => $trackingUrl,
+                'params'      => $params,
+                'status'      => $response->status(),
+                'body'        => $response->body(),
+                'successful'  => $response->successful(),
+            ]);
+        } catch (\Throwable $e) {
+            Log::error('MobPlus tracking pixel failed', [
+                'click_id' => $clickId,
+                'pubid'    => $pubid,
+                'url'      => $trackingUrl,
+                'params'   => $params,
+                'error'    => $e->getMessage(),
+            ]);
+        }
     }
 }
