@@ -55,9 +55,6 @@ class LandingPage extends Controller
         $endDate       = $request->get('endDate');
         $language      = $request->get('language');
 
-        // Map incoming action + status to a concrete enum case
-        $subscriptionAction = SubscriptionAction::fromCallback((string) $action, $userStatus);
-
         // ── Deduplication ────────────────────────────────────────────────────
         // If this exact transactionId has already been processed, skip silently.
         if (User::where('transaction_id', $transactionId)->exists()) {
@@ -67,13 +64,22 @@ class LandingPage extends Controller
             );
         }
 
+        // ── Find existing user by phone ───────────────────────────────────────
+        $user = User::where('phone', $msisdn)->first();
+
+        // Map incoming action + status to a concrete enum case.
+        // If the user already exists, any subscription flow is treated as a renewal.
+        $subscriptionAction = SubscriptionAction::fromCallback((string) $action, $userStatus, $user !== null);
+
         // Build callback payload
         $callbackPayload = [
             'transaction_id' => $transactionId,
             'vendor_name'    => $vendorName,
             'circle'         => $circle,
             'amount'         => $amount,
-            'action'         => $action,
+            'action'         => $subscriptionAction === SubscriptionAction::SUBSCRIBED_RENEWAL
+                ? SubscriptionAction::SUBSCRIBED_RENEWAL->value
+                : $action,
             'operator'       => $operator,
             'channel'        => $channel,
             'pack_name'      => $packName,
@@ -82,9 +88,6 @@ class LandingPage extends Controller
             'end_date'       => $endDate,
             'language'       => $language,
         ];
-
-        // ── Find existing user by phone ───────────────────────────────────────
-        $user = User::where('phone', $msisdn)->first();
 
         // Determine subscription duration based on productId (plan ID)
         if ($subscriptionAction === SubscriptionAction::SUBSCRIBED_NEW || $subscriptionAction === SubscriptionAction::SUBSCRIBED_RENEWAL) {

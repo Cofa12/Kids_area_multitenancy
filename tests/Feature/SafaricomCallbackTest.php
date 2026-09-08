@@ -110,6 +110,7 @@ class SafaricomCallbackTest extends TestCase
             'msisdn'        => $msisdn,
             'transactionId' => 'TXN-SUB-002',
             'userStatus'    => '1',
+            'action'        => 'Subscription',
         ]));
 
         $response->assertStatus(JsonResponse::HTTP_OK);
@@ -119,7 +120,41 @@ class SafaricomCallbackTest extends TestCase
             'phone'               => $msisdn,
             'subscription_status' => 1,
             'transaction_id'      => 'TXN-SUB-002',
+            'action'              => 'SUBSCRIBED_RENEWAL',
         ], 'tenant');
+    }
+
+    public function test_subscription_callback_for_existing_user_treated_as_renewal_and_extends_expiration(): void
+    {
+        $msisdn = '94721800005';
+        $existingExpiration = now()->addDays(5);
+
+        User::factory()->create([
+            'phone'               => $msisdn,
+            'subscription_status' => true,
+            'expiration_date'     => $existingExpiration,
+            'transaction_id'      => 'PREV-TXN',
+            'action'              => 'Subscription',
+        ]);
+
+        // Daily plan adds 1 day to existing future expiration
+        $response = $this->postCallback($this->callbackPayload([
+            'msisdn'        => $msisdn,
+            'transactionId' => 'TXN-SUB-RENEW-01',
+            'action'        => 'Subscription',
+            'userStatus'    => '1',
+            'productId'     => '2341022000051559', // Daily plan
+        ]));
+
+        $response->assertStatus(JsonResponse::HTTP_OK);
+        $response->assertJsonFragment(['message' => 'User updated successfully']);
+
+        $user = User::where('phone', $msisdn)->first();
+        $this->assertNotNull($user);
+        $this->assertEquals('SUBSCRIBED_RENEWAL', $user->action);
+        $this->assertEquals(1, $user->subscription_status);
+        $this->assertEquals('TXN-SUB-RENEW-01', $user->transaction_id);
+        $this->assertEquals($existingExpiration->copy()->addDays(1)->toDateString(), $user->expiration_date->toDateString());
     }
 
     // ─────────────────────────────────────────────────────────────────────────

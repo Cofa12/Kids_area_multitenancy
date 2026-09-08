@@ -16,12 +16,21 @@ enum SubscriptionAction: string
     case SUBSCRIBED_RENEWAL = 'SUBSCRIBED_RENEWAL';
     case UNSUBSCRIPTION = 'UNSUBSCRIPTION';
 
-    public static function fromCallback(string $action, int $userStatus): self
+    public static function fromCallback(string $action, int $userStatus, bool $userExists = false): self
     {
         $action = strtoupper(trim($action));
 
         if ($action === 'UNSUBSCRIPTION') {
             return self::UNSUBSCRIPTION;
+        }
+
+        if ($action === 'RENEWAL' || $action === 'SUBSCRIBED_RENEWAL') {
+            return self::SUBSCRIBED_RENEWAL;
+        }
+
+        // If the user already exists, any subscription flow is treated as a renewal rather than a new subscription
+        if ($userExists) {
+            return self::SUBSCRIBED_RENEWAL;
         }
 
         if ($action === 'SUBSCRIPTION') {
