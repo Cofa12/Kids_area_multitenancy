@@ -544,34 +544,74 @@ class FinancialMetricsService
     /**
      * High performance aggregate daily Ads Cost (USD) from campaigns.
      *
-     * @return array<string, float>
+     * Formula per day:
+     *   ads_cost = Σ ( subscribers_that_day(campaign_i) × campaign_i.cpa )
+     *
+     * When multiple campaigns overlap on the same day each one contributes
+     * independently:
+     *   ads_cost = (n_A × cpa_A) + (n_B × cpa_B) + …
+     *
+     * Implementation: join campaign_subscribers → campaigns and SUM(c.cpa).
+     * Every subscriber row "carries" the cpa of its campaign, so SUM(c.cpa)
+     * grouped by date gives the correct total without any sub-queries.
+     *
+     * Fallback: if campaign_subscribers or campaigns tables / cpa column are
+     * absent the method returns an empty array (ads_cost_usd defaults to 0).
+     *
+     * @return array<string, float>  keyed by 'Y-m-d'
      */
     protected function getDailyAdsCostAggregated(Carbon $start, Carbon $end): array
     {
         $results = [];
 
-        if (Schema::connection('tenant')->hasTable('campaigns')) {
-            $hasCost = Schema::connection('tenant')->hasColumn('campaigns', 'influencer_cost');
-            $hasCpa = Schema::connection('tenant')->hasColumn('campaigns', 'cpa');
+        $hasCampaignSubscribers = Schema::connection('tenant')->hasTable('campaign_subscribers');
+        $hasCampaigns           = Schema::connection('tenant')->hasTable('campaigns');
 
-            if ($hasCost || $hasCpa) {
-                // Sum influencer cost grouped by start_date or date
-                $costSelect = $hasCost ? "COALESCE(CAST(influencer_cost AS DECIMAL(12,2)), 0)" : "0";
+        if (! $hasCampaignSubscribers || ! $hasCampaigns) {
+            return $results;
+        }
 
-                $rows = DB::connection('tenant')->table('campaigns')
-                    ->whereBetween('start_date', [$start->toDateString(), $end->toDateString()])
-                    ->select(
-                        DB::raw('DATE(start_date) as date_val'),
-                        DB::raw("SUM({$costSelect}) as total_cost")
-                    )
-                    ->groupBy(DB::raw('DATE(start_date)'))
-                    ->get();
+        $hasCpa = Schema::connection('tenant')->hasColumn('campaigns', 'cpa');
 
-                foreach ($rows as $row) {
-                    $d = (string) $row->date_val;
-                    $results[$d] = (float) $row->total_cost;
-                }
-            }
+        if (! $hasCpa) {
+            return $results;
+        }
+
+        /*
+         * Single JOIN query:
+         *
+         *   SELECT
+         *       DATE(cs.created_at)  AS date_val,
+         *       SUM(c.cpa)           AS total_ads_cost
+         *   FROM campaign_subscribers cs
+         *   JOIN campaigns c ON c.id = cs.campaign_id
+         *   WHERE cs.created_at BETWEEN :start AND :end
+         *     AND (c.start_date IS NULL OR c.start_date <= DATE(cs.created_at))
+         *     AND (c.end_date   IS NULL OR c.end_date   >= DATE(cs.created_at))
+         *   GROUP BY DATE(cs.created_at)
+         */
+        $rows = DB::connection('tenant')
+            ->table('campaign_subscribers as cs')
+            ->join('campaigns as c', 'c.id', '=', 'cs.campaign_id')
+            ->whereBetween('cs.created_at', [$start, $end])
+            ->where(function ($q) {
+                $q->whereNull('c.start_date')
+                  ->orWhereRaw('c.start_date <= DATE(cs.created_at)');
+            })
+            ->where(function ($q) {
+                $q->whereNull('c.end_date')
+                  ->orWhereRaw('c.end_date >= DATE(cs.created_at)');
+            })
+            ->select(
+                DB::raw('DATE(cs.created_at) AS date_val'),
+                DB::raw('SUM(COALESCE(c.cpa, 0)) AS total_ads_cost')
+            )
+            ->groupBy(DB::raw('DATE(cs.created_at)'))
+            ->get();
+
+        foreach ($rows as $row) {
+            $d           = (string) $row->date_val;
+            $results[$d] = (float) $row->total_ads_cost;
         }
 
         return $results;

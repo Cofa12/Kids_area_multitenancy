@@ -222,4 +222,67 @@ class FinancialMetricsCalculationTest extends TestCase
         $this->assertEquals(0.22, $totals['pnl_usd']);
         $this->assertEquals(round((0.22 / 0.30) * 100, 2), $totals['daily_roi']);
     }
+    /**
+     * ads_cost = n_subscribers × cpa (single campaign)
+     */
+    public function test_ads_cost_single_campaign_is_subscribers_times_cpa(): void
+    {
+        // 5 subscribers, cpa = 2.00  →  ads_cost = 10.00
+        $adsCostUsd = 5 * 2.00;
+
+        $row = $this->service->computeSingleDayMetrics(
+            '2026-09-14',
+            ['daily' => 5],
+            [],
+            $adsCostUsd,
+            1500.0,
+            'naijria',
+            'NGN'
+        );
+
+        $this->assertEquals(10.00, $row['ads_cost_usd']);
+    }
+
+    /**
+     * ads_cost = (n_A × cpa_A) + (n_B × cpa_B)  —  overlapping campaigns edge case
+     */
+    public function test_ads_cost_two_overlapping_campaigns_is_sum_of_each(): void
+    {
+        // Campaign A: 3 subscribers × $1.50 cpa = $4.50
+        // Campaign B: 7 subscribers × $0.80 cpa = $5.60
+        // Total ads_cost for the day = $10.10
+        $adsCostUsd = (3 * 1.50) + (7 * 0.80); // 10.10
+
+        $row = $this->service->computeSingleDayMetrics(
+            '2026-09-14',
+            ['daily' => 10], // total subscribers (used for revenue, not for ads_cost)
+            [],
+            $adsCostUsd,
+            1500.0,
+            'naijria',
+            'NGN'
+        );
+
+        $this->assertEquals(round(10.10, 2), $row['ads_cost_usd']);
+    }
+
+    /**
+     * ads_cost = 0 when there are no campaign subscribers for the day
+     */
+    public function test_ads_cost_is_zero_when_no_campaign_subscribers(): void
+    {
+        $row = $this->service->computeSingleDayMetrics(
+            '2026-09-14',
+            ['daily' => 3],
+            [],
+            0.0, // no campaign subscribers → no ads cost
+            1500.0,
+            'naijria',
+            'NGN'
+        );
+
+        $this->assertEquals(0.0, $row['ads_cost_usd']);
+        $this->assertNull($row['daily_roi']);
+        $this->assertEquals('—', $row['daily_roi_display']);
+    }
 }
