@@ -545,18 +545,20 @@ class FinancialMetricsService
      * High performance aggregate daily Ads Cost (USD) from campaigns.
      *
      * Formula per day:
-     *   ads_cost = Σ ( subscribers_that_day(campaign_i) × campaign_i.cpa )
+     *   ads_cost = Σ ( conversions_that_day(campaign_i) × campaign_i.cpa )
      *
-     * When multiple campaigns overlap on the same day each one contributes
-     * independently:
-     *   ads_cost = (n_A × cpa_A) + (n_B × cpa_B) + …
+     * "Conversions" come from two tables depending on campaign type:
+     *   - billable campaigns     → campaign_subscribers
+     *   - non-billable campaigns → non_billable_campaign_clicks
      *
-     * Implementation: join campaign_subscribers → campaigns and SUM(c.cpa).
-     * Every subscriber row "carries" the cpa of its campaign, so SUM(c.cpa)
-     * grouped by date gives the correct total without any sub-queries.
+     * Both tables are UNIONed so mixed portfolios are handled correctly.
      *
-     * Fallback: if campaign_subscribers or campaigns tables / cpa column are
-     * absent the method returns an empty array (ads_cost_usd defaults to 0).
+     * Multi-campaign overlap is handled automatically: every conversion row
+     * carries its campaign's cpa, so SUM(cpa) grouped by date gives
+     *   (n_A × cpa_A) + (n_B × cpa_B) + …
+     *
+     * Fallback: if the required tables / cpa column are absent the method
+     * returns an empty array (ads_cost_usd defaults to 0).
      *
      * @return array<string, float>  keyed by 'Y-m-d'
      */
@@ -564,49 +566,82 @@ class FinancialMetricsService
     {
         $results = [];
 
-        $hasCampaignSubscribers = Schema::connection('tenant')->hasTable('campaign_subscribers');
-        $hasCampaigns           = Schema::connection('tenant')->hasTable('campaigns');
-
-        if (! $hasCampaignSubscribers || ! $hasCampaigns) {
+        $hasCampaigns = Schema::connection('tenant')->hasTable('campaigns');
+        if (! $hasCampaigns) {
             return $results;
         }
 
         $hasCpa = Schema::connection('tenant')->hasColumn('campaigns', 'cpa');
-
         if (! $hasCpa) {
             return $results;
         }
 
+        $hasCampaignSubscribers = Schema::connection('tenant')->hasTable('campaign_subscribers');
+        $hasNonBillableClicks   = Schema::connection('tenant')->hasTable('non_billable_campaign_clicks');
+
+        if (! $hasCampaignSubscribers && ! $hasNonBillableClicks) {
+            return $results;
+        }
+
         /*
-         * Single JOIN query:
+         * Build a UNION of both conversion sources so the SUM covers
+         * billable and non-billable conversions in a single pass.
          *
-         *   SELECT
-         *       DATE(cs.created_at)  AS date_val,
-         *       SUM(c.cpa)           AS total_ads_cost
-         *   FROM campaign_subscribers cs
-         *   JOIN campaigns c ON c.id = cs.campaign_id
-         *   WHERE cs.created_at BETWEEN :start AND :end
-         *     AND (c.start_date IS NULL OR c.start_date <= DATE(cs.created_at))
-         *     AND (c.end_date   IS NULL OR c.end_date   >= DATE(cs.created_at))
-         *   GROUP BY DATE(cs.created_at)
+         * Each branch produces rows: (campaign_id, date_val)
+         * The outer query joins to campaigns and sums cpa per date.
+         *
+         *   SELECT date_val, SUM(COALESCE(c.cpa, 0)) AS total_ads_cost
+         *   FROM (
+         *       SELECT campaign_id, DATE(created_at) AS date_val
+         *       FROM campaign_subscribers
+         *       WHERE created_at BETWEEN :start AND :end
+         *
+         *       UNION ALL
+         *
+         *       SELECT campaign_id, DATE(created_at) AS date_val
+         *       FROM non_billable_campaign_clicks
+         *       WHERE created_at BETWEEN :start AND :end
+         *   ) AS conversions
+         *   JOIN campaigns c ON c.id = conversions.campaign_id
+         *   WHERE (c.start_date IS NULL OR c.start_date <= date_val)
+         *     AND (c.end_date   IS NULL OR c.end_date   >= date_val)
+         *   GROUP BY date_val
          */
+        $startStr = $start->toDateTimeString();
+        $endStr   = $end->toDateTimeString();
+
+        $unionParts = [];
+
+        if ($hasCampaignSubscribers) {
+            $unionParts[] = "SELECT campaign_id, DATE(created_at) AS date_val
+                             FROM campaign_subscribers
+                             WHERE created_at BETWEEN '{$startStr}' AND '{$endStr}'";
+        }
+
+        if ($hasNonBillableClicks) {
+            $unionParts[] = "SELECT campaign_id, DATE(created_at) AS date_val
+                             FROM non_billable_campaign_clicks
+                             WHERE created_at BETWEEN '{$startStr}' AND '{$endStr}'";
+        }
+
+        $unionSql = implode(' UNION ALL ', $unionParts);
+
         $rows = DB::connection('tenant')
-            ->table('campaign_subscribers as cs')
-            ->join('campaigns as c', 'c.id', '=', 'cs.campaign_id')
-            ->whereBetween('cs.created_at', [$start, $end])
+            ->table(DB::raw("({$unionSql}) AS conversions"))
+            ->join('campaigns as c', 'c.id', '=', 'conversions.campaign_id')
             ->where(function ($q) {
                 $q->whereNull('c.start_date')
-                  ->orWhereRaw('c.start_date <= DATE(cs.created_at)');
+                  ->orWhereRaw('c.start_date <= conversions.date_val');
             })
             ->where(function ($q) {
                 $q->whereNull('c.end_date')
-                  ->orWhereRaw('c.end_date >= DATE(cs.created_at)');
+                  ->orWhereRaw('c.end_date >= conversions.date_val');
             })
             ->select(
-                DB::raw('DATE(cs.created_at) AS date_val'),
+                DB::raw('conversions.date_val AS date_val'),
                 DB::raw('SUM(COALESCE(c.cpa, 0)) AS total_ads_cost')
             )
-            ->groupBy(DB::raw('DATE(cs.created_at)'))
+            ->groupBy('conversions.date_val')
             ->get();
 
         foreach ($rows as $row) {
