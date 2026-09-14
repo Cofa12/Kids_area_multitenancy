@@ -6,6 +6,7 @@ use App\Http\Controllers\Controller;
 use App\Services\V1\FinancialMetricsService;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
+use Symfony\Component\HttpFoundation\StreamedResponse;
 
 /**
  * @psalm-suppress UnusedClass
@@ -62,50 +63,111 @@ class FinancialMetricsController extends Controller
     }
 
     /**
-     * Full Financial Breakdown export endpoint returning exact JSON structure as index.
-     * Accessible at /api/v1/dashboard/financial-metrics/export
-     * and /api/v1/performance/daily-financials/export.
+     * Downloadable Financial Breakdown Report endpoint (CSV / Excel ready) with the whole keys.
+     * Accessible at /api/v1/dashboard/financial-metrics/export and /api/v1/performance/daily-financials/export.
      */
-    public function export(Request $request): JsonResponse
+    public function export(Request $request): StreamedResponse
     {
-        $startDate    = $request->query('from') ?? $request->query('start_date') ?? $request->query('start');
-        $endDate      = $request->query('to') ?? $request->query('end_date') ?? $request->query('end');
+        $startDate = $request->query('from') ?? $request->query('start_date') ?? $request->query('start');
+        $endDate = $request->query('to') ?? $request->query('end_date') ?? $request->query('end');
         $exchangeRate = $request->query('exchange_rate') ? (float) $request->query('exchange_rate') : null;
-        $tenant       = $request->header('X-Tenant') ?: $request->query('tenant');
+        $tenant = $request->header('X-Tenant') ?: $request->query('tenant');
 
         $tenantName = $this->financialMetricsService->resolveTenantName($tenant);
-        $result     = $this->financialMetricsService->getBreakdownData($startDate, $endDate, $exchangeRate, $tenantName);
+        $result = $this->financialMetricsService->getBreakdownData($startDate, $endDate, $exchangeRate, $tenantName);
 
-        $totalRows = count($result['rows']);
-        $pagination = [
-            'current_page'   => 1,
-            'data'           => $result['rows'],
-            'first_page_url' => $request->url() . '?page=1',
-            'from'           => $totalRows > 0 ? 1 : null,
-            'last_page'      => 1,
-            'last_page_url'  => $request->url() . '?page=1',
-            'links'          => [],
-            'next_page_url'  => null,
-            'path'           => $request->url(),
-            'per_page'       => $totalRows,
-            'prev_page_url'  => null,
-            'to'             => $totalRows,
-            'total'          => $totalRows,
+        $rows = $result['rows'];
+        $totals = $result['totals'];
+        $filename = sprintf(
+            'financial_breakdown_%s_%s_to_%s.csv',
+            strtolower($tenantName),
+            $result['start_date'],
+            $result['end_date']
+        );
+
+        $headers = [
+            'Content-Type' => 'text/csv; charset=UTF-8',
+            'Content-Disposition' => "attachment; filename=\"{$filename}\"",
+            'Pragma' => 'no-cache',
+            'Cache-Control' => 'must-revalidate, post-check=0, pre-check=0',
+            'Expires' => '0',
         ];
 
-        return response()->json([
-            'success'       => true,
-            'tenant'        => $tenantName,
-            'currency'      => $result['currency'],
-            'exchange_rate' => $result['exchange_rate'],
-            'from'          => $result['start_date'],
-            'to'            => $result['end_date'],
-            'start_date'    => $result['start_date'],
-            'end_date'      => $result['end_date'],
-            'data'          => $result['rows'],
-            'pagination'    => $pagination,
-            'totals'        => $result['totals'],
-        ], JsonResponse::HTTP_OK);
+        return response()->stream(function () use ($rows, $totals) {
+            $handle = fopen('php://output', 'w');
+
+            // Add UTF-8 BOM for Microsoft Excel compatibility
+            fprintf($handle, chr(0xEF) . chr(0xBB) . chr(0xBF));
+
+            // Complete keys matching all fields returned in dashboard/financial-metrics
+            $keys = [
+                'date',
+                'subscribers_count',
+                'renewals_count',
+                'subscribers_by_plan',
+                'renewals_by_plan',
+                'daily_revenue',
+                'net_revenue_after_vat',
+                'mtn_share',
+                'aggregator_share',
+                'wht',
+                'balance_before_ncc',
+                'ncc_levy',
+                'net_balance',
+                'yns_net_revenue_local',
+                'vas_sunych_share_local',
+                'currency',
+                'exchange_rate',
+                'yns_net_revenue_usd',
+                'ads_cost_usd',
+                'pnl_usd',
+                'daily_roi',
+                'daily_roi_display',
+                'daily_revenue_variation',
+                'daily_revenue_variation_display',
+                'roi_trend',
+                'watch_alert',
+            ];
+
+            // Header row with the whole keys
+            fputcsv($handle, $keys);
+
+            $formatRow = function (array $row) use ($keys): array {
+                $formatted = [];
+                foreach ($keys as $key) {
+                    $val = $row[$key] ?? null;
+                    if (is_array($val)) {
+                        $formatted[] = empty($val) ? '' : json_encode($val);
+                    } elseif (is_bool($val)) {
+                        $formatted[] = $val ? 'true' : 'false';
+                    } elseif ($val === null) {
+                        $formatted[] = '';
+                    } else {
+                        $formatted[] = $val;
+                    }
+                }
+                return $formatted;
+            };
+
+            // Chunk and stream data rows
+            $chunkSize = 200;
+            $chunks = array_chunk($rows, $chunkSize);
+
+            foreach ($chunks as $chunk) {
+                foreach ($chunk as $row) {
+                    fputcsv($handle, $formatRow($row));
+                }
+                if (ob_get_level() > 0) {
+                    ob_flush();
+                }
+                flush();
+            }
+
+            // Append TOTAL Summary Row at the bottom with the whole keys
+            fputcsv($handle, $formatRow($totals));
+
+            fclose($handle);
+        }, 200, $headers);
     }
 }
 

@@ -135,46 +135,33 @@ class FinancialMetricsControllerTest extends TestCase
         $this->assertEquals(11, $response->json('pagination.total')); // 11 days inclusive
     }
 
-    public function test_export_financial_metrics_returns_json_matching_metrics(): void
+    public function test_export_financial_metrics_as_csv_stream_with_whole_keys(): void
     {
-        $response = $this->getJson('/api/v1/dashboard/financial-metrics/export', [
+        $response = $this->get('/api/v1/dashboard/financial-metrics/export', [
             'Authorization' => 'Bearer ' . $this->adminToken,
             'X-Tenant' => 'test.localhost',
-            'Accept' => 'application/json',
         ]);
 
-        $response->assertStatus(JsonResponse::HTTP_OK);
-        $response->assertJsonStructure([
-            'success',
-            'tenant',
-            'currency',
-            'exchange_rate',
-            'start_date',
-            'end_date',
-            'data',
-            'pagination' => [
-                'current_page',
-                'data',
-                'total',
-            ],
-            'totals',
-        ]);
-        $response->assertJsonPath('success', true);
-        $this->assertIsArray($response->json('data'));
+        $response->assertStatus(200);
+        $response->assertHeader('Content-Type', 'text/csv; charset=UTF-8');
+        $this->assertStringContainsString('attachment; filename="financial_breakdown_', (string) $response->headers->get('Content-Disposition'));
+
+        $content = $response->streamedContent();
+
+        // Verify the whole keys are in the CSV header
+        $expectedHeader = 'date,subscribers_count,renewals_count,subscribers_by_plan,renewals_by_plan,daily_revenue,net_revenue_after_vat,mtn_share,aggregator_share,wht,balance_before_ncc,ncc_levy,net_balance,yns_net_revenue_local,vas_sunych_share_local,currency,exchange_rate,yns_net_revenue_usd,ads_cost_usd,pnl_usd,daily_roi,daily_roi_display,daily_revenue_variation,daily_revenue_variation_display,roi_trend,watch_alert';
+        $this->assertStringContainsString($expectedHeader, $content);
+        $this->assertStringContainsString('TOTAL', $content);
     }
 
     public function test_export_financial_metrics_with_from_and_to_params(): void
     {
-        $response = $this->getJson('/api/v1/dashboard/financial-metrics/export?from=2026-08-15&to=2026-08-18', [
+        $response = $this->get('/api/v1/dashboard/financial-metrics/export?from=2026-08-15&to=2026-08-18', [
             'Authorization' => 'Bearer ' . $this->adminToken,
             'X-Tenant' => 'test.localhost',
-            'Accept' => 'application/json',
         ]);
 
-        $response->assertStatus(JsonResponse::HTTP_OK);
-        $response->assertJsonPath('from', '2026-08-15');
-        $response->assertJsonPath('to', '2026-08-18');
-        $this->assertCount(4, $response->json('data')); // 4 days inclusive
-        $this->assertEquals(4, $response->json('pagination.total'));
+        $response->assertStatus(200);
+        $this->assertStringContainsString('financial_breakdown_test.localhost_2026-08-15_to_2026-08-18.csv', (string) $response->headers->get('Content-Disposition'));
     }
 }

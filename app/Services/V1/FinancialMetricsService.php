@@ -384,7 +384,16 @@ class FinancialMetricsService
         $totalAdsCostUsd = 0.0;
         $totalPnlUsd = 0.0;
 
+        $totalSubsByPlan = [];
+        $totalRenewalsByPlan = [];
+
         foreach ($rows as $row) {
+            foreach (($row['subscribers_by_plan'] ?? []) as $plan => $count) {
+                $totalSubsByPlan[$plan] = ($totalSubsByPlan[$plan] ?? 0) + (int) $count;
+            }
+            foreach (($row['renewals_by_plan'] ?? []) as $plan => $count) {
+                $totalRenewalsByPlan[$plan] = ($totalRenewalsByPlan[$plan] ?? 0) + (int) $count;
+            }
             $totalSubscribers += (int) ($row['subscribers_count'] ?? 0);
             $totalRenewals += (int) ($row['renewals_count'] ?? 0);
             $totalDailyRevenue += (float) ($row['daily_revenue'] ?? 0.0);
@@ -409,6 +418,8 @@ class FinancialMetricsService
             'date' => 'TOTAL',
             'subscribers_count' => $totalSubscribers,
             'renewals_count' => $totalRenewals,
+            'subscribers_by_plan' => $totalSubsByPlan,
+            'renewals_by_plan' => $totalRenewalsByPlan,
             'daily_revenue' => round($totalDailyRevenue, 2),
             'net_revenue_after_vat' => round($totalNetRevenueAfterVat, 2),
             'mtn_share' => round($totalMtnShare, 2),
