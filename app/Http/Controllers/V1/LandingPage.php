@@ -4,6 +4,7 @@ namespace App\Http\Controllers\V1;
 
 use App\Http\Controllers\Controller;
 use App\Http\Requests\V1\SafaricomRequest;
+use App\Models\CampaignRenewal;
 use App\Models\HeEntry;
 use App\Models\SdpResponse;
 use App\Models\Tenant;
@@ -113,6 +114,20 @@ class LandingPage extends Controller
 
             if ($subscriptionAction === SubscriptionAction::UNSUBSCRIPTION) {
                 return response()->json(['message' => 'User is deactivated successfully'], JsonResponse::HTTP_OK);
+            }
+
+            // ── Track renewal as an immutable event ──────────────────────────────
+            // Insert into campaign_renewals so that the financial metrics dashboard
+            // can count renewals by their actual renewal date (renewed_at), without
+            // relying on the mutable users.updated_at / users.action columns.
+            if ($subscriptionAction === SubscriptionAction::SUBSCRIBED_RENEWAL) {
+                CampaignRenewal::create([
+                    'user_id'     => $user->id,
+                    'campaign_id' => null,
+                    'plan_id'     => $productId,
+                    'amount'      => $amount,
+                    'renewed_at'  => now(),
+                ]);
             }
 
             return response()->json(['message' => 'User updated successfully'], JsonResponse::HTTP_OK);

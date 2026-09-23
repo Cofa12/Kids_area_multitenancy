@@ -456,20 +456,13 @@ class FinancialMetricsService
         // Check if users table exists in active tenant connection
         if (Schema::connection('tenant')->hasTable('users')) {
             $hasPlanId = Schema::connection('tenant')->hasColumn('users', 'plan_id');
-            $hasAction = Schema::connection('tenant')->hasColumn('users', 'action');
 
             $query = DB::connection('tenant')->table('users')
                 ->whereBetween('created_at', [$start, $end]);
 
-            if ($hasAction) {
-                // If action is specified, filter for new subscriptions or non-renewals
-                $query->where(function ($q) {
-                    $q->whereNull('action')
-                        ->orWhere('action', '!=', 'SUBSCRIBED_RENEWAL')
-                        ->orWhere('action', 'SUBSCRIPTION')
-                        ->orWhere('action', 'SUBSCRIBED_NEW');
-                });
-            }
+            // Every row in the users table represents exactly one original subscription
+            // event, identified by created_at. Renewals are now tracked as separate
+            // immutable records in campaign_renewals, so no action-based filter is needed.
 
             $selectPlan = $hasPlanId ? "COALESCE(plan_id, 'daily')" : "'daily'";
 
@@ -500,7 +493,9 @@ class FinancialMetricsService
     {
         $results = [];
 
-        // 1. Check campaign_renewals table if exists
+        // Source: campaign_renewals table — the single source of truth for renewal events.
+        // Each row is an immutable record inserted by the callback handler when a renewal
+        // is processed, with renewed_at capturing the exact renewal timestamp.
         if (Schema::connection('tenant')->hasTable('campaign_renewals')) {
             $hasPlanId = Schema::connection('tenant')->hasColumn('campaign_renewals', 'plan_id');
             $dateColumn = Schema::connection('tenant')->hasColumn('campaign_renewals', 'renewed_at')
@@ -517,29 +512,6 @@ class FinancialMetricsService
                     DB::raw('COUNT(*) as total_count')
                 )
                 ->groupBy(DB::raw("DATE({$dateColumn})"), DB::raw($selectPlan))
-                ->get();
-
-            foreach ($rows as $row) {
-                $d = (string) $row->date_val;
-                $p = SubscriptionPlan::normalizePlanKey((string) $row->plan_key);
-                $results[$d][$p] = ($results[$d][$p] ?? 0) + (int) $row->total_count;
-            }
-        }
-
-        // 2. Check users with action = 'SUBSCRIBED_RENEWAL'
-        if (Schema::connection('tenant')->hasTable('users') && Schema::connection('tenant')->hasColumn('users', 'action')) {
-            $hasPlanId = Schema::connection('tenant')->hasColumn('users', 'plan_id');
-            $selectPlan = $hasPlanId ? "COALESCE(plan_id, 'daily')" : "'daily'";
-
-            $rows = DB::connection('tenant')->table('users')
-                ->where('action', 'SUBSCRIBED_RENEWAL')
-                ->whereBetween('updated_at', [$start, $end])
-                ->select(
-                    DB::raw('DATE(updated_at) as date_val'),
-                    DB::raw("{$selectPlan} as plan_key"),
-                    DB::raw('COUNT(*) as total_count')
-                )
-                ->groupBy(DB::raw('DATE(updated_at)'), DB::raw($selectPlan))
                 ->get();
 
             foreach ($rows as $row) {
